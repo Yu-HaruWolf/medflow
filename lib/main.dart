@@ -4,13 +4,15 @@ import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/LoginPage.dart';
 import 'package:solution_challenge_tcu_2025/Patient.dart';
 import 'package:solution_challenge_tcu_2025/Personal.dart';
-
+import 'package:solution_challenge_tcu_2025/gemini_page.dart';
 
 void main() {
-    runApp(ChangeNotifierProvider(
-    create: (context) => ApplicationState(),
-    builder: ((context, child) => const MyApp()),
-  ));
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ApplicationState(),
+      builder: ((context, child) => const MyApp()),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -24,8 +26,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Nursing Efficiency',
       theme: ThemeData(
- 
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 8, 77, 181)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 8, 77, 181),
+        ),
       ),
       home: const MyHomePage(title: 'Nursing Work Efficiency'),
     );
@@ -47,29 +50,29 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<ApplicationState>();
-    
+
     Widget insideWidget;
-    switch (appState.screenId){
+    switch (appState.screenId) {
       case 0:
-        insideWidget = const LoginPage();
+        insideWidget = GeminiPage();
         break;
       case 1:
         insideWidget = const Patient();
         break;
       case 2:
-      insideWidget = const Personal();
+        insideWidget = const Personal();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
     return Scaffold(
       appBar: AppBar(
-
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
 
         title: Text(widget.title),
       ),
-      body: Center( // ← ここが重要！
+      body: Center(
+        // ← ここが重要！
         child: insideWidget,
       ),
       floatingActionButton: FloatingActionButton(
