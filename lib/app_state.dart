@@ -23,8 +23,10 @@ class ApplicationState extends ChangeNotifier {
   int oldscreenId = 0;
   int get screenId => _screenId;
   set screenId(int value) {
+    oldscreenId = _screenId;
     _screenId = value;
     print('screenId changed to $value');
+    print('oldId to $oldscreenId');
     notifyListeners();
   }
 }

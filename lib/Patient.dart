@@ -25,7 +25,7 @@ class Patient extends StatelessWidget {
               trailing: Icon(Icons.arrow_forward),
               onTap: () {
                 context.read<ApplicationState>().screenId = 2;
-                },
+              },
             ),
             );
         },
