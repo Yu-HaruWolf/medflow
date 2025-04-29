@@ -4,6 +4,8 @@ import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/LoginPage.dart';
 import 'package:solution_challenge_tcu_2025/Patient.dart';
 import 'package:solution_challenge_tcu_2025/Personal.dart';
+import 'package:solution_challenge_tcu_2025/Nursing_plan.dart';
+import 'package:solution_challenge_tcu_2025/Nursing_info.dart';
 
 
 void main() {
@@ -57,18 +59,24 @@ class _MyHomePageState extends State<MyHomePage> {
         insideWidget = const Patient();
         break;
       case 2:
-      insideWidget = const Personal();
+        insideWidget = const Personal();
+      case 3:
+        insideWidget = const Nursing_plan();
+        break;
+      case 4:
+        insideWidget = const Nursing_info();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
     return Scaffold(
-      appBar: AppBar(
-
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
+      appBar: appState.screenId == 0 || appState.screenId == 1 
+      ? AppBar(
+          backgroundColor: const Color.fromARGB(255, 8, 77, 181),
+          title: Text(widget.title),
+        )
+      : null, 
       body: Center( // ← ここが重要！
         child: insideWidget,
       ),
