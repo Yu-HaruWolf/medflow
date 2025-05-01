@@ -15,35 +15,33 @@ class _GeminiPageState extends State<GeminiPage> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<ApplicationState>(context);
-    return Scaffold(
-      body: Center(
-        child: Container(
-          child: Column(
-            children: [
-              Text(responseText),
-              ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    responseText = "";
-                  });
+    return SingleChildScrollView(
+      child: Container(
+        child: Column(
+          children: [
+            Text(responseText),
+            ElevatedButton(
+              onPressed: () async {
+                setState(() {
+                  responseText = "";
+                });
 
-                  Stream<GenerateContentResponse> responseStream =
-                      await appState.model.startChat().sendMessageStream(
-                        Content.text("長文で自己紹介をしてください。"),
-                      );
-                  await for (final response in responseStream) {
-                    final responseResultText = response.text;
-                    if (responseResultText != null) {
-                      setState(() {
-                        responseText += responseResultText;
-                      });
-                    }
+                Stream<GenerateContentResponse> responseStream = await appState
+                    .model
+                    .startChat()
+                    .sendMessageStream(Content.text("長文で自己紹介をしてください。"));
+                await for (final response in responseStream) {
+                  final responseResultText = response.text;
+                  if (responseResultText != null) {
+                    setState(() {
+                      responseText += responseResultText;
+                    });
                   }
-                },
-                child: Text("button"),
-              ),
-            ],
-          ),
+                }
+              },
+              child: Text("button"),
+            ),
+          ],
         ),
       ),
     );
