@@ -6,13 +6,7 @@ import 'package:solution_challenge_tcu_2025/firebase_options.dart';
 
 class ApplicationState extends ChangeNotifier {
   late GenerativeModel model;
-  ApplicationState() {
-    firebaseInit();
-  }
-  Future<void> firebaseInit() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+  geminiInit() async {
     model = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
     );

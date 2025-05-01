@@ -1,9 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // <- 追加
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/LoginPage.dart';
 import 'package:solution_challenge_tcu_2025/Patient.dart';
 import 'package:solution_challenge_tcu_2025/Personal.dart';
+import 'package:solution_challenge_tcu_2025/firebase_options.dart';
 import 'package:solution_challenge_tcu_2025/gemini_page.dart';
 import 'package:solution_challenge_tcu_2025/Nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/Nursing_info.dart';
@@ -23,8 +25,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var appState = context.read<ApplicationState>();
-
     return MaterialApp(
       title: 'Nursing Efficiency',
       theme: ThemeData(
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 8, 77, 181),
         ),
       ),
-      home: const MyHomePage(title: 'Nursing Work Efficiency'),
+      home: SplashScreen(),
     );
   }
 }
@@ -93,6 +93,44 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Go to Patient',
         child: const Icon(Icons.navigate_next), // アイコンを "次へ" のイメージに変更
       ),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('Firebase Ready!');
+    context.read<ApplicationState>().geminiInit();
+    // 初期化後にホーム画面へ
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => MyHomePage(title: 'Nursing Work Efficiency'),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 8, 77, 181),
+        title: Text('Loading'),
+      ),
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }
