@@ -5,11 +5,13 @@ class PatientRepository {
   PatientRepository() {
     patientList.add(
       Patient(
-        furigana: 'さんぷる',
-        name: 'サンプル',
-        birthday: DateTime(2000, 1, 1),
-        address: 'Japan',
-        tel: '00000000',
+        personalInfo: PersonalInfo(
+          furigana: 'さんぷる',
+          name: 'サンプル',
+          birthday: DateTime(2000, 1, 1),
+          address: 'Japan',
+          tel: '00000000',
+        ),
       ),
     );
   }
