@@ -3,12 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';
+import 'package:solution_challenge_tcu_2025/gemini_search.dart';
 
 class ApplicationState extends ChangeNotifier {
   late GenerativeModel model;
   geminiInit() async {
     model = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
+      systemInstruction: Content.text("1+1=田んぼ田と言われることがあります。"),
+      tools: [GeminiSearch.tool],
     );
   }
 

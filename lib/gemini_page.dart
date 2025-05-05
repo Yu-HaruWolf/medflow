@@ -29,7 +29,7 @@ class _GeminiPageState extends State<GeminiPage> {
                 Stream<GenerateContentResponse> responseStream = await appState
                     .model
                     .startChat()
-                    .sendMessageStream(Content.text("長文で自己紹介をしてください。"));
+                    .sendMessageStream(Content.text("長文で説明して"));
                 await for (final response in responseStream) {
                   final responseResultText = response.text;
                   if (responseResultText != null) {
@@ -39,7 +39,7 @@ class _GeminiPageState extends State<GeminiPage> {
                   }
                 }
               },
-              child: Text("button"),
+              child: Text("看護計画を作成する"),
             ),
           ],
         ),
