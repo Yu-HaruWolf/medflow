@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class GeminiPage extends StatefulWidget {
   @override
@@ -22,6 +24,19 @@ class _GeminiPageState extends State<GeminiPage> {
             Text(responseText),
             ElevatedButton(
               onPressed: () async {
+                final response = await fetchWeatherData("what is apple?");
+                if (response != null) {
+                  print("Response from Cloud Function: $response");
+                  setState(() {
+                    responseText =
+                        response['response']; // Cloud Functionからのレスポンスを更新
+                  });
+                } else {
+                  setState(() {
+                    responseText = "Failed to load data";
+                  });
+                }
+
                 setState(() {
                   responseText = "";
                 });
@@ -45,5 +60,28 @@ class _GeminiPageState extends State<GeminiPage> {
         ),
       ),
     );
+  }
+
+  // GETリクエストを送信する関数
+  Future<Map<String, dynamic>?> fetchWeatherData(String prompt) async {
+    final Uri url = Uri.parse(
+      'https://asia-northeast1-solution-challenge-458913.cloudfunctions.net/python-http-function?$prompt',
+    );
+
+    try {
+      final response = await http.get(url);
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print('Response body: ${response.body}');
+        // レスポンスが正常ならJSONデータを解析して返す
+        return json.decode(response.body);
+      } else {
+        print('Failed to load data');
+        return null;
+      }
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
   }
 }
