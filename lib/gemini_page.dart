@@ -39,13 +39,34 @@ class _GeminiPageState extends State<GeminiPage> {
                 }
 
                 // 過去の会話履歴
-                final history = [
+                final history1 = [
                   Content.text('今日の東京の天気は？'),
                   Content.model([TextPart(responseText)]),
                 ];
+
+                Stream<GenerateContentResponse> responseStream1 = await appState
+                    .model
+                    .startChat(history: history1)
+                    .sendMessageStream(
+                      Content.text("会話履歴をもとにこの地域の天気について教えてください。"),
+                    );
+                String intermediateResponse = "";
+                await for (final response in responseStream1) {
+                  final responseResultText = response.text;
+                  if (responseResultText != null) {
+                    setState(() {
+                      intermediateResponse += responseResultText;
+                    });
+                  }
+                }
+                final history2 = [
+                  Content.text('今日の東京の天気は？'),
+                  Content.model([TextPart(responseText)]),
+                ];
+
                 Stream<GenerateContentResponse> responseStream = await appState
                     .model
-                    .startChat(history: history)
+                    .startChat(history: history2)
                     .sendMessageStream(
                       Content.text("会話履歴をもとにこの地域の天気について教えてください。"),
                     );
