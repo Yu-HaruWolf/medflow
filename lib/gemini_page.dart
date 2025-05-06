@@ -1,6 +1,8 @@
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:solution_challenge_tcu_2025/data/patient.dart';
+import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/function_soap.dart';
 
 import 'app_state.dart';
@@ -29,6 +31,9 @@ class _GeminiPageState extends State<GeminiPage> {
             ElevatedButton(
               onPressed: () async {
                 print("Patient Index: ${widget.patientIndex}");
+                final repo = PatientRepository();
+                Patient patient = repo.getPatient(0);
+                print(patient.personalInfo.name);
                 final response = await fetchWeatherData(
                   "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
                 );
