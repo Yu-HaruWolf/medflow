@@ -15,7 +15,7 @@ class Gemini {
       systemInstruction: Content.text("""
 あなたは優秀な看護師です。今から退院時の看護計画を作成します。
 
-出力の形式はjsonとし、fetchSOAPtool関数に引数として渡して、処理してください。
+出力の形式はjsonとし、fetchNursing関数に引数として渡して、処理してください。
 詳細な出力形式は以下に示す。
 {
   nanda_i: ,

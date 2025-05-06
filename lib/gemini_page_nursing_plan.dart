@@ -165,7 +165,7 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                       // Extract the structured input data prepared by the model
                       // from the function call arguments.
                       Map<String, dynamic> nursingplanJson =
-                          functionCall.args['soapJson']!
+                          functionCall.args['nursingJson']!
                               as Map<String, dynamic>;
 
                       final functionResult = await fetchNursing(
@@ -212,13 +212,13 @@ E-P（指導） ${patient.nursingPlan.ep}""";
   // This function calls a hypothetical external API that returns
   // a collection of weather information for a given location on a given date.
   // `location` is an object of the form { city: string, state: string }
-  Future<void> fetchNursing(Map<String, dynamic> soapJson) async {
+  Future<void> fetchNursing(Map<String, dynamic> nursingJson) async {
     // 引数のJSONからそれぞれの値を取り出して変数に格納
-    String nanda_i = soapJson['nanda_i'] ?? '';
-    String goal = soapJson['goal'] ?? '';
-    String kansatu = soapJson['kansatu'] ?? '';
-    String ennjo = soapJson['ennjo'] ?? '';
-    String sidou = soapJson['sidou'] ?? '';
+    String nanda_i = nursingJson['nanda_i'] ?? '';
+    String goal = nursingJson['goal'] ?? '';
+    String kansatu = nursingJson['kansatu'] ?? '';
+    String ennjo = nursingJson['ennjo'] ?? '';
+    String sidou = nursingJson['sidou'] ?? '';
 
     // ここでデータを処理することができます（例：ログに出力する）
     print('nanda_i: $nanda_i');
