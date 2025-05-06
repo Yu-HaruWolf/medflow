@@ -297,10 +297,10 @@ packages:
     dependency: "direct main"
     description:
       name: multiselect
-      sha256: "21f60b3979adc4b769058b7aba2a124b2d14f769ede948efb61f116e3c3ff435"
+      sha256: "89307c172c874dbd184825f8509bee38c4c68eae676c480ac5b7943ee2e8436d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.1"
+    version: "0.0.9"
   navigation_builder:
     dependency: transitive
     description:
