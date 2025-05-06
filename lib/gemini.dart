@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:solution_challenge_tcu_2025/function_nursing_plan.dart';
 
-class Gemini with ChangeNotifier {
+class Gemini {
   late GenerativeModel model1;
 
   Future<void> geminiInit() async {
@@ -25,7 +25,5 @@ class Gemini with ChangeNotifier {
 }
 """),
     );
-
-    notifyListeners(); // 初期化が終わったら通知
   }
 }
