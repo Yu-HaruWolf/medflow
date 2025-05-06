@@ -72,8 +72,8 @@ class _GeminiPageState extends State<GeminiPage> {
 患者：「わかりました。」""";
                 String usersingPlan = """看護計画
 男性：50代、前十字靭帯断裂術後　合併症に糖尿病がある。
-NANDA-I　自己健康管理促進準備状態
-目標：退院後は一人暮らしを自身で行えるようにする
+NANDA-I　${patient.nursingPlan.nanda_i}
+目標：${patient.nursingPlan.goal}
 O-P (観察項目)
 創部の状態
 床病の有無
