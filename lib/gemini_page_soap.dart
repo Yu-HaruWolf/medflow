@@ -173,27 +173,24 @@ E-P（指導） ${patient.nursingPlan.ep}""";
   // `location` is an object of the form { city: string, state: string }
   Future<void> fetchSOAP(Map<String, dynamic> soapJson) async {
     // 引数のJSONからそれぞれの値を取り出して変数に格納
-    String nanda_i = soapJson['nanda_i'] ?? '';
-    String goal = soapJson['goal'] ?? '';
-    String kansatu = soapJson['kansatu'] ?? '';
-    String ennjo = soapJson['ennjo'] ?? '';
-    String sidou = soapJson['sidou'] ?? '';
+    String subject = soapJson['subjective'] ?? '';
+    String object = soapJson['objective'] ?? '';
+    String assessment = soapJson['assessment'] ?? '';
+    String plan = soapJson['plan'] ?? '';
 
     // ここでデータを処理することができます（例：ログに出力する）
-    print('nanda_i: $nanda_i');
-    print('goal: $goal');
-    print('kansatu: $kansatu');
-    print('ennjo: $ennjo');
-    print('sidou: $sidou');
-    final newplan = NursingPlan(
-      nanda_i: nanda_i,
-      goal: goal,
-      op: kansatu,
-      tp: ennjo,
-      ep: sidou,
+    print('Subjective: $subject');
+    print('Objective: $object');
+    print('Assessment: $assessment');
+    print('Plan: $plan');
+    final newSOAP = Soap(
+      subject: subject,
+      object: object,
+      assessment: assessment,
+      plan: plan,
     );
     final newPatient = Patient(
-      nursingPlan: newplan,
+      historyOfSoap: [newSOAP],
       // nursingPlan は省略（null）
     );
 
@@ -201,6 +198,9 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 
     repo.updatePatient(widget.patientIndex, newPatient);
     Patient patient1 = repo.getPatient(widget.patientIndex);
-    print('Subject:${patient1.nursingPlan.nanda_i}');
+    print('Subject:${patient1.historyOfSoap[0].subject}');
+    print('Subject:${patient1.historyOfSoap[0].object}');
+    print('Subject:${patient1.historyOfSoap[0].assessment}');
+    print('Subject:${patient1.historyOfSoap[0].plan}');
   }
 }
