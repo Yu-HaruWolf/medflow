@@ -61,7 +61,7 @@ class _GeminiPageState extends State<GeminiPage> {
                 }
                 final history2 = [
                   Content.text('今日の東京の天気は？'),
-                  Content.model([TextPart(responseText)]),
+                  Content.model([TextPart(intermediateResponse)]),
                 ];
 
                 Stream<GenerateContentResponse> responseStream = await appState
