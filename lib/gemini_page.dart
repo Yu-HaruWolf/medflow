@@ -25,7 +25,7 @@ class _GeminiPageState extends State<GeminiPage> {
             ElevatedButton(
               onPressed: () async {
                 final response = await fetchWeatherData(
-                  "what is the weather today in Tokyo?",
+                  "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
                 );
                 if (response != null) {
                   setState(() {
@@ -43,14 +43,62 @@ class _GeminiPageState extends State<GeminiPage> {
                 // });
                 // 過去の会話履歴
                 final history = [
-                  Content.text('今日の東京の天気は？'),
+                  Content.text(
+                    '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
+                  ),
                   Content.model([TextPart(responseText)]),
                 ];
                 Stream<GenerateContentResponse> responseStream = await appState
                     .model
                     .startChat(history: history)
                     .sendMessageStream(
-                      Content.text("会話履歴をもとにこの地域の天気について教えてください。"),
+                      Content.text("""
+以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください
+
+
+看護師：「こんにちは。今日の体調はいかがですか？」
+患者：「まあまあですけど、夜になると膝がズキズキして眠れないことがあります。」
+看護師：「夜の痛みが強いんですね。どのくらいの痛みですか？例えば、10 段階で表すと？」
+患者：「夜は7 くらいです。昼間は3 くらいかな。」
+看護師：「ありがとうございます。痛み止めは今、食後に飲んでいますか？」
+患者：「はい、食後に飲んでいます。」
+看護師：「夜の痛みが強いので、薬の飲み方を 9 時、15 時、21 時に変えてみましょうか。」
+患者：「それなら夜も少し楽になるかもしれませんね。」
+看護師：「退院後はご自宅で一人暮らしですが、不安なことはありますか？」
+患者：「布団から起き上がるのが大変そうで...。あと、駅まで歩くのも心配です。」
+看護師：「布団からの起き上がり方や、必要であれば福祉用具の導入も考えましょう。駅ま
+での移動は理学療法士と一緒に練習しましょうね。」
+患者：「はい、お願いします。」
+看護師：「食事や血糖値の管理で困っていることはありませんか？」
+患者：「つい間食してしまうので、どうしたらいいか...。」
+看護師：「栄養士と一緒に食事の工夫を考えましょう。糖尿病があると傷の治りも遅くなる
+ので、気をつけていきましょうね。」
+患者：「わかりました。」
+看護計画
+男性：50代、前十字靭帯断裂術後　合併症に糖尿病がある。
+NANDA-I　自己健康管理促進準備状態
+目標：退院後は一人暮らしを自身で行えるようにする
+O-P (観察項目)
+創部の状態
+床病の有無
+バイタル
+松葉杖の使用状態
+入院中の日常生活動作
+退院後、介助してくれる人がいるのか。
+仕事の状況
+可動域の有無
+食事の状況
+T-P 援助
+痛みの強さの時間を確認し、緩和策を助言
+退院後、電車で出社し駅から遠いため、理学療法士と協力し、リハビリ以外でも積極的に松葉杖の使用を促したり、リハビリを行ってもらう
+退院後、一人暮らしのため、日常生活は自身でできるように関わる。また、家では布団で寝ついているため、自身でできないのであれば、福利用具の導入を提案する。
+糖尿病があるため、栄養士と連携して食事指導を行う。
+E-P（指導）
+痛みは夜に強くなるようなので、食後ではなく、９時１５時、２１時で飲むようにつたえる　
+出社するために早めに家を出るなど工夫してもらうように伝える
+リハビリを行う。（具体的なメニューを書く）また、一人で起き上がれないため、初めて使用する用具の使い方を指導する。さらに、雨の日など傘がさせないため、カッパを使用してもらったする
+糖尿病があると、創の回復が遅くなったり、感染など合併症になるリスクも指導して食事の指導をする。
+"""),
                     );
                 await for (final response in responseStream) {
                   final responseResultText = response.text;
