@@ -6,7 +6,8 @@ import 'package:solution_challenge_tcu_2025/LoginPage.dart';
 import 'package:solution_challenge_tcu_2025/Patient.dart';
 import 'package:solution_challenge_tcu_2025/Personal.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';
-import 'package:solution_challenge_tcu_2025/gemini_page.dart';
+import 'package:solution_challenge_tcu_2025/gemini.dart';
+import 'package:solution_challenge_tcu_2025/gemini_page_nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/Nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/Nursing_info.dart';
 
@@ -56,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget insideWidget;
     switch (appState.screenId) {
       case 0:
-        insideWidget = GeminiPage(patientIndex: patientIndex);
+        insideWidget = GeminiPage_nursing_plan(patientIndex: patientIndex);
         break;
       case 1:
         insideWidget = const Patient();
@@ -114,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen> {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     print('Firebase Ready!');
-    context.read<ApplicationState>().geminiInit();
+    context.read<Gemini>().geminiInit();
     // 初期化後にホーム画面へ
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(

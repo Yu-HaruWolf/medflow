@@ -19,7 +19,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-   
       body: Center(
         child: Container(
           padding: const EdgeInsets.all(30.0),
@@ -29,8 +28,10 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 16,
+                  ),
                   child: TextFormField(
                     controller: _UserController,
                     validator: (value) {
@@ -45,8 +46,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 16,
+                  ),
                   child: TextFormField(
                     controller: _PasswardcCntroller,
                     validator: (value) {
@@ -57,16 +60,18 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     obscureText: _isObscure,
                     decoration: InputDecoration(
-                        labelText: 'Password',
-                        suffixIcon: IconButton(
-                            icon: Icon(_isObscure
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            onPressed: () {
-                              setState(() {
-                                _isObscure = !_isObscure;
-                              });
-                            })),
+                      labelText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isObscure ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 Center(
@@ -78,10 +83,13 @@ class _LoginPageState extends State<LoginPage> {
                       String correctUser = "tcu";
                       String correctPass = "0000";
 
-                      if(inputUser == correctUser && inputPass == correctPass){
+                      if (inputUser == correctUser &&
+                          inputPass == correctPass) {
                         context.read<ApplicationState>().screenId = 1;
                       }
-                    }, child: Text('ログイン')),
+                    },
+                    child: Text('ログイン'),
+                  ),
                 ),
               ],
             ),

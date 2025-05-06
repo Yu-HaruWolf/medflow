@@ -9,7 +9,8 @@ class Nursing_info extends StatefulWidget {
   _Infomation createState() => _Infomation();
 }
 
-class _Infomation extends State<Nursing_info> with SingleTickerProviderStateMixin {
+class _Infomation extends State<Nursing_info>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -31,7 +32,9 @@ class _Infomation extends State<Nursing_info> with SingleTickerProviderStateMixi
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            context.read<ApplicationState>().screenId =  context.read<ApplicationState>().oldscreenId;;
+            context.read<ApplicationState>().screenId =
+                context.read<ApplicationState>().oldscreenId;
+            ;
           },
         ),
         title: Text('Nursing Information'),
