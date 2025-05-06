@@ -1,6 +1,7 @@
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:solution_challenge_tcu_2025/function_soap.dart';
 
 import 'app_state.dart';
 import 'package:http/http.dart' as http;
@@ -113,7 +114,7 @@ E-P（指導）
                   final functionCalls = response.functionCalls.toList();
                   if (functionCalls.isNotEmpty) {
                     final functionCall = functionCalls.first;
-                    if (functionCall.name == 'fetchSOAPTool') {
+                    if (functionCall.name == 'fetchSOAP') {
                       // Extract the structured input data prepared by the model
                       // from the function call arguments.
                       Map<String, dynamic> soapJson =
