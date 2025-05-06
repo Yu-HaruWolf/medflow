@@ -31,7 +31,7 @@ class _GeminiPageState_nursing_plan extends State<GeminiPage_nursing_plan> {
   @override
   Widget build(BuildContext context) {
     // final appState = Provider.of<ApplicationState>(context);
-    final app = Gemini();
+
     return SingleChildScrollView(
       child: Container(
         child: Column(
@@ -105,7 +105,8 @@ T-P 援助 ${patient.nursingPlan.tp}
 
 E-P（指導） ${patient.nursingPlan.ep}""";
 
-                Stream<GenerateContentResponse> responseStream1 = await app
+                Stream<GenerateContentResponse> responseStream1 = await widget
+                    .gemini
                     .model1
                     .startChat(history: history1)
                     .sendMessageStream(
@@ -130,7 +131,8 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                   Content.model([TextPart(intermediateResponse)]),
                 ];
 
-                Stream<GenerateContentResponse> responseStream = await app
+                Stream<GenerateContentResponse> responseStream = await widget
+                    .gemini
                     .model1
                     .startChat(history: history2)
                     .sendMessageStream(
