@@ -48,7 +48,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
-
+  var patientIndex = 0;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<ApplicationState>();
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget insideWidget;
     switch (appState.screenId) {
       case 0:
-        insideWidget = GeminiPage();
+        insideWidget = GeminiPage(patientIndex: patientIndex);
         break;
       case 1:
         insideWidget = const Patient();

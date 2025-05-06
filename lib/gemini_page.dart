@@ -8,6 +8,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class GeminiPage extends StatefulWidget {
+  final int patientIndex;
+  const GeminiPage({Key? key, required this.patientIndex}) : super(key: key);
+
   @override
   State<GeminiPage> createState() => _GeminiPageState();
 }
@@ -25,6 +28,7 @@ class _GeminiPageState extends State<GeminiPage> {
             Text(responseText),
             ElevatedButton(
               onPressed: () async {
+                print("Patient Index: ${widget.patientIndex}");
                 final response = await fetchWeatherData(
                   "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
                 );
