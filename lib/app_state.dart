@@ -10,7 +10,7 @@ class ApplicationState extends ChangeNotifier {
   geminiInit() async {
     model = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
-      systemInstruction: Content.text("長文で説明して"),
+      systemInstruction: Content.text("あなたは優秀な看護師です。今から退院時の看護計画を作成します。"),
     );
   }
 
