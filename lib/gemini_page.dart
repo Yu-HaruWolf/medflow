@@ -605,8 +605,8 @@ ECG：異常なし
   // GETリクエストを送信する関数
   Future<Map<String, dynamic>?> fetchWeatherData(String prompt) async {
     final Uri url = Uri.parse(
-      'https://asia-northeast1-solution-challenge-458913.cloudfunctions.net/python-http-function?$prompt',
-    );
+      'https://asia-northeast1-solution-challenge-458913.cloudfunctions.net/python-http-function',
+    ).replace(queryParameters: {'prompt': prompt});
 
     try {
       final response = await http.get(url);
