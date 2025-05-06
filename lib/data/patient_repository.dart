@@ -42,4 +42,16 @@ class PatientRepository {
   Patient getPatient(int index) => patientList[index];
   int get size => patientList.length;
   List<Patient> get getAllPatients => patientList;
+
+  void addPatient(Patient patient) {
+    patientList.add(patient);
+  }
+
+  void updatePatient(int index, Patient updatedPatient) {
+    if (index >= 0 && index < patientList.length) {
+      patientList[index] = updatedPatient;
+    } else {
+      throw RangeError('Invalid index: $index');
+    }
+  }
 }

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/function_soap.dart';
-
+import 'package:solution_challenge_tcu_2025/data/soap.dart';
 import 'app_state.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -75,25 +75,10 @@ class _GeminiPageState extends State<GeminiPage> {
 NANDA-I　${patient.nursingPlan.nanda_i}
 目標：${patient.nursingPlan.goal}
 O-P (観察項目) ${patient.nursingPlan.op}
-創部の状態
-床病の有無
-バイタル
-松葉杖の使用状態
-入院中の日常生活動作
-退院後、介助してくれる人がいるのか。
-仕事の状況
-可動域の有無
-食事の状況
+
 T-P 援助 ${patient.nursingPlan.tp}
-痛みの強さの時間を確認し、緩和策を助言
-退院後、電車で出社し駅から遠いため、理学療法士と協力し、リハビリ以外でも積極的に松葉杖の使用を促したり、リハビリを行ってもらう
-退院後、一人暮らしのため、日常生活は自身でできるように関わる。また、家では布団で寝ついているため、自身でできないのであれば、福利用具の導入を提案する。
-糖尿病があるため、栄養士と連携して食事指導を行う。
-E-P（指導） ${patient.nursingPlan.ep}
-痛みは夜に強くなるようなので、食後ではなく、９時１５時、２１時で飲むようにつたえる　
-出社するために早めに家を出るなど工夫してもらうように伝える
-リハビリを行う。（具体的なメニューを書く）また、一人で起き上がれないため、初めて使用する用具の使い方を指導する。さらに、雨の日など傘がさせないため、カッパを使用してもらったする
-糖尿病があると、創の回復が遅くなったり、感染など合併症になるリスクも指導して食事の指導をする。""";
+
+E-P（指導） ${patient.nursingPlan.ep}""";
                 final history = [
                   Content.text(
                     '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
@@ -184,5 +169,24 @@ E-P（指導） ${patient.nursingPlan.ep}
     print('Objective: $object');
     print('Assessment: $assessment');
     print('Plan: $plan');
+    final newSOAP = Soap(
+      subject: subject,
+      object: object,
+      assessment: assessment,
+      plan: plan,
+    );
+    final newPatient = Patient(
+      historyOfSoap: [newSOAP],
+      // nursingPlan は省略（null）
+    );
+
+    final repo = PatientRepository();
+
+    repo.updatePatient(widget.patientIndex, newPatient);
+    Patient patient1 = repo.getPatient(widget.patientIndex);
+    print('Subject:${patient1.historyOfSoap[0].subject}');
+    print('Subject:${patient1.historyOfSoap[0].object}');
+    print('Subject:${patient1.historyOfSoap[0].assessment}');
+    print('Subject:${patient1.historyOfSoap[0].plan}');
   }
 }
