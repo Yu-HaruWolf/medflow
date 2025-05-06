@@ -1,3 +1,6 @@
+import 'nursing_plan.dart';
+import 'soap.dart';
+
 class Patient {
   Patient({
     this.relatedContacts = const [],
@@ -15,6 +18,8 @@ class Patient {
     Safety? safety,
     Comfort? comfort,
     Growth? growth,
+    NursingPlan? nursingPlan,
+    this.historyOfSoap = const [],
   }) : personalInfo = personalInfo ?? PersonalInfo(),
        healthPromotion = healthPromotion ?? HealthPromotion(),
        nutrition = nutrition ?? Nutrition(),
@@ -30,7 +35,8 @@ class Patient {
        lifePrinciples = lifePrinciples ?? LifePrinciples(),
        safety = safety ?? Safety(),
        comfort = comfort ?? Comfort(),
-       growth = growth ?? Growth();
+       growth = growth ?? Growth(),
+       nursingPlan = nursingPlan ?? NursingPlan();
 
   PersonalInfo personalInfo;
   List<RelatedContact> relatedContacts;
@@ -47,6 +53,9 @@ class Patient {
   Safety safety;
   Comfort comfort;
   Growth growth;
+
+  List<Soap> historyOfSoap;
+  NursingPlan nursingPlan;
 }
 
 class PersonalInfo {
