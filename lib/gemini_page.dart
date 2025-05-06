@@ -42,21 +42,7 @@ class _GeminiPageState extends State<GeminiPage> {
                 //   responseText = "";
                 // });
                 // 過去の会話履歴
-                final history = [
-                  Content.text(
-                    '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
-                  ),
-                  Content.model([TextPart(responseText)]),
-                ];
-                Stream<GenerateContentResponse> responseStream = await appState
-                    .model
-                    .startChat(history: history)
-                    .sendMessageStream(
-                      Content.text("""
-以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください
-
-
-看護師：「こんにちは。今日の体調はいかがですか？」
+                String userConversation = """看護師：「こんにちは。今日の体調はいかがですか？」
 患者：「まあまあですけど、夜になると膝がズキズキして眠れないことがあります。」
 看護師：「夜の痛みが強いんですね。どのくらいの痛みですか？例えば、10 段階で表すと？」
 患者：「夜は7 くらいです。昼間は3 くらいかな。」
@@ -73,8 +59,8 @@ class _GeminiPageState extends State<GeminiPage> {
 患者：「つい間食してしまうので、どうしたらいいか...。」
 看護師：「栄養士と一緒に食事の工夫を考えましょう。糖尿病があると傷の治りも遅くなる
 ので、気をつけていきましょうね。」
-患者：「わかりました。」
-看護計画
+患者：「わかりました。」""";
+                String usersingPlan = """看護計画
 男性：50代、前十字靭帯断裂術後　合併症に糖尿病がある。
 NANDA-I　自己健康管理促進準備状態
 目標：退院後は一人暮らしを自身で行えるようにする
@@ -97,8 +83,24 @@ E-P（指導）
 痛みは夜に強くなるようなので、食後ではなく、９時１５時、２１時で飲むようにつたえる　
 出社するために早めに家を出るなど工夫してもらうように伝える
 リハビリを行う。（具体的なメニューを書く）また、一人で起き上がれないため、初めて使用する用具の使い方を指導する。さらに、雨の日など傘がさせないため、カッパを使用してもらったする
-糖尿病があると、創の回復が遅くなったり、感染など合併症になるリスクも指導して食事の指導をする。
-"""),
+糖尿病があると、創の回復が遅くなったり、感染など合併症になるリスクも指導して食事の指導をする。""";
+                final history = [
+                  Content.text(
+                    '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
+                  ),
+                  Content.model([TextPart(responseText)]),
+                ];
+
+                Stream<GenerateContentResponse> responseStream = await appState
+                    .model
+                    .startChat(history: history)
+                    .sendMessageStream(
+                      Content.text("""
+                          以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください。fetchSOAP関数を呼び出してください。
+                          会話:${userConversation}
+                          看護計画:${usersingPlan}
+
+                          """),
                     );
                 await for (final response in responseStream) {
                   final responseResultText = response.text;
@@ -106,6 +108,25 @@ E-P（指導）
                     setState(() {
                       responseText += responseResultText;
                     });
+                  }
+
+                  final functionCalls = response.functionCalls.toList();
+                  if (functionCalls.isNotEmpty) {
+                    final functionCall = functionCalls.first;
+                    if (functionCall.name == 'fetchSOAPTool') {
+                      // Extract the structured input data prepared by the model
+                      // from the function call arguments.
+                      Map<String, dynamic> soapJson =
+                          functionCall.args['soapJson']!
+                              as Map<String, dynamic>;
+
+                      final functionResult = await fetchSOAP(soapJson);
+                    } else {
+                      Text(responseText);
+                      throw UnimplementedError(
+                        'Function not declared to the model: ${functionCall.name}',
+                      );
+                    }
                   }
                 }
               },
@@ -136,5 +157,22 @@ E-P（指導）
       print('Error: $e');
       return null;
     }
+  }
+
+  // This function calls a hypothetical external API that returns
+  // a collection of weather information for a given location on a given date.
+  // `location` is an object of the form { city: string, state: string }
+  Future<void> fetchSOAP(Map<String, dynamic> soapJson) async {
+    // 引数のJSONからそれぞれの値を取り出して変数に格納
+    String subject = soapJson['subjective'] ?? '';
+    String object = soapJson['objective'] ?? '';
+    String assessment = soapJson['assessment'] ?? '';
+    String plan = soapJson['plan'] ?? '';
+
+    // ここでデータを処理することができます（例：ログに出力する）
+    print('Subjective: $subject');
+    print('Objective: $object');
+    print('Assessment: $assessment');
+    print('Plan: $plan');
   }
 }
