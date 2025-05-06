@@ -144,7 +144,7 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 
 ・O-P (観察項目)
 ・T-P 援助
-・E-P（指導）
+・E-P（指導)
 
  看護記録:${soap}
 
