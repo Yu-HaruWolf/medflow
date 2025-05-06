@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "986294078734",
+    "project_id": "codelab-flutter-with-gemini",
+    "storage_bucket": "codelab-flutter-with-gemini.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986294078734:android:ffdca0ecc8282b6f8e9b5f",
+        "android_client_info": {
+          "package_name": "com.example.colorist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMc8admsuOhxXHhGIyTIOz813TO1PaQ2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986294078734:android:9cdab120575b4f968e9b5f",
+        "android_client_info": {
+          "package_name": "com.example.solution_challenge_tcu_2025"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMc8admsuOhxXHhGIyTIOz813TO1PaQ2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
