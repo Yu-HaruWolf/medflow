@@ -46,7 +46,7 @@ class _GeminiPageState_soap extends State<GeminiPage_soap> {
                 Patient patient = repo.getPatient(0);
                 print(patient.personalInfo.name);
                 final response = await fetchWeatherData(
-                  "Please investigate NANDA-I usin Google search. What types of NANDA-I exist, and please tell me all the evaluation criteria for each",
+                  "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
                 );
                 if (response != null) {
                   setState(() {
@@ -69,32 +69,24 @@ class _GeminiPageState_soap extends State<GeminiPage_soap> {
                 // setState(() {
                 //   responseText = "";
                 // });
-                String soap = """【10日目】
-S
-「リハビリで歩く距離が伸びてきました。痛みは日中はほとんど気になりません。家で一人
-でもやっていけそうな気がしてきましたが、雨の日の通勤が心配です。」
-O
-• 創部の状態：治癒良好、発赤・腫脹なし
-• 褥瘡の有無：なし
-• 体温：36.4℃
-• 血圧：120/76mmHg
-• 脈拍：74回/分
-• 松葉杖の使用状態：院内の長距離も自立
-• 入院中の日常生活動作：自立
-• 退院後介助者：なし
-• 仕事の状況：復職希望、通勤は電車・徒歩
-• 可動域：ほぼ正常
-• 食事の状況：全量摂取、間食なし
-• 血糖値（朝食前）：120mg/dL
-A
-ADL 自立。松葉杖歩行も安定。退院後の生活に対する自信がついてきている。雨天時の移
-動方法に課題あり。
-P
-• 雨天時の通勤対策としてカッパの使用を提案し、使い方を指導
-• 必要に応じて福祉用具の導入を再検討
-• 退院後もリハビリを継続できるよう理学療法士と連携
-• 糖尿病管理のため食事指導を継続
-""";
+                String userConversation = """看護師：「こんにちは。今日の体調はいかがですか？」
+患者：「まあまあですけど、夜になると膝がズキズキして眠れないことがあります。」
+看護師：「夜の痛みが強いんですね。どのくらいの痛みですか？例えば、10 段階で表すと？」
+患者：「夜は7 くらいです。昼間は3 くらいかな。」
+看護師：「ありがとうございます。痛み止めは今、食後に飲んでいますか？」
+患者：「はい、食後に飲んでいます。」
+看護師：「夜の痛みが強いので、薬の飲み方を 9 時、15 時、21 時に変えてみましょうか。」
+患者：「それなら夜も少し楽になるかもしれませんね。」
+看護師：「退院後はご自宅で一人暮らしですが、不安なことはありますか？」
+患者：「布団から起き上がるのが大変そうで...。あと、駅まで歩くのも心配です。」
+看護師：「布団からの起き上がり方や、必要であれば福祉用具の導入も考えましょう。駅ま
+での移動は理学療法士と一緒に練習しましょうね。」
+患者：「はい、お願いします。」
+看護師：「食事や血糖値の管理で困っていることはありませんか？」
+患者：「つい間食してしまうので、どうしたらいいか...。」
+看護師：「栄養士と一緒に食事の工夫を考えましょう。糖尿病があると傷の治りも遅くなる
+ので、気をつけていきましょうね。」
+患者：「わかりました。」""";
                 String usersingPlan = """看護計画
 男性：50代、前十字靭帯断裂術後　合併症に糖尿病がある。
 NANDA-I　${patient.nursingPlan.nanda_i}
@@ -104,51 +96,23 @@ O-P (観察項目) ${patient.nursingPlan.op}
 T-P 援助 ${patient.nursingPlan.tp}
 
 E-P（指導） ${patient.nursingPlan.ep}""";
-
-                Stream<GenerateContentResponse> responseStream1 = await widget
-                    .gemini
-                    .model1
-                    .startChat(history: history1)
-                    .sendMessageStream(
-                      Content.text("""
-                         会話履歴をもとに、最適で一番重要視するNANDA-Iを1つ決めてください。
-                          看護記録:${soap}
-                          看護計画:${usersingPlan}
-
-                          """),
-                    );
-                String intermediateResponse = "";
-                await for (final response in responseStream1) {
-                  final responseResultText = response.text;
-                  if (responseResultText != null) {
-                    setState(() {
-                      intermediateResponse += responseResultText;
-                    });
-                  }
-                }
-                final history2 = [
-                  Content.text('最適なNANDA-Iを１つ決めてください。'),
-                  Content.model([TextPart(intermediateResponse)]),
+                final history = [
+                  Content.text(
+                    '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
+                  ),
+                  Content.model([TextPart(responseText)]),
                 ];
 
                 Stream<GenerateContentResponse> responseStream = await widget
-                    .gemini
-                    .model1
-                    .startChat(history: history2)
+                    .model
+                    .startChat(history: history)
                     .sendMessageStream(
-                      Content.text("""重要視するNANDA-Iの項目非効果的健康自己管理リスク状態となりました。
+                      Content.text("""
+                          以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください。fetchSOAP関数を呼び出してください。
+                          会話:${userConversation}
+                          看護計画:${usersingPlan}
 
-１．googel検索でこのNANDA-Iの項目における看護計画を作成し、
-２．SOAPや入院時データベースから患者の個別性を加えてください。
-作成する看護計画は以下の内容として、json形式で出力してください。
-
-・O-P (観察項目)
-・T-P 援助
-・E-P（指導)
-
- 看護記録:${soap}
-
-"""),
+                          """),
                     );
                 await for (final response in responseStream) {
                   final responseResultText = response.text;
@@ -164,13 +128,11 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                     if (functionCall.name == 'fetchSOAP') {
                       // Extract the structured input data prepared by the model
                       // from the function call arguments.
-                      Map<String, dynamic> soapplanJson =
+                      Map<String, dynamic> soapJson =
                           functionCall.args['soapJson']!
                               as Map<String, dynamic>;
 
-                      final functionResult = await fetchSOAP(
-                        soapplanJson,
-                      );
+                      final functionResult = await fetchSOAP(soapJson);
                     } else {
                       Text(responseText);
                       throw UnimplementedError(
