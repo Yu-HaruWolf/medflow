@@ -139,7 +139,7 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                   }
                 }
               },
-              child: Text("看護計画を作成する"),
+              child: Text("SOAPを作成する"),
             ),
           ],
         ),

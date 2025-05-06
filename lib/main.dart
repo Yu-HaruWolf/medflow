@@ -57,16 +57,24 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var appState = context.watch<ApplicationState>();
 
-    Widget insideWidget, insideWidget1;
+    Widget insideWidget;
     switch (appState.screenId) {
       case 0:
-        insideWidget = GeminiPage_nursing_plan(
-          patientIndex: patientIndex,
-          gemini: widget.gemini,
-        );
-        insideWidget1 = GeminiPage_soap(
-          patientIndex: patientIndex,
-          gemini: widget.gemini,
+        insideWidget = Column(
+          children: [
+            Expanded(
+              child: GeminiPage_nursing_plan(
+                patientIndex: patientIndex,
+                gemini: widget.gemini,
+              ),
+            ),
+            Expanded(
+              child: GeminiPage_soap(
+                patientIndex: patientIndex,
+                gemini: widget.gemini,
+              ),
+            ),
+          ],
         );
         break;
       case 1:
