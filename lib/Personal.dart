@@ -47,7 +47,7 @@ class Personal extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            context.read<ApplicationState>().screenId =  context.read<ApplicationState>().oldscreenId;;
+            context.read<ApplicationState>().screenId = 1;
           },
         ),
         title: Text('Patient Information'),

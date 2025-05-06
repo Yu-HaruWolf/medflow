@@ -31,7 +31,7 @@ class _Infomation extends State<Nursing_info> with SingleTickerProviderStateMixi
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            context.read<ApplicationState>().screenId =  context.read<ApplicationState>().oldscreenId;;
+            context.read<ApplicationState>().screenId = 2;
           },
         ),
         title: Text('Nursing Information'),
