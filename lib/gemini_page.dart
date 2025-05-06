@@ -24,9 +24,10 @@ class _GeminiPageState extends State<GeminiPage> {
             Text(responseText),
             ElevatedButton(
               onPressed: () async {
-                final response = await fetchWeatherData("what is apple?");
+                final response = await fetchWeatherData(
+                  "what is the weather today in Tokyo?",
+                );
                 if (response != null) {
-                  print("Response from Cloud Function: $response");
                   setState(() {
                     responseText =
                         response['response']; // Cloud Functionからのレスポンスを更新
@@ -37,14 +38,20 @@ class _GeminiPageState extends State<GeminiPage> {
                   });
                 }
 
-                setState(() {
-                  responseText = "";
-                });
-
+                // setState(() {
+                //   responseText = "";
+                // });
+                // 過去の会話履歴
+                final history = [
+                  Content.text('今日の東京の天気は？'),
+                  Content.model([TextPart(responseText)]),
+                ];
                 Stream<GenerateContentResponse> responseStream = await appState
                     .model
-                    .startChat()
-                    .sendMessageStream(Content.text("長文で説明して"));
+                    .startChat(history: history)
+                    .sendMessageStream(
+                      Content.text("会話履歴をもとにこの地域の天気について教えてください。"),
+                    );
                 await for (final response in responseStream) {
                   final responseResultText = response.text;
                   if (responseResultText != null) {
@@ -72,7 +79,6 @@ class _GeminiPageState extends State<GeminiPage> {
       final response = await http.get(url);
       print(response.statusCode);
       if (response.statusCode == 200) {
-        print('Response body: ${response.body}');
         // レスポンスが正常ならJSONデータを解析して返す
         return json.decode(response.body);
       } else {
