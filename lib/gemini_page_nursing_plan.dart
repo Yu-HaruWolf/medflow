@@ -13,8 +13,12 @@ import 'dart:convert';
 
 class GeminiPage_nursing_plan extends StatefulWidget {
   final int patientIndex;
-  const GeminiPage_nursing_plan({Key? key, required this.patientIndex})
-    : super(key: key);
+  final Gemini gemini;
+
+  const GeminiPage_nursing_plan({
+    required this.patientIndex,
+    required this.gemini,
+  });
 
   @override
   State<GeminiPage_nursing_plan> createState() =>

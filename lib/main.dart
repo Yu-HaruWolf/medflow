@@ -39,10 +39,12 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  // const MyHomePage({super.key, required this.title});
 
   final String title;
+  final Gemini gemini; // ← これを追加する必要がある！
 
+  const MyHomePage({required this.title, required this.gemini});
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -57,7 +59,10 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget insideWidget;
     switch (appState.screenId) {
       case 0:
-        insideWidget = GeminiPage_nursing_plan(patientIndex: patientIndex);
+        insideWidget = GeminiPage_nursing_plan(
+          patientIndex: patientIndex,
+          gemini: widget.gemini,
+        );
         break;
       case 1:
         insideWidget = const Patient();
@@ -99,27 +104,49 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late Gemini gemini; // ✅ インスタンスを持つようにする
+
   @override
   void initState() {
     super.initState();
     _init();
   }
 
+  // Future<void> _init() async {
+  //   await Firebase.initializeApp(
+  //     options: DefaultFirebaseOptions.currentPlatform,
+  //   );
+  //   print('Firebase Ready!');
+  //   context.read<Gemini>().geminiInit();
+  //   // 初期化後にホーム画面へ
+  //   Navigator.of(context).pushReplacement(
+  //     MaterialPageRoute(
+  //       builder: (_) => MyHomePage(title: 'Nursing Work Efficiency'),
+  //     ),
+  //   );
+  // }
+
   Future<void> _init() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     print('Firebase Ready!');
-    context.read<Gemini>().geminiInit();
-    // 初期化後にホーム画面へ
+
+    gemini = Gemini();
+    await gemini.geminiInit(); // ✅ モデル初期化
+
+    // ✅ 初期化後にホームへ渡す
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => MyHomePage(title: 'Nursing Work Efficiency'),
+        builder:
+            (_) => MyHomePage(title: 'Nursing Work Efficiency', gemini: gemini),
       ),
     );
   }
