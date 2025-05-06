@@ -10,6 +10,7 @@ import 'package:solution_challenge_tcu_2025/gemini.dart';
 import 'package:solution_challenge_tcu_2025/gemini_page_nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/Nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/Nursing_info.dart';
+import 'package:solution_challenge_tcu_2025/gemini_page_soap.dart';
 
 void main() {
   runApp(
@@ -56,10 +57,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var appState = context.watch<ApplicationState>();
 
-    Widget insideWidget;
+    Widget insideWidget, insideWidget1;
     switch (appState.screenId) {
       case 0:
         insideWidget = GeminiPage_nursing_plan(
+          patientIndex: patientIndex,
+          gemini: widget.gemini,
+        );
+        insideWidget1 = GeminiPage_soap(
           patientIndex: patientIndex,
           gemini: widget.gemini,
         );
@@ -141,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     gemini = Gemini();
     await gemini.geminiInit(); // ✅ モデル初期化
-
+    await gemini.geminiInit2();
     // ✅ 初期化後にホームへ渡す
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(

@@ -15,14 +15,10 @@ class GeminiPage_soap extends StatefulWidget {
   final int patientIndex;
   final Gemini gemini;
 
-  const GeminiPage_soap({
-    required this.patientIndex,
-    required this.gemini,
-  });
+  const GeminiPage_soap({required this.patientIndex, required this.gemini});
 
   @override
-  State<GeminiPage_soap> createState() =>
-      _GeminiPageState_soap();
+  State<GeminiPage_soap> createState() => _GeminiPageState_soap();
 }
 
 class _GeminiPageState_soap extends State<GeminiPage_soap> {
@@ -104,7 +100,8 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                 ];
 
                 Stream<GenerateContentResponse> responseStream = await widget
-                    .model
+                    .gemini
+                    .model2
                     .startChat(history: history)
                     .sendMessageStream(
                       Content.text("""
