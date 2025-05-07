@@ -1,45 +1,43 @@
 {
   "project_info": {
-    "project_number": "986294078734",
-    "project_id": "codelab-flutter-with-gemini",
-    "storage_bucket": "codelab-flutter-with-gemini.firebasestorage.app"
+    "project_number": "996765302538",
+    "project_id": "medflow-tcu",
+    "storage_bucket": "medflow-tcu.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:986294078734:android:ffdca0ecc8282b6f8e9b5f",
-        "android_client_info": {
-          "package_name": "com.example.colorist"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBMc8admsuOhxXHhGIyTIOz813TO1PaQ2Y"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:986294078734:android:9cdab120575b4f968e9b5f",
+        "mobilesdk_app_id": "1:996765302538:android:e8e4d9380dc7b84f5544f3",
         "android_client_info": {
           "package_name": "com.example.solution_challenge_tcu_2025"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "996765302538-78p5p117jma3iruv44ri9sk066h7i1l3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBMc8admsuOhxXHhGIyTIOz813TO1PaQ2Y"
+          "current_key": "AIzaSyAvHBZzNWuUNk7Lz_exQyBlL-ef9_oUU0g"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "996765302538-78p5p117jma3iruv44ri9sk066h7i1l3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "996765302538-rv609epkq9bgfbg93769aa760f2aspoq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.solutionChallengeTcu2025"
+              }
+            }
+          ]
         }
       }
     }
