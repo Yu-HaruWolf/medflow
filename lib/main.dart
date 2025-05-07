@@ -12,6 +12,9 @@ import 'package:solution_challenge_tcu_2025/Nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/Nursing_info.dart';
 import 'package:solution_challenge_tcu_2025/gemini_page_soap.dart';
 
+import 'data/patient_repository.dart';
+import 'data/patient.dart' as PatientData;
+
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -62,6 +65,21 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         insideWidget = Column(
           children: [
+            ElevatedButton(
+              child: Text("Create patient"),
+              onPressed: () async {
+                final patient = PatientData.Patient(
+                  personalInfo: PatientData.PersonalInfo(
+                    furigana: 'さんぷる',
+                    name: "三府瑠",
+                    birthday: DateTime(2000, 1, 1),
+                  ),
+                );
+                final patient_repository = PatientRepository();
+                await patient_repository.addPatient(patient);
+                print(patient);
+              },
+            ),
             Expanded(
               child: GeminiPage_nursing_plan(
                 patientIndex: patientIndex,

@@ -43,8 +43,8 @@ class _GeminiPageState_nursing_plan extends State<GeminiPage_nursing_plan> {
                 // ⭐ model1 の初期化を忘れずに
                 await widget.gemini.geminiInit();
                 final repo = PatientRepository();
-                Patient patient = repo.getPatient(0);
-                print(patient.personalInfo.name);
+                Patient? patient = await repo.getPatient('0');
+                print(patient!.personalInfo.name);
                 final response = await fetchWeatherData(
                   "Please investigate NANDA-I usin Google search. What types of NANDA-I exist, and please tell me all the evaluation criteria for each",
                 );
@@ -240,8 +240,9 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 
     final repo = PatientRepository();
 
-    repo.updatePatient(widget.patientIndex, newPatient);
-    Patient patient1 = repo.getPatient(widget.patientIndex);
-    print('Subject:${patient1.nursingPlan.nanda_i}');
+    repo.updatePatient(newPatient);
+    repo
+        .getPatient(widget.patientIndex.toString())
+        .then((patient) => print('Subject:${patient!.nursingPlan.nanda_i}'));
   }
 }

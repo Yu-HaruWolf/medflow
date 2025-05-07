@@ -41,46 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBFxkuxt2V5q22RLGBwC9swO4I6jIBTxWM',
-    appId: '1:986294078734:web:11ee6a20290c8c4e8e9b5f',
-    messagingSenderId: '986294078734',
-    projectId: 'codelab-flutter-with-gemini',
-    authDomain: 'codelab-flutter-with-gemini.firebaseapp.com',
-    storageBucket: 'codelab-flutter-with-gemini.firebasestorage.app',
+    apiKey: 'AIzaSyCKq6aL-Om7Pz6ta0sUorwpIJ-sBkAi5FI',
+    appId: '1:996765302538:web:bfb8032c9454c2245544f3',
+    messagingSenderId: '996765302538',
+    projectId: 'medflow-tcu',
+    authDomain: 'medflow-tcu.firebaseapp.com',
+    storageBucket: 'medflow-tcu.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBMc8admsuOhxXHhGIyTIOz813TO1PaQ2Y',
-    appId: '1:986294078734:android:9cdab120575b4f968e9b5f',
-    messagingSenderId: '986294078734',
-    projectId: 'codelab-flutter-with-gemini',
-    storageBucket: 'codelab-flutter-with-gemini.firebasestorage.app',
+    apiKey: 'AIzaSyAvHBZzNWuUNk7Lz_exQyBlL-ef9_oUU0g',
+    appId: '1:996765302538:android:e8e4d9380dc7b84f5544f3',
+    messagingSenderId: '996765302538',
+    projectId: 'medflow-tcu',
+    storageBucket: 'medflow-tcu.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD1ESdYBqASxqOgo2WoJF9n5crZfMkdwkk',
-    appId: '1:986294078734:ios:b5c3b88065c98d3c8e9b5f',
-    messagingSenderId: '986294078734',
-    projectId: 'codelab-flutter-with-gemini',
-    storageBucket: 'codelab-flutter-with-gemini.firebasestorage.app',
+    apiKey: 'AIzaSyAkMj828GyF96qDo7diS2ywclYumuVqn24',
+    appId: '1:996765302538:ios:6fc598989ddc0f3c5544f3',
+    messagingSenderId: '996765302538',
+    projectId: 'medflow-tcu',
+    storageBucket: 'medflow-tcu.firebasestorage.app',
+    iosClientId: '996765302538-rv609epkq9bgfbg93769aa760f2aspoq.apps.googleusercontent.com',
     iosBundleId: 'com.example.solutionChallengeTcu2025',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyD1ESdYBqASxqOgo2WoJF9n5crZfMkdwkk',
-    appId: '1:986294078734:ios:b5c3b88065c98d3c8e9b5f',
-    messagingSenderId: '986294078734',
-    projectId: 'codelab-flutter-with-gemini',
-    storageBucket: 'codelab-flutter-with-gemini.firebasestorage.app',
+    apiKey: 'AIzaSyAkMj828GyF96qDo7diS2ywclYumuVqn24',
+    appId: '1:996765302538:ios:6fc598989ddc0f3c5544f3',
+    messagingSenderId: '996765302538',
+    projectId: 'medflow-tcu',
+    storageBucket: 'medflow-tcu.firebasestorage.app',
+    iosClientId: '996765302538-rv609epkq9bgfbg93769aa760f2aspoq.apps.googleusercontent.com',
     iosBundleId: 'com.example.solutionChallengeTcu2025',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBFxkuxt2V5q22RLGBwC9swO4I6jIBTxWM',
-    appId: '1:986294078734:web:18abb0d744089f4b8e9b5f',
-    messagingSenderId: '986294078734',
-    projectId: 'codelab-flutter-with-gemini',
-    authDomain: 'codelab-flutter-with-gemini.firebaseapp.com',
-    storageBucket: 'codelab-flutter-with-gemini.firebasestorage.app',
+    apiKey: 'AIzaSyCKq6aL-Om7Pz6ta0sUorwpIJ-sBkAi5FI',
+    appId: '1:996765302538:web:a7e11aad6e54ea0b5544f3',
+    messagingSenderId: '996765302538',
+    projectId: 'medflow-tcu',
+    authDomain: 'medflow-tcu.firebaseapp.com',
+    storageBucket: 'medflow-tcu.firebasestorage.app',
   );
+
 }

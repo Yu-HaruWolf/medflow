@@ -39,8 +39,8 @@ class _GeminiPageState_soap extends State<GeminiPage_soap> {
                 // ⭐ model1 の初期化を忘れずに
                 await widget.gemini.geminiInit();
                 final repo = PatientRepository();
-                Patient patient = repo.getPatient(0);
-                print(patient.personalInfo.name);
+                Patient? patient = await repo.getPatient('0');
+                print(patient!.personalInfo.name);
                 final response = await fetchWeatherData(
                   "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
                 );
@@ -196,11 +196,12 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 
     final repo = PatientRepository();
 
-    repo.updatePatient(widget.patientIndex, newPatient);
-    Patient patient1 = repo.getPatient(widget.patientIndex);
-    print('Subject:${patient1.historyOfSoap[0].subject}');
-    print('Subject:${patient1.historyOfSoap[0].object}');
-    print('Subject:${patient1.historyOfSoap[0].assessment}');
-    print('Subject:${patient1.historyOfSoap[0].plan}');
+    repo.updatePatient(newPatient);
+    repo.getPatient(widget.patientIndex.toString()).then((patient1) {
+      print('Subject:${patient1!.historyOfSoap[0].object}');
+      print('Subject:${patient1.historyOfSoap[0].subject}');
+      print('Subject:${patient1.historyOfSoap[0].assessment}');
+      print('Subject:${patient1.historyOfSoap[0].plan}');
+    });
   }
 }
