@@ -1,27 +1,24 @@
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
-import 'package:solution_challenge_tcu_2025/gemini.dart';
-import 'app_state.dart';
+import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class GeminiPage_soap extends StatefulWidget {
+class GeminiSoapPage extends StatefulWidget {
   final int patientIndex;
-  final Gemini gemini;
+  final GeminiService gemini;
 
-  const GeminiPage_soap({required this.patientIndex, required this.gemini});
+  const GeminiSoapPage({required this.patientIndex, required this.gemini});
 
   @override
-  State<GeminiPage_soap> createState() => _GeminiPageState_soap();
+  State<GeminiSoapPage> createState() => _GeminiSoapPageState();
 }
 
-class _GeminiPageState_soap extends State<GeminiPage_soap> {
+class _GeminiSoapPageState extends State<GeminiSoapPage> {
   String responseText = "Sample";
 
   @override
@@ -39,8 +36,8 @@ class _GeminiPageState_soap extends State<GeminiPage_soap> {
                 // ⭐ model1 の初期化を忘れずに
                 await widget.gemini.geminiInit();
                 final repo = PatientRepository();
-                Patient patient = repo.getPatient(0);
-                print(patient.personalInfo.name);
+                Patient? patient = await repo.getPatient('0');
+                print(patient!.personalInfo.name);
                 final response = await fetchWeatherData(
                   "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
                 );
@@ -196,11 +193,12 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 
     final repo = PatientRepository();
 
-    repo.updatePatient(widget.patientIndex, newPatient);
-    Patient patient1 = repo.getPatient(widget.patientIndex);
-    print('Subject:${patient1.historyOfSoap[0].subject}');
-    print('Subject:${patient1.historyOfSoap[0].object}');
-    print('Subject:${patient1.historyOfSoap[0].assessment}');
-    print('Subject:${patient1.historyOfSoap[0].plan}');
+    repo.updatePatient(newPatient);
+    repo.getPatient(widget.patientIndex.toString()).then((patient1) {
+      print('Subject:${patient1!.historyOfSoap[0].object}');
+      print('Subject:${patient1.historyOfSoap[0].subject}');
+      print('Subject:${patient1.historyOfSoap[0].assessment}');
+      print('Subject:${patient1.historyOfSoap[0].plan}');
+    });
   }
 }

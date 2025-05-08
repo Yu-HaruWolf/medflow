@@ -39,19 +39,23 @@ class PatientRepository {
     );
   }
 
-  Patient getPatient(int index) => patientList[index];
-  int get size => patientList.length;
-  List<Patient> get getAllPatients => patientList;
-
-  void addPatient(Patient patient) {
-    patientList.add(patient);
+  Future<Patient?> getPatient(String id) async {
+    try {
+      return patientList[int.parse(id)];
+    } catch (e) {
+      return null;
+    }
   }
 
-  void updatePatient(int index, Patient updatedPatient) {
-    if (index >= 0 && index < patientList.length) {
-      patientList[index] = updatedPatient;
-    } else {
-      throw RangeError('Invalid index: $index');
-    }
+  Future<int> get size async => patientList.length;
+  Future<List<Patient>> get getAllPatients async => patientList;
+
+  Future<void> addPatient(Patient patient) async {
+    patientList.add(patient);
+    patient.id = (await size - 1).toString();
+  }
+
+  Future<void> updatePatient(Patient updatedPatient) async {
+    patientList[int.parse(updatedPatient.id)] = updatedPatient;
   }
 }

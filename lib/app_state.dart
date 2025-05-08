@@ -1,10 +1,4 @@
-import 'dart:async';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/firebase_options.dart';
-
-import 'package:solution_challenge_tcu_2025/gemini_search.dart';
 
 class ApplicationState extends ChangeNotifier {
   // 表示画面選択

@@ -1,8 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+import 'converters.dart';
 import 'nursing_plan.dart';
 import 'soap.dart';
 
+part 'patient.g.dart';
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class Patient {
   Patient({
+    this.id = "",
     this.relatedContacts = const [],
     PersonalInfo? personalInfo,
     HealthPromotion? healthPromotion,
@@ -38,6 +46,7 @@ class Patient {
        growth = growth ?? Growth(),
        nursingPlan = nursingPlan ?? NursingPlan();
 
+  String id;
   PersonalInfo personalInfo;
   List<RelatedContact> relatedContacts;
   HealthPromotion healthPromotion;
@@ -56,8 +65,22 @@ class Patient {
 
   List<Soap> historyOfSoap;
   NursingPlan nursingPlan;
+
+  factory Patient.fromJson(Map<String, dynamic> json) =>
+      _$PatientFromJson(json);
+
+  Map<String, dynamic> toJson() {
+    final json = _$PatientToJson(this);
+    json.remove('id');
+    return json;
+  }
 }
 
+@JsonSerializable(
+  explicitToJson: true,
+  includeIfNull: false,
+  converters: [TimestampConverter()],
+)
 class PersonalInfo {
   PersonalInfo({
     this.furigana = "",
@@ -71,16 +94,28 @@ class PersonalInfo {
   DateTime? birthday;
   String address;
   String tel;
+
+  factory PersonalInfo.fromJson(Map<String, dynamic> json) =>
+      _$PersonalInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PersonalInfoToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class RelatedContact {
   RelatedContact({this.name = "", this.relationship = "", this.tel = ""});
 
   String name;
   String relationship; // 続柄
   String tel;
+
+  factory RelatedContact.fromJson(Map<String, dynamic> json) =>
+      _$RelatedContactFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RelatedContactToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class HealthPromotion {
   HealthPromotion({
     this.preHospitalCourse = "",
@@ -113,28 +148,114 @@ class HealthPromotion {
   int cigarettsPerDay; // タバコ本数(1日あたり)
   String otherSubstance; // 嗜好品 - その他
   String otherSubstanceRelatedInfo; // 嗜好品 - その他の関連情報
+
+  factory HealthPromotion.fromJson(Map<String, dynamic> json) =>
+      _$HealthPromotionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HealthPromotionToJson(this);
 }
 
-class Nutrition {}
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class Nutrition {
+  Nutrition();
+  factory Nutrition.fromJson(Map<String, dynamic> json) =>
+      _$NutritionFromJson(json);
 
-class EliminationAndExchange {}
+  Map<String, dynamic> toJson() => _$NutritionToJson(this);
+}
 
-class ActivityAndRest {}
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class EliminationAndExchange {
+  EliminationAndExchange();
+  factory EliminationAndExchange.fromJson(Map<String, dynamic> json) =>
+      _$EliminationAndExchangeFromJson(json);
 
-class PerceptionAndCognition {}
+  Map<String, dynamic> toJson() => _$EliminationAndExchangeToJson(this);
+}
 
-class SelfPerception {}
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class ActivityAndRest {
+  ActivityAndRest();
+  factory ActivityAndRest.fromJson(Map<String, dynamic> json) =>
+      _$ActivityAndRestFromJson(json);
 
-class Relationship {}
+  Map<String, dynamic> toJson() => _$ActivityAndRestToJson(this);
+}
 
-class Sexuality {}
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class PerceptionAndCognition {
+  PerceptionAndCognition();
+  factory PerceptionAndCognition.fromJson(Map<String, dynamic> json) =>
+      _$PerceptionAndCognitionFromJson(json);
 
-class Coping {}
+  Map<String, dynamic> toJson() => _$PerceptionAndCognitionToJson(this);
+}
 
-class LifePrinciples {}
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class SelfPerception {
+  SelfPerception();
+  factory SelfPerception.fromJson(Map<String, dynamic> json) =>
+      _$SelfPerceptionFromJson(json);
 
-class Safety {}
+  Map<String, dynamic> toJson() => _$SelfPerceptionToJson(this);
+}
 
-class Comfort {}
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class Relationship {
+  Relationship();
+  factory Relationship.fromJson(Map<String, dynamic> json) =>
+      _$RelationshipFromJson(json);
 
-class Growth {}
+  Map<String, dynamic> toJson() => _$RelationshipToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class Sexuality {
+  Sexuality();
+  factory Sexuality.fromJson(Map<String, dynamic> json) =>
+      _$SexualityFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SexualityToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class Coping {
+  Coping();
+  factory Coping.fromJson(Map<String, dynamic> json) => _$CopingFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CopingToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class LifePrinciples {
+  LifePrinciples();
+  factory LifePrinciples.fromJson(Map<String, dynamic> json) =>
+      _$LifePrinciplesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LifePrinciplesToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class Safety {
+  Safety();
+  factory Safety.fromJson(Map<String, dynamic> json) => _$SafetyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SafetyToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class Comfort {
+  Comfort();
+  factory Comfort.fromJson(Map<String, dynamic> json) =>
+      _$ComfortFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ComfortToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class Growth {
+  Growth();
+  factory Growth.fromJson(Map<String, dynamic> json) => _$GrowthFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GrowthToJson(this);
+}

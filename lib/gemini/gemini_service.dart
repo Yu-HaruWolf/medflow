@@ -1,9 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
-import 'package:solution_challenge_tcu_2025/function_nursing_plan.dart';
-import 'package:solution_challenge_tcu_2025/function_soap.dart';
 
-class Gemini {
+import 'gemini_tools.dart';
+
+class GeminiService {
   late GenerativeModel model1;
 
   Future<void> geminiInit() async {

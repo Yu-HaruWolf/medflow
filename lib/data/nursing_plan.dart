@@ -1,3 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+import 'converters.dart';
+
+part 'nursing_plan.g.dart';
+
+@JsonSerializable(
+  explicitToJson: true,
+  includeIfNull: false,
+  converters: [TimestampConverter()],
+)
 class NursingPlan {
   NursingPlan({
     DateTime? issueDateTime,
@@ -13,4 +25,9 @@ class NursingPlan {
   String op; // 観察項目
   String tp; // 援助
   String ep; // 指導
+
+  factory NursingPlan.fromJson(Map<String, dynamic> json) =>
+      _$NursingPlanFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NursingPlanToJson(this);
 }
