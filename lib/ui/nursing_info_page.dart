@@ -34,7 +34,6 @@ class _NursingInfoPageState extends State<NursingInfoPage>
           onPressed: () {
             context.read<ApplicationState>().screenId =
                 context.read<ApplicationState>().oldscreenId;
-            ;
           },
         ),
         title: Text('Nursing Information'),
