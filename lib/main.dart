@@ -112,15 +112,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return Scaffold(
-      appBar:
-          appState.screenId == 0 || appState.screenId == 1
-              ? AppBar(
-                backgroundColor: const Color.fromARGB(255, 8, 77, 181),
-                title: Text(widget.title),
-              )
-              : null,
-      body: Center(
-        // ← ここが重要！
+      appBar: appState.screenId == 0 || appState.screenId == 1 
+      ? AppBar(
+          backgroundColor: const Color.fromARGB(255, 8, 77, 181),
+          title: Text(widget.title),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                // ログアウト処理（ログイン画面へ戻す）
+                context.read<ApplicationState>().screenId = 0;
+              },
+            ),
+          ],
+        )
+      : null, 
+      body: Center( // ← ここが重要！
         child: insideWidget,
       ),
       floatingActionButton: FloatingActionButton(
