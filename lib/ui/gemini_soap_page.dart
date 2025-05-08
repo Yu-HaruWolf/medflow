@@ -1,13 +1,10 @@
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
 import 'package:solution_challenge_tcu_2025/gemini_service.dart';
-import '../app_state.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

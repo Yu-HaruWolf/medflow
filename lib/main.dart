@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // <- 追加
 import 'package:solution_challenge_tcu_2025/app_state.dart';
-import 'package:solution_challenge_tcu_2025/ui/login_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';

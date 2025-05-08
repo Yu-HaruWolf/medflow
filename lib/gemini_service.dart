@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 import 'gemini_tools.dart';
