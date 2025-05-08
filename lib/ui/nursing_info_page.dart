@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:solution_challenge_tcu_2025/app_state.dart';
+
+class NursingInfoPage extends StatefulWidget {
+  const NursingInfoPage({Key? key}) : super(key: key); // ★ここ追加！
+
+  @override
+  _NursingInfoPageState createState() => _NursingInfoPageState();
+}
+
+class _NursingInfoPageState extends State<NursingInfoPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            context.read<ApplicationState>().screenId =
+                context.read<ApplicationState>().oldscreenId;
+          },
+        ),
+        title: Text('Nursing Information'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'doctor'),
+            Tab(text: 'nurse'),
+            Tab(text: 'inspection'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Center(child: Text('Tab 1 View')),
+          Center(child: Text('Tab 2 View')),
+          Center(child: Text('Tab 3 View')),
+        ],
+      ),
+    );
+  }
+}
