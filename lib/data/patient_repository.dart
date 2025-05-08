@@ -39,7 +39,14 @@ class PatientRepository {
     );
   }
 
-  Future<Patient> getPatient(String id) async => patientList[int.parse(id)];
+  Future<Patient?> getPatient(String id) async {
+    try {
+      return patientList[int.parse(id)];
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<int> get size async => patientList.length;
   Future<List<Patient>> get getAllPatients async => patientList;
 
