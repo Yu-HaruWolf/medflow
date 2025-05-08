@@ -30,12 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Nursing Efficiency',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 8, 77, 181),
-        ),
-      ),
+      title: 'MedFlow',
       home: SplashScreen(),
     );
   }
@@ -113,21 +108,42 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: appState.screenId == 0 || appState.screenId == 1 
       ? AppBar(
-          backgroundColor: const Color.fromARGB(255, 8, 77, 181),
+          backgroundColor: const Color.fromARGB(255, 62, 183, 220),
+          centerTitle: true,
           title: Text(widget.title),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                // ログアウト処理（ログイン画面へ戻す）
-                context.read<ApplicationState>().screenId = 0;
-              },
-            ),
-          ],
         )
       : null, 
       body: Center( // ← ここが重要！
         child: insideWidget,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 15, 92, 118),
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Sign Out'),
+              onTap: () {
+                // サインアウト処理
+                context.read<ApplicationState>().screenId = 0;
+                Navigator.of(context).pop(); // Drawerを閉じる
+              },
+            ),
+            // 必要なら他のメニューもここに追加可能
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -183,7 +199,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder:
-            (_) => MyHomePage(title: 'Nursing Work Efficiency', gemini: gemini),
+            (_) => MyHomePage(title: 'MEdFlow', gemini: gemini),
       ),
     );
   }
@@ -192,7 +208,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 8, 77, 181),
+        backgroundColor: const Color.fromARGB(255, 15, 92, 118),
         title: Text('Loading'),
       ),
       body: Center(child: CircularProgressIndicator()),
