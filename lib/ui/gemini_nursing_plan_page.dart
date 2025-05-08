@@ -6,26 +6,25 @@ import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
-import 'package:solution_challenge_tcu_2025/gemini.dart';
-import 'app_state.dart';
+import 'package:solution_challenge_tcu_2025/gemini_service.dart';
+import '../app_state.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class GeminiPage_nursing_plan extends StatefulWidget {
+class GeminiNursingPlanPage extends StatefulWidget {
   final int patientIndex;
-  final Gemini gemini;
+  final GeminiService gemini;
 
-  const GeminiPage_nursing_plan({
+  const GeminiNursingPlanPage({
     required this.patientIndex,
     required this.gemini,
   });
 
   @override
-  State<GeminiPage_nursing_plan> createState() =>
-      _GeminiPageState_nursing_plan();
+  State<GeminiNursingPlanPage> createState() => _GeminiNursingPlanPageState();
 }
 
-class _GeminiPageState_nursing_plan extends State<GeminiPage_nursing_plan> {
+class _GeminiNursingPlanPageState extends State<GeminiNursingPlanPage> {
   String responseText = "Sample";
 
   @override

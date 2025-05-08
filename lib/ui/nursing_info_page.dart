@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 
-class Nursing_info extends StatefulWidget {
-  const Nursing_info({Key? key}) : super(key: key); // ★ここ追加！
+class NursingInfoPage extends StatefulWidget {
+  const NursingInfoPage({Key? key}) : super(key: key); // ★ここ追加！
 
   @override
-  _Infomation createState() => _Infomation();
+  _NursingInfoPageState createState() => _NursingInfoPageState();
 }
 
-class _Infomation extends State<Nursing_info>
+class _NursingInfoPageState extends State<NursingInfoPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 

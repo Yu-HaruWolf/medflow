@@ -2,15 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // <- 追加
 import 'package:solution_challenge_tcu_2025/app_state.dart';
-import 'package:solution_challenge_tcu_2025/LoginPage.dart';
-import 'package:solution_challenge_tcu_2025/Patient.dart';
-import 'package:solution_challenge_tcu_2025/Personal.dart';
+import 'package:solution_challenge_tcu_2025/ui/login_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/patient_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';
-import 'package:solution_challenge_tcu_2025/gemini.dart';
-import 'package:solution_challenge_tcu_2025/gemini_page_nursing_plan.dart';
-import 'package:solution_challenge_tcu_2025/Nursing_plan.dart';
-import 'package:solution_challenge_tcu_2025/Nursing_info.dart';
-import 'package:solution_challenge_tcu_2025/gemini_page_soap.dart';
+import 'package:solution_challenge_tcu_2025/gemini_service.dart';
+import 'package:solution_challenge_tcu_2025/ui/gemini_nursing_plan_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/nursing_plan_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/nursing_info_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/gemini_soap_page.dart';
 
 import 'data/patient_repository.dart';
 import 'data/patient.dart' as PatientData;
@@ -46,7 +46,7 @@ class MyHomePage extends StatefulWidget {
   // const MyHomePage({super.key, required this.title});
 
   final String title;
-  final Gemini gemini; // ← これを追加する必要がある！
+  final GeminiService gemini; // ← これを追加する必要がある！
 
   const MyHomePage({required this.title, required this.gemini});
   @override
@@ -81,13 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             Expanded(
-              child: GeminiPage_nursing_plan(
+              child: GeminiNursingPlanPage(
                 patientIndex: patientIndex,
                 gemini: widget.gemini,
               ),
             ),
             Expanded(
-              child: GeminiPage_soap(
+              child: GeminiSoapPage(
                 patientIndex: patientIndex,
                 gemini: widget.gemini,
               ),
@@ -96,16 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         break;
       case 1:
-        insideWidget = const Patient();
+        insideWidget = const PatientPage();
         break;
       case 2:
-        insideWidget = const Personal();
+        insideWidget = const PersonalPage();
         break;
       case 3:
-        insideWidget = const Nursing_plan();
+        insideWidget = const NursingPlanPage();
         break;
       case 4:
-        insideWidget = const Nursing_info();
+        insideWidget = const NursingInfoPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -142,7 +142,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  late Gemini gemini; // ✅ インスタンスを持つようにする
+  late GeminiService gemini; // ✅ インスタンスを持つようにする
 
   @override
   void initState() {
@@ -170,7 +170,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
     print('Firebase Ready!');
 
-    gemini = Gemini();
+    gemini = GeminiService();
     await gemini.geminiInit(); // ✅ モデル初期化
     await gemini.geminiInit2();
     // ✅ 初期化後にホームへ渡す

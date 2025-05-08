@@ -3,7 +3,7 @@ import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 import 'gemini_tools.dart';
 
-class Gemini {
+class GeminiService {
   late GenerativeModel model1;
 
   Future<void> geminiInit() async {

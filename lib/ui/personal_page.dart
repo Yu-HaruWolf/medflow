@@ -18,8 +18,8 @@ class Patient_info {
   });
 }
 
-class Personal extends StatelessWidget {
-  const Personal({super.key});
+class PersonalPage extends StatelessWidget {
+  const PersonalPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 
-class Patient extends StatelessWidget {
-  const Patient({super.key});
+class PatientPage extends StatelessWidget {
+  const PatientPage({super.key});
 
   @override
   Widget build(BuildContext context) {
