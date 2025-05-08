@@ -4,7 +4,7 @@ import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
-import 'package:solution_challenge_tcu_2025/gemini_service.dart';
+import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

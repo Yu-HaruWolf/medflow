@@ -5,7 +5,7 @@ import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';
-import 'package:solution_challenge_tcu_2025/gemini_service.dart';
+import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 import 'package:solution_challenge_tcu_2025/ui/gemini_nursing_plan_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/nursing_plan_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/nursing_info_page.dart';
