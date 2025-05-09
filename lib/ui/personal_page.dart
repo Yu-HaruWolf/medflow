@@ -1,36 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
+import 'package:solution_challenge_tcu_2025/data/patient.dart';
+import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
-class Patient_info {
-  final String id;
-  final String gender;
-  final String name;
-  final String birthDate;
-  final String id_doctor;
-
-  Patient_info({
-    required this.id,
-    required this.gender,
-    required this.name,
-    required this.birthDate,
-    required this.id_doctor,
-  });
-}
 
 class PersonalPage extends StatelessWidget {
   const PersonalPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 仮の患者データ
-    final patient = Patient_info(
-      id: '2518406',
-      gender: 'man',
-      name: '大谷翔平',
-      birthDate: '2002/05/11',
-      id_doctor: '1111111',
-    );
 
     // ダミーの診察情報リスト
     final List<String> visits = [
@@ -41,17 +20,20 @@ class PersonalPage extends StatelessWidget {
       '2023/03/12',
     ];
 
+    PatientRepository repository = PatientRepository();
+    Patient patient = PatientRepository().patientList[0];
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
-              context.read<ApplicationState>().screenId =
-                  context.read<ApplicationState>().oldscreenId;
+              context.read<ApplicationState>().screenId = 1;
               ;
             },
           ),
+          backgroundColor: const Color.fromARGB(255, 62, 183, 220),
           title: Text('Patient Information'),
         ),
         body: Center(
@@ -69,12 +51,12 @@ class PersonalPage extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "ID: ${patient.id}",
+                          "name: ${patient.personalInfo.name}",
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(width: 20),
                         Text(
-                          "性別: ${patient.gender}",
+                          "furigana: ${patient.personalInfo.furigana}",
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -84,14 +66,14 @@ class PersonalPage extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "名前: ${patient.name}",
+                          "birthday: ${patient.personalInfo.birthday}",
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(width: 20),
-                        Text(
+                        /*Text(
                           "生年月日: ${patient.birthDate}",
                           style: TextStyle(fontSize: 16),
-                        ),
+                        ),*/
                       ],
                     ),
                   ],

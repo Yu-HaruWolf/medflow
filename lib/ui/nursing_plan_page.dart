@@ -18,12 +18,17 @@ class _NursingPlanPageState extends State<NursingPlanPage>
     _tabController = TabController(length: 3, vsync: this);
   }
 
+// Doctor タブ用
+  final TextEditingController _doctorController = TextEditingController();
+  bool _isDoctorSaved = false;
+  bool get isDoctorFilled => !_isDoctorSaved && _doctorController.text.isNotEmpty;
+
+  // Nursing Plan タブ用
   final TextEditingController _sController = TextEditingController();
   final TextEditingController _oController = TextEditingController();
   final TextEditingController _aController = TextEditingController();
   final TextEditingController _pController = TextEditingController();
   bool _isNursingPlanSaved = false;
-
   bool get isNursingPlanFilled =>
       !_isNursingPlanSaved &&
       (_sController.text.isNotEmpty ||
@@ -31,13 +36,31 @@ class _NursingPlanPageState extends State<NursingPlanPage>
           _aController.text.isNotEmpty ||
           _pController.text.isNotEmpty);
 
+  // Inspection タブ用
+  final TextEditingController _tempController = TextEditingController();
+  final TextEditingController _hrController = TextEditingController();
+  final TextEditingController _bpController = TextEditingController();
+  final TextEditingController _rrController = TextEditingController();
+  bool _isInspectionSaved = false;
+  bool get isInspectionFilled =>
+        !_isInspectionSaved &&
+        (_tempController.text.isNotEmpty ||
+            _hrController.text.isNotEmpty ||
+            _bpController.text.isNotEmpty ||
+            _rrController.text.isNotEmpty);
+
   @override
   void dispose() {
+    _doctorController.dispose();
     _tabController.dispose();
     _sController.dispose();
     _oController.dispose();
     _aController.dispose();
     _pController.dispose();
+    _tempController.dispose();
+    _hrController.dispose();
+    _bpController.dispose();
+    _rrController.dispose();
     super.dispose();
   }
 
@@ -48,75 +71,71 @@ class _NursingPlanPageState extends State<NursingPlanPage>
         length: 3,
         child: Scaffold(
           appBar: AppBar(
+            //centerTitle: true,
+            backgroundColor: const Color.fromARGB(255, 62, 183, 220),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.black),
               onPressed: () {
                 context.read<ApplicationState>().screenId = 2;
               },
             ),
-            title: const Text(
-              'Nursing Plan',
-              style: TextStyle(color: Colors.black),
-            ),
+            title: const Text('Nursing Plan', style: TextStyle(color: Colors.black)),
             bottom: TabBar(
               controller: _tabController,
               isScrollable: true,
-              tabs: const [
-                Tab(text: 'Doctor'),
+              tabs: [
+                Tab(text: isDoctorFilled ? 'Doctor *' : 'Doctor'),
                 Tab(text: 'Nurse'),
-                Tab(text: 'Inspection'),
+                Tab(text: isInspectionFilled ? 'Inspection *' : 'Inspection'),
               ],
+              labelColor: Colors.black,
             ),
           ),
           body: TabBarView(
             controller: _tabController,
             children: [
+              // Doctor タブ
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'memo',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text('memo',style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(height: 300,
+                      child: TextField(
+                        controller: _doctorController,
+                        maxLines: null,
+                        expands: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter doctor memo...',
+                          border: OutlineInputBorder(),
                         ),
+                        onChanged: (_) => setState(() {}),
                       ),
-                      const SizedBox(height: 10),
-
-                      // 高さ固定のTextField（スクロール対応）
-                      SizedBox(
-                        height: 300, // 好みの高さに調整可能
-                        child: TextField(
-                          maxLines: null,
-                          expands: true,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter your medical details here...',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _isDoctorSaved = true;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Doctor data saved')),
+                          );
+                        },
+                        child: const Text('Save'),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // 保存ボタン
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // 保存処理
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('data saved')),
-                            );
-                          },
-                          child: const Text('Save'),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+
               _NestedTabWidget(
                 sController: _sController,
                 oController: _oController,
@@ -134,20 +153,19 @@ class _NursingPlanPageState extends State<NursingPlanPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildVitalInput('Temperature'),
-                    const SizedBox(height: 10),
-                    _buildVitalInput('Heart Rate'),
-                    const SizedBox(height: 10),
-                    _buildVitalInput('Blood Pressure'),
-                    const SizedBox(height: 10),
-                    _buildVitalInput('Respiratory Rate'),
+                    _buildVitalInput('Temperature', _tempController),
+                    _buildVitalInput('Heart Rate', _hrController),
+                    _buildVitalInput('Blood Pressure', _bpController),
+                    _buildVitalInput('Respiratory Rate', _rrController),
                     const SizedBox(height: 20), // 少しスペース
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
-                          // 保存処理をここに追加
+                          setState(() {
+                            _isInspectionSaved = true;
+                          });
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('data saved')),
+                            const SnackBar(content: Text('Inspection data saved')),
                           );
                         },
                         child: const Text('Save'),
@@ -163,27 +181,30 @@ class _NursingPlanPageState extends State<NursingPlanPage>
     );
   }
 
-  Widget _buildVitalInput(String label) {
-    return Row(
-      children: [
-        SizedBox(width: 100, child: Text(label)),
-        const SizedBox(width: 50),
-        Expanded(
-          child: TextField(
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              isDense: true, // 高さを少し抑える
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 12,
+  Widget _buildVitalInput(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          SizedBox(width: 100, child: Text(label)),
+          const SizedBox(width: 50),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
+              onChanged: (_) => setState(() {}),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
+
 }
 
 class _NestedTabWidget extends StatefulWidget {
@@ -208,8 +229,7 @@ class _NestedTabWidget extends StatefulWidget {
   State<_NestedTabWidget> createState() => _NestedTabWidgetState();
 }
 
-class _NestedTabWidgetState extends State<_NestedTabWidget>
-    with TickerProviderStateMixin {
+class _NestedTabWidgetState extends State<_NestedTabWidget> with TickerProviderStateMixin {
   late TabController _innerTabController;
 
   @override
@@ -237,12 +257,18 @@ class _NestedTabWidgetState extends State<_NestedTabWidget>
       children: [
         TabBar(
           controller: _innerTabController,
-          tabs: [Tab(text: isFilled ? 'SOAP *' : 'SOAP'), Tab(text: '看護計画')],
+          tabs: [
+            Tab(text: isFilled ? 'SOAP *' : 'SOAP'),
+            Tab(text: '看護計画'),
+          ],
         ),
         Expanded(
           child: TabBarView(
             controller: _innerTabController,
-            children: [_buildSOAPTab(), const Center(child: Text('内タブBの内容'))],
+            children: [
+              _buildSOAPTab(),
+              const Center(child: Text('内タブBの内容')),
+            ],
           ),
         ),
       ],
@@ -254,33 +280,17 @@ class _NestedTabWidgetState extends State<_NestedTabWidget>
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          _buildInputField(
-            'Subjective Data',
-            widget.sController,
-            'Enter subjective information',
-          ),
-          _buildInputField(
-            'Objective Data',
-            widget.oController,
-            'Enter objective information',
-          ),
-          _buildInputField(
-            'Assessment',
-            widget.aController,
-            'Enter assessment information',
-          ),
-          _buildInputField(
-            'Plan',
-            widget.pController,
-            'Enter plan information',
-          ),
+          _buildInputField('Subjective Data', widget.sController, 'Enter subjective information'),
+          _buildInputField('Objective Data', widget.oController, 'Enter objective information'),
+          _buildInputField('Assessment', widget.aController, 'Enter assessment information'),
+          _buildInputField('Plan', widget.pController, 'Enter plan information'),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               widget.onSaved();
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('data saved')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('data saved')),
+              );
             },
             child: const Text('Save'),
           ),
@@ -289,11 +299,7 @@ class _NestedTabWidgetState extends State<_NestedTabWidget>
     );
   }
 
-  Widget _buildInputField(
-    String label,
-    TextEditingController controller,
-    String hintText,
-  ) {
+  Widget _buildInputField(String label, TextEditingController controller, String hintText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -311,4 +317,5 @@ class _NestedTabWidgetState extends State<_NestedTabWidget>
       ],
     );
   }
+
 }
