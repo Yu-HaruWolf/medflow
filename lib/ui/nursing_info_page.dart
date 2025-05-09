@@ -67,7 +67,8 @@ class NestedTabWidget extends StatefulWidget {
   State<NestedTabWidget> createState() => _NestedTabWidgetState();
 }
 
-class _NestedTabWidgetState extends State<NestedTabWidget> with TickerProviderStateMixin {
+class _NestedTabWidgetState extends State<NestedTabWidget>
+    with TickerProviderStateMixin {
   late TabController _innerTabController;
 
   @override
@@ -84,20 +85,108 @@ class _NestedTabWidgetState extends State<NestedTabWidget> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    PatientRepository repository = PatientRepository();
+    Patient patient = PatientRepository().patientList[0];
     return Column(
       children: [
         TabBar(
           controller: _innerTabController,
-          tabs: const [
-            Tab(text: 'SOAP'),
-            Tab(text: '看護計画'),
-          ],
+          tabs: const [Tab(text: 'SOAP'), Tab(text: '看護計画')],
         ),
         Expanded(
           child: TabBarView(
             controller: _innerTabController,
             children: [
-              Center(child: Text('SOAP内容')),
+              // ----- SOAPタブの内容を表形式で -----
+              SingleChildScrollView(
+                child: Table(
+                  border: TableBorder.all(),
+                  columnWidths: const {
+                    0: IntrinsicColumnWidth(),
+                    1: FlexColumnWidth(),
+                  },
+                  children: [
+                    TableRow(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            'NANDA-I',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(patient.nursingPlan.nanda_i),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            '目標',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(patient.nursingPlan.goal),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            'O-P (観察項目)',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(patient.nursingPlan.op),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            'T-P (援助)',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(patient.nursingPlan.tp),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            'E-P (指導)',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(patient.nursingPlan.ep),
+                        ),
+                      ],
+                    ),
+                    // 他にもSOAPに関連する情報があれば追加
+                  ],
+                ),
+              ),
+
+              Center(child: Text(patient.nursingPlan.nanda_i)),
               Center(child: Text('看護計画の内容')),
             ],
           ),
