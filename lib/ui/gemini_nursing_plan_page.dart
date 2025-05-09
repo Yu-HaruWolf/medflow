@@ -133,7 +133,7 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                     .startChat(history: history2)
                     .sendMessageStream(
                       Content.text("""
-重要視するNANDA-Iの項目非効果的健康自己管理リスク状態となりました。
+重要視するNANDA-Iの項目は会話履歴から確認してそれを一番重視してください。
 
 １．googel検索でこのNANDA-Iの項目における看護計画を作成し、
 ２．SOAPや入院時データベースから患者の個別性を加えてください。
@@ -235,6 +235,7 @@ function call が成功したら、「成功しました」出力して
 
     final repo = PatientRepository();
     Patient? patient = await repo.getPatient('0');
+
     final newplan = NursingPlan(
       nanda_i: nanda_i,
       goal: goal,
@@ -242,7 +243,9 @@ function call が成功したら、「成功しました」出力して
       tp: ennjo,
       ep: sidou,
     );
+
     final newPatient = Patient(
+      id: patient!.id,
       nursingPlan: newplan,
       // nursingPlan は省略（null）
     );
