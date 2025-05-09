@@ -156,7 +156,7 @@ function call が成功したら、「成功しました」出力して
                   // );
                   // // 直接関数を呼び出す
                   // await fetchNursing(nursingplanJson);
-
+                  print(response.functionCalls);
                   final functionCalls = response.functionCalls.toList();
                   if (functionCalls.isNotEmpty) {
                     final functionCall = functionCalls.first;
