@@ -137,8 +137,9 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 
 １．googel検索でこのNANDA-Iの項目における看護計画を作成し、
 ２．SOAPや入院時データベースから患者の個別性を加えてください。
-作成する看護計画は以下の内容として、json形式で出力してください。json形式で出力してください。そして、fetchNursing関数を呼び出してください。
-
+作成する看護計画は以下の内容として、
+必ずfetchNursing関数で実行してください
+function call が成功したら、「成功しました」出力して
 
 ・O-P (観察項目)
 ・T-P 援助
@@ -150,21 +151,12 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                     );
                 String json_responseText = "";
                 await for (final response in responseStream) {
-                  final responseResultText = response.text;
-                  if (responseResultText != null) {
-                    setState(() {
-                      responseText += responseResultText;
-                      json_responseText += responseResultText;
-                    });
-                  }
-
                   // Map<String, dynamic> nursingplanJson = jsonDecode(
                   //   json_responseText,
                   // );
                   // // 直接関数を呼び出す
                   // await fetchNursing(nursingplanJson);
-                  print(response);
-                  print(response.functionCalls);
+
                   final functionCalls = response.functionCalls.toList();
                   if (functionCalls.isNotEmpty) {
                     final functionCall = functionCalls.first;
@@ -183,6 +175,13 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                       throw UnimplementedError(
                         'Function not declared to the model: ${functionCall.name}',
                       );
+                    }
+                    final responseResultText = response.text;
+                    if (responseResultText != null) {
+                      setState(() {
+                        responseText += responseResultText;
+                        json_responseText += responseResultText;
+                      });
                     }
                   }
                 }
@@ -233,6 +232,9 @@ E-P（指導） ${patient.nursingPlan.ep}""";
     print('kansatu: $kansatu');
     print('ennjo: $ennjo');
     print('sidou: $sidou');
+
+    final repo = PatientRepository();
+    Patient? patient = await repo.getPatient('0');
     final newplan = NursingPlan(
       nanda_i: nanda_i,
       goal: goal,
@@ -245,7 +247,7 @@ E-P（指導） ${patient.nursingPlan.ep}""";
       // nursingPlan は省略（null）
     );
 
-    final repo = PatientRepository();
+    // final repo = PatientRepository();
 
     repo.updatePatient(newPatient);
     repo
