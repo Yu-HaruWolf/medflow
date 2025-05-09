@@ -208,7 +208,7 @@ json形式で出力してください。
 
         // リポジトリ経由で更新
 
-        await repo.updatePatient(newPatient);
+        // await repo.updatePatient(newPatient);
 
         return newPatient;
       } else {
@@ -223,13 +223,6 @@ json形式で出力してください。
     throw Exception("期待される条件が満たされていません");
     // 実際のPatientオブジェクトを作成して返す
   }
-
-
-
-
-
-
-
 
   Future<Patient> gemini_create_soap(
     String userConversation,
@@ -315,7 +308,7 @@ json形式で出力してください。
 
         // リポジトリ経由で更新
 
-        await repo.updatePatient(newPatient);
+        // await repo.updatePatient(newPatient);
 
         return newPatient;
       } else {
