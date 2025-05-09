@@ -37,7 +37,7 @@ class _GeminiNursingPlanPageState extends State<GeminiNursingPlanPage> {
               onPressed: () async {
                 print("Patient Index: ${widget.patientIndex}");
                 // ⭐ model1 の初期化を忘れずに
-                await widget.gemini.geminiInit();
+                widget.gemini.geminiInit();
                 final repo = PatientRepository();
                 Patient? patient = await repo.getPatient('0');
                 print(patient!.personalInfo.name);

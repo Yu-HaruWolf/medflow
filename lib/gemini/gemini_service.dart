@@ -11,8 +11,9 @@ import 'gemini_tools.dart';
 
 class GeminiService {
   late GenerativeModel model1;
+  late GenerativeModel model2;
 
-  Future<void> geminiInit() async {
+  void geminiInit() {
     // Set parameter values in a `GenerationConfig` (example values shown here)
     final generationConfig = GenerationConfig(temperature: 0.0);
     // GenerationConfigにtool_configを追加
@@ -51,17 +52,14 @@ class GeminiService {
 }
 """),
     );
-  }
 
-  late GenerativeModel model2;
-
-  Future<void> geminiInit2() async {
     model2 = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       tools: [
         Tool.functionDeclarations([fetchSOAPTool]),
       ],
-      systemInstruction: Content.text("""これは看護師と患者の会話の内容です。
+      systemInstruction: Content.text("""
+これは看護師と患者の会話の内容です。
 この会話の内容と患者の看護計画を参照し、看護記録の記載方法の一つで、Subjective（主観的情報）、Objective（客観的情報）、Assessment（評価）、Plan（計画）をそれぞれjson形式で出力してください。
 Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以降するかを推論してください。
 
@@ -71,8 +69,6 @@ Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以�
 4. 1,2,3のステップを通してSOAPにおける注意点を考慮しながら、看護計画と会話の内容を参照してSOAPを構成する。
 5. Planの部分は今の看護計画のNANDA-Iを継続か、あるいは新たなNANDA-Iに変更か。のみを記載するようにする。
 6. 出力のjsonはfetchSOAPtool関数に引数として渡して、処理してください
-
-
 """),
     );
   }
