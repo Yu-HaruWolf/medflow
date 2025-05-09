@@ -114,11 +114,11 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                           """),
                     );
                 String intermediateResponse = "";
-                await for (final response in responseStream1) {
-                  final responseResultText = response.text;
-                  if (responseResultText != null) {
+                await for (final response1 in responseStream1) {
+                  final response1ResultText = response1.text;
+                  if (response1ResultText != null) {
                     setState(() {
-                      intermediateResponse += responseResultText;
+                      intermediateResponse += response1ResultText;
                     });
                   }
                 }
@@ -132,11 +132,13 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                     .model1
                     .startChat(history: history2)
                     .sendMessageStream(
-                      Content.text("""重要視するNANDA-Iの項目非効果的健康自己管理リスク状態となりました。
+                      Content.text("""
+重要視するNANDA-Iの項目非効果的健康自己管理リスク状態となりました。
 
 １．googel検索でこのNANDA-Iの項目における看護計画を作成し、
 ２．SOAPや入院時データベースから患者の個別性を加えてください。
-作成する看護計画は以下の内容として、json形式で出力してください。
+作成する看護計画は以下の内容として、json形式で出力してください。json形式で出力してください。そして、fetchNursing関数を呼び出してください。
+
 
 ・O-P (観察項目)
 ・T-P 援助
@@ -146,14 +148,23 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 
 """),
                     );
+                String json_responseText = "";
                 await for (final response in responseStream) {
                   final responseResultText = response.text;
                   if (responseResultText != null) {
                     setState(() {
                       responseText += responseResultText;
+                      json_responseText += responseResultText;
                     });
                   }
 
+                  // Map<String, dynamic> nursingplanJson = jsonDecode(
+                  //   json_responseText,
+                  // );
+                  // // 直接関数を呼び出す
+                  // await fetchNursing(nursingplanJson);
+                  print(response);
+                  print(response.functionCalls);
                   final functionCalls = response.functionCalls.toList();
                   if (functionCalls.isNotEmpty) {
                     final functionCall = functionCalls.first;

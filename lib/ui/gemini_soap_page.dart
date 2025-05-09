@@ -115,7 +115,8 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                       responseText += responseResultText;
                     });
                   }
-
+                  print(response);
+                  print(response.functionCalls);
                   final functionCalls = response.functionCalls.toList();
                   if (functionCalls.isNotEmpty) {
                     final functionCall = functionCalls.first;
