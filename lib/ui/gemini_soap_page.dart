@@ -38,30 +38,7 @@ class _GeminiSoapPageState extends State<GeminiSoapPage> {
                 final repo = PatientRepository();
                 Patient? patient = await repo.getPatient('0');
                 print(patient!.personalInfo.name);
-                final response = await fetchWeatherData(
-                  "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
-                );
-                if (response != null) {
-                  setState(() {
-                    responseText =
-                        response['response']; // Cloud Functionからのレスポンスを更新
-                  });
-                } else {
-                  setState(() {
-                    responseText = "Failed to load data";
-                  });
-                }
-                // 過去の会話履歴
-                final history1 = [
-                  Content.text(
-                    'NANDA-Iについて調べてください。どのようなNANDA-Iがあり、それぞれの評価項目をすべて教えてください。',
-                  ),
-                  Content.model([TextPart(responseText)]),
-                ];
 
-                // setState(() {
-                //   responseText = "";
-                // });
                 String userConversation = """看護師：「こんにちは。今日の体調はいかがですか？」
 患者：「まあまあですけど、夜になると膝がズキズキして眠れないことがあります。」
 看護師：「夜の痛みが強いんですね。どのくらいの痛みですか？例えば、10 段階で表すと？」
@@ -89,53 +66,12 @@ O-P (観察項目) ${patient.nursingPlan.op}
 T-P 援助 ${patient.nursingPlan.tp}
 
 E-P（指導） ${patient.nursingPlan.ep}""";
-                final history = [
-                  Content.text(
-                    '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
-                  ),
-                  Content.model([TextPart(responseText)]),
-                ];
 
-                Stream<GenerateContentResponse> responseStream = await widget
-                    .gemini
-                    .model2
-                    .startChat(history: history)
-                    .sendMessageStream(
-                      Content.text("""
-                          以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください。fetchSOAP関数を呼び出してください。関数の呼び出しを成功したら成功したいと出力して
-                          会話:${userConversation}
-                          看護計画:${usersingPlan}
-
-                          """),
-                    );
-                await for (final response in responseStream) {
-                  final responseResultText = response.text;
-                  if (responseResultText != null) {
-                    setState(() {
-                      responseText += responseResultText;
-                    });
-                  }
-                  print(response);
-                  print(response.functionCalls);
-                  final functionCalls = response.functionCalls.toList();
-                  if (functionCalls.isNotEmpty) {
-                    final functionCall = functionCalls.first;
-                    if (functionCall.name == 'fetchSOAP') {
-                      // Extract the structured input data prepared by the model
-                      // from the function call arguments.
-                      Map<String, dynamic> soapJson =
-                          functionCall.args['soapJson']!
-                              as Map<String, dynamic>;
-
-                      final functionResult = await fetchSOAP(soapJson);
-                    } else {
-                      Text(responseText);
-                      throw UnimplementedError(
-                        'Function not declared to the model: ${functionCall.name}',
-                      );
-                    }
-                  }
-                }
+                var response_nursing_plan = await widget.gemini
+                    .gemini_create_soap(userConversation, usersingPlan, 0);
+                print(
+                  "個々の値を見たい${response_nursing_plan.historyOfSoap[0].subject}",
+                );
               },
               child: Text("SOAPを作成する"),
             ),

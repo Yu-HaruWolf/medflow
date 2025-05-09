@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
 import 'gemini_tools.dart';
 
@@ -221,5 +222,110 @@ json形式で出力してください。
     // 関数の最後に追加
     throw Exception("期待される条件が満たされていません");
     // 実際のPatientオブジェクトを作成して返す
+  }
+
+
+
+
+
+
+
+
+  Future<Patient> gemini_create_soap(
+    String userConversation,
+    String usersingPlan,
+    int patientId,
+  ) async {
+    // 1. GAEからレスポンスを取得
+    String responseText = "";
+    final response = await fetchWeatherData(
+      "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
+    );
+
+    if (response != null) {
+      responseText = response['response']; // Cloud Functionからのレスポンス
+    } else {
+      responseText = "Failed to load data";
+    }
+
+    final history = [
+      Content.text(
+        '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
+      ),
+      Content.model([TextPart(responseText)]),
+    ];
+    String json_responseText = "";
+    Stream<GenerateContentResponse> responseStream = await model2
+        .startChat(history: history)
+        .sendMessageStream(
+          Content.text("""
+     以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください。json形式で出力してください。
+    {
+  subject:  ,
+  object:    ,
+  assessment:   ,
+  plan:  ,
+}
+
+                          会話:${userConversation}
+                          看護計画:${usersingPlan}
+              """),
+        );
+
+    String accumulated_text = "";
+    await for (final response in responseStream) {
+      final responseResultText = response.text;
+      if (responseResultText != null) {
+        accumulated_text += responseResultText;
+      }
+    }
+    final repo = PatientRepository();
+    Patient? patient = await repo.getPatient(patientId.toString());
+    if (patient == null) {
+      throw Exception("患者ID $patientId が見つかりません");
+    }
+
+    final newplan;
+    try {
+      // JSON部分を正規表現で抽出
+      final regex = RegExp(r'\{[\s\S]*\}');
+      final match = regex.firstMatch(accumulated_text);
+
+      if (match != null) {
+        final jsonString = match.group(0)!;
+        final jsonObject = jsonDecode(jsonString);
+        print('抽出・パースしたJSONオブジェクト:');
+        print(jsonObject);
+
+        final newplan = Soap(
+          subject: jsonObject['subjective'] ?? '',
+          object: jsonObject['objective'] ?? '',
+          assessment: jsonObject['assessment'] ?? '',
+          plan: jsonObject['plan'] ?? '',
+        );
+        print('新しいSOAP:');
+        print(newplan);
+
+        final newPatient = Patient(
+          id: patient!.id,
+          historyOfSoap: [newplan],
+          // 他の必須プロパティも設定
+          // 患者の他の情報は保持する必要がある場合はここでセット
+        );
+
+        // リポジトリ経由で更新
+
+        await repo.updatePatient(newPatient);
+
+        return newPatient;
+      } else {
+        print('JSON部分が見つかりませんでした。');
+      }
+    } catch (e) {
+      print('JSONのパースエラー: $e');
+      return Patient(id: patientId.toString());
+    }
+    // 関数の最後に追加
+    throw Exception("期待される条件が満たされていません");
   }
 }
