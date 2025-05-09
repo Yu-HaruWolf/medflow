@@ -5,7 +5,7 @@ import 'patient.dart';
 class PatientRepository {
   List<Patient> patientList = List<Patient>.empty(growable: true);
   PatientRepository() {
-    patientList.add(
+    addPatient(
       Patient(
         personalInfo: PersonalInfo(
           furigana: 'さんぷる',
