@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // <- 追加
 import 'package:solution_challenge_tcu_2025/app_state.dart';
+import 'package:solution_challenge_tcu_2025/ui/login_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';
@@ -16,8 +18,11 @@ import 'data/patient.dart' as PatientData;
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ApplicationState(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ApplicationState()),
+        ChangeNotifierProvider(create: (_) => FirebaseAuthState()),
+      ],
       builder: ((context, child) => const MyApp()),
     ),
   );
@@ -62,37 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget insideWidget;
     switch (appState.screenId) {
       case 0:
-        insideWidget = Column(
-          children: [
-            ElevatedButton(
-              child: Text("Create patient"),
-              onPressed: () async {
-                final patient = PatientData.Patient(
-                  personalInfo: PatientData.PersonalInfo(
-                    furigana: 'さんぷる',
-                    name: "三府瑠",
-                    birthday: DateTime(2000, 1, 1),
-                  ),
-                );
-                final patient_repository = PatientRepository();
-                await patient_repository.addPatient(patient);
-                print(patient);
-              },
-            ),
-            Expanded(
-              child: GeminiNursingPlanPage(
-                patientIndex: patientIndex,
-                gemini: widget.gemini,
-              ),
-            ),
-            Expanded(
-              child: GeminiSoapPage(
-                patientIndex: patientIndex,
-                gemini: widget.gemini,
-              ),
-            ),
-          ],
-        );
+        insideWidget = LoginPage();
         break;
       case 1:
         insideWidget = const PatientPage();
@@ -111,22 +86,24 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return Scaffold(
-      appBar: appState.screenId == 0 || appState.screenId == 1 
-      ? AppBar(
-          backgroundColor: const Color.fromARGB(255, 8, 77, 181),
-          title: Text(widget.title),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                // ログアウト処理（ログイン画面へ戻す）
-                context.read<ApplicationState>().screenId = 0;
-              },
-            ),
-          ],
-        )
-      : null, 
-      body: Center( // ← ここが重要！
+      appBar:
+          appState.screenId == 0 || appState.screenId == 1
+              ? AppBar(
+                backgroundColor: const Color.fromARGB(255, 8, 77, 181),
+                title: Text(widget.title),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () {
+                      // ログアウト処理（ログイン画面へ戻す）
+                      context.read<ApplicationState>().screenId = 0;
+                    },
+                  ),
+                ],
+              )
+              : null,
+      body: Center(
+        // ← ここが重要！
         child: insideWidget,
       ),
       floatingActionButton: FloatingActionButton(
@@ -156,24 +133,11 @@ class _SplashScreenState extends State<SplashScreen> {
     _init();
   }
 
-  // Future<void> _init() async {
-  //   await Firebase.initializeApp(
-  //     options: DefaultFirebaseOptions.currentPlatform,
-  //   );
-  //   print('Firebase Ready!');
-  //   context.read<Gemini>().geminiInit();
-  //   // 初期化後にホーム画面へ
-  //   Navigator.of(context).pushReplacement(
-  //     MaterialPageRoute(
-  //       builder: (_) => MyHomePage(title: 'Nursing Work Efficiency'),
-  //     ),
-  //   );
-  // }
-
   Future<void> _init() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    context.read<FirebaseAuthState>().firebaseAuthListenerInit();
     print('Firebase Ready!');
 
     gemini = GeminiService();
