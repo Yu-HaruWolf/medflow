@@ -1,4 +1,5 @@
 import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
+import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
 import 'patient.dart';
 
@@ -35,6 +36,15 @@ class PatientRepository {
 リハビリを行う。（具体的なメニューを書く）また、一人で起き上がれないため、初めて使用する用具の使い方を指導する。さらに、雨の日など傘がさせないため、カッパを使用してもらったする
 糖尿病があると、創の回復が遅くなったり、感染など合併症になるリスクも指導して食事の指導をする。""",
         ),
+        historyOfSoap: [
+          Soap(
+            issueDateTime: DateTime(2024, 3, 14),
+            subject: 'Sample Subject',
+            object: 'Sample Object',
+            assessment: 'Sample Assessment',
+            plan: 'Sample Plan',
+          ),
+        ],
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
@@ -25,14 +26,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<ApplicationState>();
+    final firebaseAuthState = context.watch<FirebaseAuthState>();
 
     Widget insideWidget;
     switch (appState.screenId) {
       case 0:
-        insideWidget = LoginPage();
+        insideWidget = firebaseAuthState.loggedIn ? TopPageMenu() : LoginPage();
         break;
       case 1:
-        insideWidget = const PatientPage();
+        insideWidget = PatientPage();
         break;
       case 2:
         insideWidget = const PersonalPage();
@@ -64,13 +66,23 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
                 color: Color.fromARGB(255, 15, 92, 118),
               ),
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Menu',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                  if (firebaseAuthState.loggedIn)
+                    Text(
+                      '${FirebaseAuth.instance.currentUser?.email}',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                ],
               ),
             ),
             ListTile(
@@ -78,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('Sign Out'),
               onTap: () {
                 // サインアウト処理
+                FirebaseAuth.instance.signOut();
                 context.read<ApplicationState>().screenId = 0;
                 Navigator.of(context).pop(); // Drawerを閉じる
               },
@@ -93,6 +106,31 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Go to Patient',
         child: const Icon(Icons.navigate_next), // アイコンを "次へ" のイメージに変更
       ),
+    );
+  }
+}
+
+class TopPageMenu extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 80,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => PatientPage()),
+                );
+              },
+              child: const Text('Patients list'),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
