@@ -138,9 +138,14 @@ E-P（指導） ${patient.nursingPlan.ep}""";
 １．googel検索でこのNANDA-Iの項目における看護計画を作成し、
 ２．SOAPや入院時データベースから患者の個別性を加えてください。
 作成する看護計画は以下の内容として、
-必ずfetchNursing関数で実行してください
-function call が成功したら、「成功しました」出力して
-
+json形式で出力してください。
+{
+  nanda_i:  ,
+  goal:    ,
+  kansatu:   ,
+  ennjo:  ,
+  sidou:  ,
+}
 ・O-P (観察項目)
 ・T-P 援助
 ・E-P（指導)
@@ -156,34 +161,70 @@ function call が成功したら、「成功しました」出力して
                   // );
                   // // 直接関数を呼び出す
                   // await fetchNursing(nursingplanJson);
-                  print(response.functionCalls);
-                  final functionCalls = response.functionCalls.toList();
-                  if (functionCalls.isNotEmpty) {
-                    final functionCall = functionCalls.first;
-                    if (functionCall.name == 'fetchNursing') {
-                      // Extract the structured input data prepared by the model
-                      // from the function call arguments.
-                      Map<String, dynamic> nursingplanJson =
-                          functionCall.args['nursingJson']!
-                              as Map<String, dynamic>;
 
-                      final functionResult = await fetchNursing(
-                        nursingplanJson,
-                      );
-                    } else {
-                      Text(responseText);
-                      throw UnimplementedError(
-                        'Function not declared to the model: ${functionCall.name}',
-                      );
-                    }
-                    final responseResultText = response.text;
-                    if (responseResultText != null) {
-                      setState(() {
-                        responseText += responseResultText;
-                        json_responseText += responseResultText;
-                      });
-                    }
+                  // final functionCalls = response.functionCalls.toList();
+                  // if (functionCalls.isNotEmpty) {
+                  //   final functionCall = functionCalls.first;
+                  //   if (functionCall.name == 'fetchNursing') {
+                  //     // Extract the structured input data prepared by the model
+                  //     // from the function call arguments.
+                  //     Map<String, dynamic> nursingplanJson =
+                  //         functionCall.args['nursingJson']!
+                  //             as Map<String, dynamic>;
+
+                  //     final functionResult = await fetchNursing(
+                  //       nursingplanJson,
+                  //     );
+                  //   } else {
+                  //     Text(responseText);
+                  //     throw UnimplementedError(
+                  //       'Function not declared to the model: ${functionCall.name}',
+                  //     );
+                  //   }
+                  final responseResultText = response.text;
+                  Patient? patient = await repo.getPatient('0');
+                  if (responseResultText != null) {
+                    setState(() {
+                      responseText += responseResultText;
+                      json_responseText += responseResultText;
+                      // JSON文字列をJSONオブジェクトに変換する処理を追加
+                      try {
+                        final regex = RegExp(r'\{[\s\S]*\}');
+                        final match = regex.firstMatch(responseText);
+                        if (match != null) {
+                          final jsonString = match.group(0)!;
+                          final jsonObject = jsonDecode(jsonString);
+                          print('抽出・パースしたJSONオブジェクト:');
+                          print(jsonObject);
+                          final repo = PatientRepository();
+
+                          final newplan = NursingPlan(
+                            nanda_i: jsonObject['nanda_i'] ?? '',
+                            goal: jsonObject['goal'] ?? '',
+                            op: jsonObject['kansatu'] ?? '',
+                            tp: jsonObject['ennjo'] ?? '',
+                            ep: jsonObject['sidou'] ?? '',
+                          );
+
+                          final newPatient = Patient(
+                            id: patient!.id,
+                            nursingPlan: newplan,
+                            // nursingPlan は省略（null）
+                          );
+
+                          // final repo = PatientRepository();
+
+                          repo.updatePatient(newPatient);
+                        } else {
+                          print('JSON部分が見つかりませんでした。');
+                        }
+                      } catch (e) {
+                        print('JSONのパースエラー: $e');
+                      }
+                    });
                   }
+
+                  // }
                 }
               },
               child: Text("看護計画を作成する"),

@@ -6,15 +6,34 @@ class GeminiService {
   late GenerativeModel model1;
 
   Future<void> geminiInit() async {
+    // Set parameter values in a `GenerationConfig` (example values shown here)
+    final generationConfig = GenerationConfig(temperature: 0.0);
+    // GenerationConfigにtool_configを追加
+    // 強制的に関数呼び出しを使用する設定
+    // final toolConfig = ToolConfig(
+    //   functionCallingConfig: FunctionCallingConfig.mode(
+    //     "ANY",
+    //   ), // 名前付きコンストラクタを使用
+    //   // または特定の関数のみ許可する場合
+    //   // functionCallingConfig: FunctionCallingConfig.modeWithAllowedFunctions("ANY", ["fetchNursing"])
+    // );
     model1 = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
+      generationConfig: generationConfig,
       tools: [
         Tool.functionDeclarations([fetchNursingTool]),
       ],
       systemInstruction: Content.text("""
 あなたは優秀な看護師です。今から退院時の看護計画を作成します。
 
-形式は以下とし、fetchNursing関数に引数として渡して、処理してください。
+形式はjson形式で、以下のように出力してください。
+{
+  nanda_i: ,
+  goal:    ,
+  kansatu:   ,
+  ennjo:  ,
+  sidou:   ,
+}
 詳細な出力形式は以下に示す。
 {
   nanda_i: ,
