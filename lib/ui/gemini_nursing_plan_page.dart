@@ -41,30 +41,7 @@ class _GeminiNursingPlanPageState extends State<GeminiNursingPlanPage> {
                 final repo = PatientRepository();
                 Patient? patient = await repo.getPatient('0');
                 print(patient!.personalInfo.name);
-                final response = await fetchWeatherData(
-                  "Please investigate NANDA-I usin Google search. What types of NANDA-I exist, and please tell me all the evaluation criteria for each",
-                );
-                if (response != null) {
-                  setState(() {
-                    responseText =
-                        response['response']; // Cloud Functionからのレスポンスを更新
-                  });
-                } else {
-                  setState(() {
-                    responseText = "Failed to load data";
-                  });
-                }
-                // 過去の会話履歴
-                final history1 = [
-                  Content.text(
-                    'NANDA-Iについて調べてください。どのようなNANDA-Iがあり、それぞれの評価項目をすべて教えてください。',
-                  ),
-                  Content.model([TextPart(responseText)]),
-                ];
 
-                // setState(() {
-                //   responseText = "";
-                // });
                 String soap = """【10日目】
 S
 「リハビリで歩く距離が伸びてきました。痛みは日中はほとんど気になりません。家で一人
@@ -101,131 +78,9 @@ T-P 援助 ${patient.nursingPlan.tp}
 
 E-P（指導） ${patient.nursingPlan.ep}""";
 
-                Stream<GenerateContentResponse> responseStream1 = await widget
-                    .gemini
-                    .model1
-                    .startChat(history: history1)
-                    .sendMessageStream(
-                      Content.text("""
-                         会話履歴をもとに、最適で一番重要視するNANDA-Iを1つ決めてください。
-                          看護記録:${soap}
-                          看護計画:${usersingPlan}
-
-                          """),
-                    );
-                String intermediateResponse = "";
-                await for (final response1 in responseStream1) {
-                  final response1ResultText = response1.text;
-                  if (response1ResultText != null) {
-                    setState(() {
-                      intermediateResponse += response1ResultText;
-                    });
-                  }
-                }
-                final history2 = [
-                  Content.text('最適なNANDA-Iを１つ決めてください。'),
-                  Content.model([TextPart(intermediateResponse)]),
-                ];
-
-                Stream<GenerateContentResponse> responseStream = await widget
-                    .gemini
-                    .model1
-                    .startChat(history: history2)
-                    .sendMessageStream(
-                      Content.text("""
-重要視するNANDA-Iの項目は会話履歴から確認してそれを一番重視してください。
-
-１．googel検索でこのNANDA-Iの項目における看護計画を作成し、
-２．SOAPや入院時データベースから患者の個別性を加えてください。
-作成する看護計画は以下の内容として、
-json形式で出力してください。
-{
-  nanda_i:  ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:  ,
-}
-・O-P (観察項目)
-・T-P 援助
-・E-P（指導)
-
- 看護記録:${soap}
-
-"""),
-                    );
-                String json_responseText = "";
-                await for (final response in responseStream) {
-                  // Map<String, dynamic> nursingplanJson = jsonDecode(
-                  //   json_responseText,
-                  // );
-                  // // 直接関数を呼び出す
-                  // await fetchNursing(nursingplanJson);
-
-                  // final functionCalls = response.functionCalls.toList();
-                  // if (functionCalls.isNotEmpty) {
-                  //   final functionCall = functionCalls.first;
-                  //   if (functionCall.name == 'fetchNursing') {
-                  //     // Extract the structured input data prepared by the model
-                  //     // from the function call arguments.
-                  //     Map<String, dynamic> nursingplanJson =
-                  //         functionCall.args['nursingJson']!
-                  //             as Map<String, dynamic>;
-
-                  //     final functionResult = await fetchNursing(
-                  //       nursingplanJson,
-                  //     );
-                  //   } else {
-                  //     Text(responseText);
-                  //     throw UnimplementedError(
-                  //       'Function not declared to the model: ${functionCall.name}',
-                  //     );
-                  //   }
-                  final responseResultText = response.text;
-                  Patient? patient = await repo.getPatient('0');
-                  if (responseResultText != null) {
-                    setState(() {
-                      responseText += responseResultText;
-                      json_responseText += responseResultText;
-                      // JSON文字列をJSONオブジェクトに変換する処理を追加
-                      try {
-                        final regex = RegExp(r'\{[\s\S]*\}');
-                        final match = regex.firstMatch(responseText);
-                        if (match != null) {
-                          final jsonString = match.group(0)!;
-                          final jsonObject = jsonDecode(jsonString);
-                          print('抽出・パースしたJSONオブジェクト:');
-                          print(jsonObject);
-                          final repo = PatientRepository();
-
-                          final newplan = NursingPlan(
-                            nanda_i: jsonObject['nanda_i'] ?? '',
-                            goal: jsonObject['goal'] ?? '',
-                            op: jsonObject['kansatu'] ?? '',
-                            tp: jsonObject['ennjo'] ?? '',
-                            ep: jsonObject['sidou'] ?? '',
-                          );
-
-                          final newPatient = Patient(
-                            id: patient!.id,
-                            nursingPlan: newplan,
-                            // nursingPlan は省略（null）
-                          );
-
-                          // final repo = PatientRepository();
-
-                          repo.updatePatient(newPatient);
-                        } else {
-                          print('JSON部分が見つかりませんでした。');
-                        }
-                      } catch (e) {
-                        print('JSONのパースエラー: $e');
-                      }
-                    });
-                  }
-
-                  // }
-                }
+                var response_nursing_plan = await widget.gemini
+                    .gemini_creat_nursing_plan(soap, usersingPlan, 0);
+                print("個々の値を見たい${response_nursing_plan.nursingPlan.nanda_i}");
               },
               child: Text("看護計画を作成する"),
             ),

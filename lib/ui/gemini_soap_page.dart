@@ -102,7 +102,7 @@ E-P（指導） ${patient.nursingPlan.ep}""";
                     .startChat(history: history)
                     .sendMessageStream(
                       Content.text("""
-                          以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください。fetchSOAP関数を呼び出してください。
+                          以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください。fetchSOAP関数を呼び出してください。関数の呼び出しを成功したら成功したいと出力して
                           会話:${userConversation}
                           看護計画:${usersingPlan}
 
