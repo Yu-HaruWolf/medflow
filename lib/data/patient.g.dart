@@ -23,64 +23,6 @@ Patient _$PatientFromJson(Map<String, dynamic> json) => Patient(
           : HealthPromotion.fromJson(
             json['healthPromotion'] as Map<String, dynamic>,
           ),
-  nutrition:
-      json['nutrition'] == null
-          ? null
-          : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),
-  eliminationAndExchange:
-      json['eliminationAndExchange'] == null
-          ? null
-          : EliminationAndExchange.fromJson(
-            json['eliminationAndExchange'] as Map<String, dynamic>,
-          ),
-  activityAndRest:
-      json['activityAndRest'] == null
-          ? null
-          : ActivityAndRest.fromJson(
-            json['activityAndRest'] as Map<String, dynamic>,
-          ),
-  perceptionAndCognition:
-      json['perceptionAndCognition'] == null
-          ? null
-          : PerceptionAndCognition.fromJson(
-            json['perceptionAndCognition'] as Map<String, dynamic>,
-          ),
-  selfPerception:
-      json['selfPerception'] == null
-          ? null
-          : SelfPerception.fromJson(
-            json['selfPerception'] as Map<String, dynamic>,
-          ),
-  relationship:
-      json['relationship'] == null
-          ? null
-          : Relationship.fromJson(json['relationship'] as Map<String, dynamic>),
-  sexuality:
-      json['sexuality'] == null
-          ? null
-          : Sexuality.fromJson(json['sexuality'] as Map<String, dynamic>),
-  coping:
-      json['coping'] == null
-          ? null
-          : Coping.fromJson(json['coping'] as Map<String, dynamic>),
-  lifePrinciples:
-      json['lifePrinciples'] == null
-          ? null
-          : LifePrinciples.fromJson(
-            json['lifePrinciples'] as Map<String, dynamic>,
-          ),
-  safety:
-      json['safety'] == null
-          ? null
-          : Safety.fromJson(json['safety'] as Map<String, dynamic>),
-  comfort:
-      json['comfort'] == null
-          ? null
-          : Comfort.fromJson(json['comfort'] as Map<String, dynamic>),
-  growth:
-      json['growth'] == null
-          ? null
-          : Growth.fromJson(json['growth'] as Map<String, dynamic>),
   nursingPlan:
       json['nursingPlan'] == null
           ? null
@@ -97,18 +39,6 @@ Map<String, dynamic> _$PatientToJson(Patient instance) => <String, dynamic>{
   'personalInfo': instance.personalInfo.toJson(),
   'relatedContacts': instance.relatedContacts.map((e) => e.toJson()).toList(),
   'healthPromotion': instance.healthPromotion.toJson(),
-  'nutrition': instance.nutrition.toJson(),
-  'eliminationAndExchange': instance.eliminationAndExchange.toJson(),
-  'activityAndRest': instance.activityAndRest.toJson(),
-  'perceptionAndCognition': instance.perceptionAndCognition.toJson(),
-  'selfPerception': instance.selfPerception.toJson(),
-  'relationship': instance.relationship.toJson(),
-  'sexuality': instance.sexuality.toJson(),
-  'coping': instance.coping.toJson(),
-  'lifePrinciples': instance.lifePrinciples.toJson(),
-  'safety': instance.safety.toJson(),
-  'comfort': instance.comfort.toJson(),
-  'growth': instance.growth.toJson(),
   'historyOfSoap': instance.historyOfSoap.map((e) => e.toJson()).toList(),
   'nursingPlan': instance.nursingPlan.toJson(),
 };
@@ -204,69 +134,3 @@ Map<String, dynamic> _$HealthPromotionToJson(
   'otherSubstance': instance.otherSubstance,
   'otherSubstanceRelatedInfo': instance.otherSubstanceRelatedInfo,
 };
-
-Nutrition _$NutritionFromJson(Map<String, dynamic> json) => Nutrition();
-
-Map<String, dynamic> _$NutritionToJson(Nutrition instance) =>
-    <String, dynamic>{};
-
-EliminationAndExchange _$EliminationAndExchangeFromJson(
-  Map<String, dynamic> json,
-) => EliminationAndExchange();
-
-Map<String, dynamic> _$EliminationAndExchangeToJson(
-  EliminationAndExchange instance,
-) => <String, dynamic>{};
-
-ActivityAndRest _$ActivityAndRestFromJson(Map<String, dynamic> json) =>
-    ActivityAndRest();
-
-Map<String, dynamic> _$ActivityAndRestToJson(ActivityAndRest instance) =>
-    <String, dynamic>{};
-
-PerceptionAndCognition _$PerceptionAndCognitionFromJson(
-  Map<String, dynamic> json,
-) => PerceptionAndCognition();
-
-Map<String, dynamic> _$PerceptionAndCognitionToJson(
-  PerceptionAndCognition instance,
-) => <String, dynamic>{};
-
-SelfPerception _$SelfPerceptionFromJson(Map<String, dynamic> json) =>
-    SelfPerception();
-
-Map<String, dynamic> _$SelfPerceptionToJson(SelfPerception instance) =>
-    <String, dynamic>{};
-
-Relationship _$RelationshipFromJson(Map<String, dynamic> json) =>
-    Relationship();
-
-Map<String, dynamic> _$RelationshipToJson(Relationship instance) =>
-    <String, dynamic>{};
-
-Sexuality _$SexualityFromJson(Map<String, dynamic> json) => Sexuality();
-
-Map<String, dynamic> _$SexualityToJson(Sexuality instance) =>
-    <String, dynamic>{};
-
-Coping _$CopingFromJson(Map<String, dynamic> json) => Coping();
-
-Map<String, dynamic> _$CopingToJson(Coping instance) => <String, dynamic>{};
-
-LifePrinciples _$LifePrinciplesFromJson(Map<String, dynamic> json) =>
-    LifePrinciples();
-
-Map<String, dynamic> _$LifePrinciplesToJson(LifePrinciples instance) =>
-    <String, dynamic>{};
-
-Safety _$SafetyFromJson(Map<String, dynamic> json) => Safety();
-
-Map<String, dynamic> _$SafetyToJson(Safety instance) => <String, dynamic>{};
-
-Comfort _$ComfortFromJson(Map<String, dynamic> json) => Comfort();
-
-Map<String, dynamic> _$ComfortToJson(Comfort instance) => <String, dynamic>{};
-
-Growth _$GrowthFromJson(Map<String, dynamic> json) => Growth();
-
-Map<String, dynamic> _$GrowthToJson(Growth instance) => <String, dynamic>{};
