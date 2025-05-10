@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:solution_challenge_tcu_2025/data/soap.dart';
+
 
 class NursingInfoPage extends StatefulWidget {
   const NursingInfoPage({Key? key}) : super(key: key); // ★ここ追加！
@@ -87,6 +89,8 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
   Widget build(BuildContext context) {
     PatientRepository repository = PatientRepository();
     Patient patient = PatientRepository().patientList[0];
+    List<Soap> soapList = patient.historyOfSoap;
+
     return Column(
       children: [
         TabBar(
@@ -97,8 +101,78 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
           child: TabBarView(
             controller: _innerTabController,
             children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: soapList.map((soap) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Table(
+                        border: TableBorder.all(),
+                        columnWidths: const {
+                          0: IntrinsicColumnWidth(),
+                          1: FlexColumnWidth(),
+                        },
+                        children: [
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('S', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(soap.subject),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('O', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(soap.object),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('A', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(soap.assessment),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('P', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(soap.plan),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
               // ----- SOAPタブの内容を表形式で -----
               SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16.0,bottom: 16.0), 
                 child: Table(
                   border: TableBorder.all(),
                   columnWidths: const {
@@ -117,7 +191,9 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                         ),
                         Padding(
                           padding: EdgeInsets.all(8),
-                          child: Text(patient.nursingPlan.nanda_i),
+                          child: Text(
+                            patient.nursingPlan.nanda_i,
+                          ),
                         ),
                       ],
                     ),
@@ -132,7 +208,13 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                         ),
                         Padding(
                           padding: EdgeInsets.all(8),
-                          child: Text(patient.nursingPlan.goal),
+                          child: Text(
+                            patient.nursingPlan.goal
+                            .split('\n')
+                            .map((line) => line.trimLeft())
+                            .join('\n'),
+                            softWrap: true,
+                          ),
                         ),
                       ],
                     ),
@@ -147,7 +229,13 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                         ),
                         Padding(
                           padding: EdgeInsets.all(8),
-                          child: Text(patient.nursingPlan.op),
+                          child: Text(
+                            patient.nursingPlan.op
+                            .split('\n')
+                            .map((line) => line.trimLeft())
+                            .join('\n'),
+                            softWrap: true,
+                          ),
                         ),
                       ],
                     ),
@@ -162,7 +250,13 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                         ),
                         Padding(
                           padding: EdgeInsets.all(8),
-                          child: Text(patient.nursingPlan.tp),
+                          child: Text(
+                            patient.nursingPlan.tp
+                            .split('\n')
+                            .map((line) => line.trimLeft())
+                            .join('\n'),
+                            softWrap: true,
+                            ),
                         ),
                       ],
                     ),
@@ -177,17 +271,20 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                         ),
                         Padding(
                           padding: EdgeInsets.all(8),
-                          child: Text(patient.nursingPlan.ep),
+                            child: Text(patient.nursingPlan.ep
+                            .split('\n')
+                            .map((line) => line.trimLeft())
+                            .join('\n'),
+                            softWrap: true,
+                          ),
                         ),
                       ],
                     ),
                     // 他にもSOAPに関連する情報があれば追加
                   ],
                 ),
+                ),
               ),
-
-              Center(child: Text(patient.nursingPlan.nanda_i)),
-              Center(child: Text('看護計画の内容')),
             ],
           ),
         ),
