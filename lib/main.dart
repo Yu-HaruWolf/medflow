@@ -199,7 +199,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder:
-            (_) => MyHomePage(title: 'MEdFlow', gemini: gemini),
+            (_) => MyHomePage(title: 'MedFlow', gemini: gemini),
       ),
     );
   }

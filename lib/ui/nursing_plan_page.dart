@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
+import 'package:solution_challenge_tcu_2025/data/patient.dart';
+import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
 class NursingPlanPage extends StatefulWidget {
   const NursingPlanPage({Key? key}) : super(key: key);
@@ -115,7 +117,9 @@ class _NursingPlanPageState extends State<NursingPlanPage>
                           hintText: 'Enter doctor memo...',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (_) => setState(() {}),
+                        onChanged: (_) => setState(() {
+                          _isDoctorSaved = false;
+                        }),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -197,7 +201,9 @@ class _NursingPlanPageState extends State<NursingPlanPage>
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
-              onChanged: (_) => setState(() {}),
+              onChanged: (_) => setState(() {
+                _isInspectionSaved = false;
+              }),
             ),
           ),
         ],
@@ -216,26 +222,29 @@ class _NestedTabWidget extends StatefulWidget {
   final VoidCallback onSaved;
 
   const _NestedTabWidget({
-    super.key,
+    Key? key,
     required this.sController,
     required this.oController,
     required this.aController,
     required this.pController,
     required this.isNursingPlanSaved,
     required this.onSaved,
-  });
+  }) : super(key: key);
 
   @override
-  State<_NestedTabWidget> createState() => _NestedTabWidgetState();
+  _NestedTabWidgetState createState() => _NestedTabWidgetState();
 }
+
 
 class _NestedTabWidgetState extends State<_NestedTabWidget> with TickerProviderStateMixin {
   late TabController _innerTabController;
+  late bool _isSaved;
 
   @override
   void initState() {
     super.initState();
     _innerTabController = TabController(length: 2, vsync: this);
+    _isSaved = widget.isNursingPlanSaved;
   }
 
   @override
@@ -245,14 +254,24 @@ class _NestedTabWidgetState extends State<_NestedTabWidget> with TickerProviderS
   }
 
   bool get isFilled =>
-      !widget.isNursingPlanSaved &&
+      !_isSaved &&
       (widget.sController.text.isNotEmpty ||
           widget.oController.text.isNotEmpty ||
           widget.aController.text.isNotEmpty ||
           widget.pController.text.isNotEmpty);
 
+  void _handleChanged() {
+    if (_isSaved) {
+      setState(() {
+        _isSaved = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    PatientRepository repository = PatientRepository();
+    Patient patient = PatientRepository().patientList[0];
     return Column(
       children: [
         TabBar(
@@ -267,7 +286,7 @@ class _NestedTabWidgetState extends State<_NestedTabWidget> with TickerProviderS
             controller: _innerTabController,
             children: [
               _buildSOAPTab(),
-              const Center(child: Text('内タブBの内容')),
+              _buildNursingPlanTable(patient),
             ],
           ),
         ),
@@ -287,6 +306,9 @@ class _NestedTabWidgetState extends State<_NestedTabWidget> with TickerProviderS
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
+              setState(() {
+                _isSaved = true;
+              });
               widget.onSaved();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('data saved')),
@@ -307,7 +329,10 @@ class _NestedTabWidgetState extends State<_NestedTabWidget> with TickerProviderS
         const SizedBox(height: 5),
         TextField(
           controller: controller,
-          onChanged: (_) => setState(() {}),
+          onChanged: (_) => _handleChanged(),
+          minLines: 1,
+          maxLines: null,
+          keyboardType: TextInputType.multiline,
           decoration: InputDecoration(
             hintText: hintText,
             border: const OutlineInputBorder(),
@@ -318,4 +343,41 @@ class _NestedTabWidgetState extends State<_NestedTabWidget> with TickerProviderS
     );
   }
 
+  Widget _buildNursingPlanTable(Patient patient) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Table(
+        border: TableBorder.all(),
+        columnWidths: const {
+          0: IntrinsicColumnWidth(),
+          1: FlexColumnWidth(),
+        },
+        children: [
+          _buildTableRow('NANDA-I', patient.nursingPlan.nanda_i),
+          _buildTableRow('目標', patient.nursingPlan.goal),
+          _buildTableRow('O-P (観察項目)', patient.nursingPlan.op),
+          _buildTableRow('T-P (援助)', patient.nursingPlan.tp),
+          _buildTableRow('E-P (指導)', patient.nursingPlan.ep),
+        ],
+      ),
+    );
+  }
+
+  TableRow _buildTableRow(String title, String content) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            content.split('\n').map((line) => line.trimLeft()).join('\n'),
+            softWrap: true,
+          ),
+        ),
+      ],
+    );
+  }
 }
