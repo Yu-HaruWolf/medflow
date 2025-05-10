@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:solution_challenge_tcu_2025/ui/nursing_info_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/nursing_plan_page.dart';
 
 class PersonalPage extends StatelessWidget {
   final patientId;
@@ -91,11 +93,17 @@ class PersonalPage extends StatelessWidget {
                           child: InkWell(
                             onTap: () {
                               if (index == 0) {
-                                context.read<ApplicationState>().screenId =
-                                    3; // ← 入力ページ
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => NursingPlanPage(),
+                                  ),
+                                );
                               } else {
-                                context.read<ApplicationState>().screenId =
-                                    4; // ← 閲覧ページ
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => NursingInfoPage(),
+                                  ),
+                                );
                               } // 3段目: 医師ID
                             },
                             child: Container(

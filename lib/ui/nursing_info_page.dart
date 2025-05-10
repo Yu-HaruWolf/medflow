@@ -5,7 +5,6 @@ import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
-
 class NursingInfoPage extends StatefulWidget {
   const NursingInfoPage({Key? key}) : super(key: key); // ★ここ追加！
 
@@ -33,12 +32,6 @@ class _NursingInfoPageState extends State<NursingInfoPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            context.read<ApplicationState>().screenId = 2;
-          },
-        ),
         backgroundColor: const Color.fromARGB(255, 62, 183, 220),
         title: const Text('Nursing Information'),
         bottom: TabBar(
@@ -104,185 +97,205 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
               SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
-                  children: soapList.map((soap) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Table(
-                        border: TableBorder.all(),
-                        columnWidths: const {
-                          0: IntrinsicColumnWidth(),
-                          1: FlexColumnWidth(),
-                        },
-                        children: [
-                          TableRow(
+                  children:
+                      soapList.map((soap) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Table(
+                            border: TableBorder.all(),
+                            columnWidths: const {
+                              0: IntrinsicColumnWidth(),
+                              1: FlexColumnWidth(),
+                            },
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text('S', style: TextStyle(fontWeight: FontWeight.bold)),
+                              TableRow(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text(
+                                      'S',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(soap.subject),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(soap.subject),
+                              TableRow(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text(
+                                      'O',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(soap.object),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text(
+                                      'A',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(soap.assessment),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text(
+                                      'P',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(soap.plan),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          TableRow(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text('O', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(soap.object),
-                              ),
-                            ],
-                          ),
-                          TableRow(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text('A', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(soap.assessment),
-                              ),
-                            ],
-                          ),
-                          TableRow(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text('P', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(soap.plan),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+                        );
+                      }).toList(),
                 ),
               ),
               // ----- SOAPタブの内容を表形式で -----
               SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 16.0,bottom: 16.0), 
-                child: Table(
-                  border: TableBorder.all(),
-                  columnWidths: const {
-                    0: IntrinsicColumnWidth(),
-                    1: FlexColumnWidth(),
-                  },
-                  children: [
-                    TableRow(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            'NANDA-I',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            patient.nursingPlan.nanda_i,
-                          ),
-                        ),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            '目標',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            patient.nursingPlan.goal
-                            .split('\n')
-                            .map((line) => line.trimLeft())
-                            .join('\n'),
-                            softWrap: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            'O-P (観察項目)',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            patient.nursingPlan.op
-                            .split('\n')
-                            .map((line) => line.trimLeft())
-                            .join('\n'),
-                            softWrap: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            'T-P (援助)',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            patient.nursingPlan.tp
-                            .split('\n')
-                            .map((line) => line.trimLeft())
-                            .join('\n'),
-                            softWrap: true,
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                  child: Table(
+                    border: TableBorder.all(),
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(),
+                      1: FlexColumnWidth(),
+                    },
+                    children: [
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              'NANDA-I',
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                        ),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            'E-P (指導)',
-                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                            child: Text(patient.nursingPlan.ep
-                            .split('\n')
-                            .map((line) => line.trimLeft())
-                            .join('\n'),
-                            softWrap: true,
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(patient.nursingPlan.nanda_i),
                           ),
-                        ),
-                      ],
-                    ),
-                    // 他にもSOAPに関連する情報があれば追加
-                  ],
-                ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              '目標',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              patient.nursingPlan.goal
+                                  .split('\n')
+                                  .map((line) => line.trimLeft())
+                                  .join('\n'),
+                              softWrap: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              'O-P (観察項目)',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              patient.nursingPlan.op
+                                  .split('\n')
+                                  .map((line) => line.trimLeft())
+                                  .join('\n'),
+                              softWrap: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              'T-P (援助)',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              patient.nursingPlan.tp
+                                  .split('\n')
+                                  .map((line) => line.trimLeft())
+                                  .join('\n'),
+                              softWrap: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              'E-P (指導)',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              patient.nursingPlan.ep
+                                  .split('\n')
+                                  .map((line) => line.trimLeft())
+                                  .join('\n'),
+                              softWrap: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // 他にもSOAPに関連する情報があれば追加
+                    ],
+                  ),
                 ),
               ),
             ],
