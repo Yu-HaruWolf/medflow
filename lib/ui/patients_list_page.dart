@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 
 class PatientsListPage extends StatefulWidget {
   const PatientsListPage({super.key});
@@ -12,20 +13,32 @@ class PatientsListPage extends StatefulWidget {
 }
 
 class _PatientsListPageState extends State<PatientsListPage> {
-  final List<String> patients = ['患者1', '患者2', '患者3', '患者4'];
-  List<String> filteredPatients = [];
+  final patientRepository = PatientRepository();
+  List<Patient> allPatients = [];
+  List<Patient> filteredPatients = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // 初期状態では全ての患者を表示
-    filteredPatients = patients;
+    _loadPatients();
+  }
+
+  void _loadPatients() async {
+    final patients = await patientRepository.getAllPatients;
+    setState(() {
+      allPatients = patients;
+      filteredPatients = patients;
+      isLoading = false;
+    });
   }
 
   void _filterPatients(String query) {
     setState(() {
       filteredPatients =
-          patients.where((patient) => patient.contains(query)).toList();
+          allPatients
+              .where((patient) => patient.personalInfo.name.contains(query))
+              .toList();
     });
   }
 
@@ -47,26 +60,45 @@ class _PatientsListPageState extends State<PatientsListPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredPatients.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 2,
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(filteredPatients[index]),
-                    subtitle: Text("なにかしらの情報"),
-                    leading: Icon(Icons.label),
-                    trailing: Icon(Icons.arrow_forward),
-                    onTap: () {
-                      context.read<ApplicationState>().screenId = 2;
-                    },
-                  ),
-                );
-              },
-            ),
+            child:
+                isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                      itemCount: filteredPatients.length,
+                      itemBuilder: (context, index) {
+                        final patient = filteredPatients[index];
+                        return Card(
+                          elevation: 2,
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: ListTile(
+                            title: Text(patient.personalInfo.name),
+                            subtitle: Text("なにかしらの情報"),
+                            leading: Icon(Icons.person),
+                            trailing: Icon(Icons.arrow_forward),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) =>
+                                          PersonalPage(patientId: patient.id),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: 新規患者追加画面遷移
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -51,6 +51,7 @@ class PatientRepository {
   }
 
   Future<Patient?> getPatient(String id) async {
+    print('getPatient called');
     try {
       return patientList[int.parse(id)];
     } catch (e) {
@@ -59,7 +60,11 @@ class PatientRepository {
   }
 
   Future<int> get size async => patientList.length;
-  Future<List<Patient>> get getAllPatients async => patientList;
+  Future<List<Patient>> get getAllPatients async {
+    await Future.delayed(Duration(seconds: 2));
+    print('getAllPatients called.');
+    return patientList;
+  }
 
   Future<void> addPatient(Patient patient) async {
     patientList.add(patient);
