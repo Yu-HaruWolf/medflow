@@ -90,8 +90,8 @@ class HealthPromotion {
     this.isHealthManageMethodExist,
     this.healthManageMethod = "",
     this.isSubstanceExist,
-    this.alcoholPerDay = 0,
-    this.cigarettsPerDay = 0,
+    this.alcoholPerDay,
+    this.cigarettsPerDay,
     this.otherSubstance = "",
     this.otherSubstanceRelatedInfo = "",
   });
@@ -106,8 +106,8 @@ class HealthPromotion {
   String healthManageMethod; // 健康管理の方法
 
   bool? isSubstanceExist; // 嗜好品
-  int alcoholPerDay; // アルコール杯数(1日あたり)
-  int cigarettsPerDay; // タバコ本数(1日あたり)
+  int? alcoholPerDay; // アルコール杯数(1日あたり)
+  int? cigarettsPerDay; // タバコ本数(1日あたり)
   String otherSubstance; // 嗜好品 - その他
   String otherSubstanceRelatedInfo; // 嗜好品 - その他の関連情報
 

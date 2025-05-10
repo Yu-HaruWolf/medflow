@@ -280,7 +280,8 @@ class _NestedTabWidgetState extends State<_NestedTabWidget>
   @override
   Widget build(BuildContext context) {
     PatientRepository repository = PatientRepository();
-    Patient patient = PatientRepository().patientList[0];
+    // Patient patient = await PatientRepository().getPatient(0);
+    Patient patient = Patient(); // PatientRepositoryに対応する
     return Column(
       children: [
         TabBar(

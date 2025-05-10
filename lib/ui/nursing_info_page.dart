@@ -81,7 +81,8 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
   @override
   Widget build(BuildContext context) {
     PatientRepository repository = PatientRepository();
-    Patient patient = PatientRepository().patientList[0];
+    // Patient patient = PatientRepository().patientList[0];
+    Patient patient = Patient(); // TODO: PatientRepositoryに対応する
     List<Soap> soapList = patient.historyOfSoap;
 
     return Column(

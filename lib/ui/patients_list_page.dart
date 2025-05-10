@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:solution_challenge_tcu_2025/ui/patient_form.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 
 class PatientsListPage extends StatefulWidget {
@@ -26,11 +27,12 @@ class _PatientsListPageState extends State<PatientsListPage> {
 
   void _loadPatients() async {
     final patients = await patientRepository.getAllPatients;
-    setState(() {
-      allPatients = patients;
-      filteredPatients = patients;
-      isLoading = false;
-    });
+    if (mounted)
+      setState(() {
+        allPatients = patients;
+        filteredPatients = patients;
+        isLoading = false;
+      });
   }
 
   void _filterPatients(String query) {
@@ -95,8 +97,11 @@ class _PatientsListPageState extends State<PatientsListPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: 新規患者追加画面遷移
+        onPressed: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => PatientFormScreen()),
+          ); // awaitでやるのが本当に正しい？(ユーザーエクスペリエンスに問題がある気がする)
+          _loadPatients();
         },
         child: const Icon(Icons.add),
       ),

@@ -50,14 +50,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // }
 
     return Scaffold(
-      appBar:
-          appState.screenId == 0 || appState.screenId == 1
-              ? AppBar(
-                backgroundColor: const Color.fromARGB(255, 62, 183, 220),
-                centerTitle: true,
-                title: Text(widget.title),
-              )
-              : null,
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 62, 183, 220),
+        centerTitle: true,
+        title: Text(widget.title),
+      ),
       body: firebaseAuthState.loggedIn ? TopPageMenu() : LoginPage(),
       drawer: Drawer(
         child: ListView(
@@ -88,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 // サインアウト処理
                 FirebaseAuth.instance.signOut();
-                context.read<ApplicationState>().screenId = 0;
                 Navigator.of(context).pop(); // Drawerを閉じる
               },
             ),
