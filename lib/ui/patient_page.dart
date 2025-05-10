@@ -31,44 +31,42 @@ class _PatientPageState extends State<PatientPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text("患者リスト")),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                onChanged: _filterPatients,
-                decoration: InputDecoration(
-                  labelText: '患者名で検索',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.search),
-                ),
+    return Scaffold(
+      appBar: AppBar(title: Text("患者リスト")),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: _filterPatients,
+              decoration: InputDecoration(
+                labelText: '患者名で検索',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredPatients.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 2,
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ListTile(
-                      title: Text(filteredPatients[index]),
-                      subtitle: Text("なにかしらの情報"),
-                      leading: Icon(Icons.label),
-                      trailing: Icon(Icons.arrow_forward),
-                      onTap: () {
-                        context.read<ApplicationState>().screenId = 2;
-                      },
-                    ),
-                  );
-                },
-              ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredPatients.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  elevation: 2,
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ListTile(
+                    title: Text(filteredPatients[index]),
+                    subtitle: Text("なにかしらの情報"),
+                    leading: Icon(Icons.label),
+                    trailing: Icon(Icons.arrow_forward),
+                    onTap: () {
+                      context.read<ApplicationState>().screenId = 2;
+                    },
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

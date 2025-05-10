@@ -28,26 +28,26 @@ class _MyHomePageState extends State<MyHomePage> {
     var appState = context.watch<ApplicationState>();
     final firebaseAuthState = context.watch<FirebaseAuthState>();
 
-    Widget insideWidget;
-    switch (appState.screenId) {
-      case 0:
-        insideWidget = firebaseAuthState.loggedIn ? TopPageMenu() : LoginPage();
-        break;
-      case 1:
-        insideWidget = PatientPage();
-        break;
-      case 2:
-        insideWidget = const PersonalPage();
-        break;
-      case 3:
-        insideWidget = const NursingPlanPage();
-        break;
-      case 4:
-        insideWidget = const NursingInfoPage();
-        break;
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
-    }
+    // Widget insideWidget;
+    // switch (appState.screenId) {
+    //   case 0:
+    //     insideWidget = firebaseAuthState.loggedIn ? TopPageMenu() : LoginPage();
+    //     break;
+    //   case 1:
+    //     insideWidget = PatientPage();
+    //     break;
+    //   case 2:
+    //     insideWidget = const PersonalPage();
+    //     break;
+    //   case 3:
+    //     insideWidget = const NursingPlanPage();
+    //     break;
+    //   case 4:
+    //     insideWidget = const NursingInfoPage();
+    //     break;
+    //   default:
+    //     throw UnimplementedError('no widget for $selectedIndex');
+    // }
 
     return Scaffold(
       appBar:
@@ -58,10 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: Text(widget.title),
               )
               : null,
-      body: Center(
-        // ← ここが重要！
-        child: insideWidget,
-      ),
+      body: firebaseAuthState.loggedIn ? TopPageMenu() : LoginPage(),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -99,13 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.read<ApplicationState>().screenId = 1;
-        },
-        tooltip: 'Go to Patient',
-        child: const Icon(Icons.navigate_next), // アイコンを "次へ" のイメージに変更
-      ),
     );
   }
 }
@@ -113,24 +103,26 @@ class _MyHomePageState extends State<MyHomePage> {
 class TopPageMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: 80,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => PatientPage()),
-                );
-              },
-              child: const Text('Patients list'),
+    return Center(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 80,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => PatientPage()));
+                },
+                child: const Text('Patients list'),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
