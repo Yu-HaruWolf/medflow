@@ -4,14 +4,14 @@ import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
-class PatientPage extends StatefulWidget {
-  const PatientPage({super.key});
+class PatientsListPage extends StatefulWidget {
+  const PatientsListPage({super.key});
 
   @override
-  _PatientPageState createState() => _PatientPageState();
+  _PatientsListPageState createState() => _PatientsListPageState();
 }
 
-class _PatientPageState extends State<PatientPage> {
+class _PatientsListPageState extends State<PatientsListPage> {
   final List<String> patients = ['患者1', '患者2', '患者3', '患者4'];
   List<String> filteredPatients = [];
 
