@@ -14,16 +14,19 @@ class Patient {
     this.relatedContacts = const [],
     PersonalInfo? personalInfo,
     HealthPromotion? healthPromotion,
+    SelfPerception? selfPerception,
     NursingPlan? nursingPlan,
     this.historyOfSoap = const [],
   }) : personalInfo = personalInfo ?? PersonalInfo(),
        healthPromotion = healthPromotion ?? HealthPromotion(),
+       selfPerception = selfPerception ?? SelfPerception(),
        nursingPlan = nursingPlan ?? NursingPlan();
 
   String id;
   PersonalInfo personalInfo;
   List<RelatedContact> relatedContacts;
   HealthPromotion healthPromotion;
+  SelfPerception selfPerception;
 
   List<Soap> historyOfSoap;
   NursingPlan nursingPlan;
@@ -115,4 +118,20 @@ class HealthPromotion {
       _$HealthPromotionFromJson(json);
 
   Map<String, dynamic> toJson() => _$HealthPromotionToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class SelfPerception {
+  SelfPerception({
+    this.selfAwareness = "",
+    this.worries = "",
+    this.howCanHelp = "",
+    this.pains = "",
+    this.others = "",
+  });
+  String selfAwareness; // 自分のことをどう思っていますか
+  String worries; // いま、悩みや不安、恐怖、抑うつ、絶望を感じていますか
+  String howCanHelp; // 悩みや不安に対し、手助けできることはありますか
+  String pains; // 身体の外観の痛みはありますか
+  String others; // その他の関連事項
 }

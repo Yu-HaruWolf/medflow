@@ -7,6 +7,7 @@ import 'soap.dart';
 class PatientRepository {
   static List<Patient> patientList = [
     Patient(
+      id: '0',
       personalInfo: PersonalInfo(
         furigana: 'さんぷる',
         name: '怪盗キッド',
