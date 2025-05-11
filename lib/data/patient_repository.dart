@@ -69,9 +69,11 @@ class PatientRepository {
   Future<void> addPatient(Patient patient) async {
     patientList.add(patient);
     patient.id = (await size - 1).toString();
+    await Future.delayed(Duration(seconds: 2));
   }
 
   Future<void> updatePatient(Patient updatedPatient) async {
     patientList[int.parse(updatedPatient.id)] = updatedPatient;
+    await Future.delayed(Duration(seconds: 2));
   }
 }

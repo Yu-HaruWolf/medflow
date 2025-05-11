@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/ui/patient_form.dart';
+import 'package:solution_challenge_tcu_2025/ui/add_patient_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_summary_page.dart';
 
@@ -85,8 +85,9 @@ class _PatientsListPageState extends State<PatientsListPage> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder:
-                                      (_) =>
-                                          PatientSummaryPage(patientId: patient.id),
+                                      (_) => PatientSummaryPage(
+                                        patientId: patient.id,
+                                      ),
                                 ),
                               );
                             },
@@ -99,10 +100,9 @@ class _PatientsListPageState extends State<PatientsListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => PatientFormScreen()),
-          ); // awaitでやるのが本当に正しい？(ユーザーエクスペリエンスに問題がある気がする)
-          _loadPatients();
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => AddPatientScreen()))
+              .then((_) => _loadPatients());
         },
         child: const Icon(Icons.add),
       ),
