@@ -95,13 +95,19 @@ class PersonalPage extends StatelessWidget {
                               if (index == 0) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => NursingPlanPage(),
+                                    builder:
+                                        (_) => NursingPlanPage(
+                                          patientId: patientId,
+                                        ),
                                   ),
                                 );
                               } else {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => NursingInfoPage(),
+                                    builder:
+                                        (_) => NursingInfoPage(
+                                          patientId: patientId,
+                                        ),
                                   ),
                                 );
                               } // 3段目: 医師ID

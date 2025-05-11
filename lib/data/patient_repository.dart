@@ -51,6 +51,7 @@ class PatientRepository {
 
   Future<Patient?> getPatient(String id) async {
     print('getPatient called');
+    await Future.delayed(Duration(seconds: 2));
     try {
       return patientList[int.parse(id)];
     } catch (e) {

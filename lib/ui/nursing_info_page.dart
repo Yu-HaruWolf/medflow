@@ -6,7 +6,9 @@ import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
 class NursingInfoPage extends StatefulWidget {
-  const NursingInfoPage({Key? key}) : super(key: key); // ★ここ追加！
+  NursingInfoPage({super.key, required this.patientId});
+
+  String patientId;
 
   @override
   _NursingInfoPageState createState() => _NursingInfoPageState();
@@ -15,17 +17,26 @@ class NursingInfoPage extends StatefulWidget {
 class _NursingInfoPageState extends State<NursingInfoPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  Patient? patient;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadPatientInfo();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _loadPatientInfo() async {
+    patient = await PatientRepository().getPatient(widget.patientId);
+    setState(() {
+      patient = patient;
+    });
   }
 
   @override
@@ -43,20 +54,25 @@ class _NursingInfoPageState extends State<NursingInfoPage>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          Center(child: Text('Tab 1 View')),
-          NestedTabWidget(),
-          Center(child: Text('Tab 3 View')),
-        ],
-      ),
+      body:
+          patient == null
+              ? const Center(child: CircularProgressIndicator())
+              : TabBarView(
+                controller: _tabController,
+                children: [
+                  const Center(child: Text('Tab 1 View')),
+                  NestedTabWidget(patient: patient!),
+                  const Center(child: Text('Tab 3 View')),
+                ],
+              ),
     );
   }
 }
 
 class NestedTabWidget extends StatefulWidget {
-  const NestedTabWidget({Key? key}) : super(key: key);
+  NestedTabWidget({super.key, required this.patient});
+
+  Patient patient;
 
   @override
   State<NestedTabWidget> createState() => _NestedTabWidgetState();
@@ -80,10 +96,7 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
 
   @override
   Widget build(BuildContext context) {
-    PatientRepository repository = PatientRepository();
-    // Patient patient = PatientRepository().patientList[0];
-    Patient patient = Patient(); // TODO: PatientRepositoryに対応する
-    List<Soap> soapList = patient.historyOfSoap;
+    List<Soap> soapList = widget.patient.historyOfSoap;
 
     return Column(
       children: [
@@ -206,7 +219,7 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                           ),
                           Padding(
                             padding: EdgeInsets.all(8),
-                            child: Text(patient.nursingPlan.nanda_i),
+                            child: Text(widget.patient.nursingPlan.nanda_i),
                           ),
                         ],
                       ),
@@ -222,7 +235,7 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                           Padding(
                             padding: EdgeInsets.all(8),
                             child: Text(
-                              patient.nursingPlan.goal
+                              widget.patient.nursingPlan.goal
                                   .split('\n')
                                   .map((line) => line.trimLeft())
                                   .join('\n'),
@@ -243,7 +256,7 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                           Padding(
                             padding: EdgeInsets.all(8),
                             child: Text(
-                              patient.nursingPlan.op
+                              widget.patient.nursingPlan.op
                                   .split('\n')
                                   .map((line) => line.trimLeft())
                                   .join('\n'),
@@ -264,7 +277,7 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                           Padding(
                             padding: EdgeInsets.all(8),
                             child: Text(
-                              patient.nursingPlan.tp
+                              widget.patient.nursingPlan.tp
                                   .split('\n')
                                   .map((line) => line.trimLeft())
                                   .join('\n'),
@@ -285,7 +298,7 @@ class _NestedTabWidgetState extends State<NestedTabWidget>
                           Padding(
                             padding: EdgeInsets.all(8),
                             child: Text(
-                              patient.nursingPlan.ep
+                              widget.patient.nursingPlan.ep
                                   .split('\n')
                                   .map((line) => line.trimLeft())
                                   .join('\n'),

@@ -5,8 +5,9 @@ import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
 class NursingPlanPage extends StatefulWidget {
-  const NursingPlanPage({Key? key}) : super(key: key);
+  const NursingPlanPage({super.key, required this.patientId});
 
+  final String patientId;
   @override
   _NursingPlanPageState createState() => _NursingPlanPageState();
 }
@@ -14,10 +15,19 @@ class NursingPlanPage extends StatefulWidget {
 class _NursingPlanPageState extends State<NursingPlanPage>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  Patient? patient;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadPatientInfo();
+  }
+
+  void _loadPatientInfo() async {
+    patient = await PatientRepository().getPatient(widget.patientId);
+    setState(() {
+      patient = patient;
+    });
   }
 
   // Doctor タブ用
@@ -90,103 +100,109 @@ class _NursingPlanPageState extends State<NursingPlanPage>
             labelColor: Colors.black,
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            // Doctor タブ
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'memo',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 300,
-                    child: TextField(
-                      controller: _doctorController,
-                      maxLines: null,
-                      expands: true,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter doctor memo...',
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged:
-                          (_) => setState(() {
-                            _isDoctorSaved = false;
-                          }),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _isDoctorSaved = true;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Doctor data saved')),
-                        );
-                      },
-                      child: const Text('Save'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            _NestedTabWidget(
-              sController: _sController,
-              oController: _oController,
-              aController: _aController,
-              pController: _pController,
-              isNursingPlanSaved: _isNursingPlanSaved,
-              onSaved: () {
-                setState(() {
-                  _isNursingPlanSaved = true;
-                });
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildVitalInput('Temperature', _tempController),
-                  _buildVitalInput('Heart Rate', _hrController),
-                  _buildVitalInput('Blood Pressure', _bpController),
-                  _buildVitalInput('Respiratory Rate', _rrController),
-                  const SizedBox(height: 20), // 少しスペース
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _isInspectionSaved = true;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Inspection data saved'),
+        body:
+            patient == null
+                ? const Center(child: CircularProgressIndicator())
+                : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // Doctor タブ
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'memo',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                      child: const Text('Save'),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            height: 300,
+                            child: TextField(
+                              controller: _doctorController,
+                              maxLines: null,
+                              expands: true,
+                              decoration: const InputDecoration(
+                                hintText: 'Enter doctor memo...',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged:
+                                  (_) => setState(() {
+                                    _isDoctorSaved = false;
+                                  }),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isDoctorSaved = true;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Doctor data saved'),
+                                  ),
+                                );
+                              },
+                              child: const Text('Save'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+
+                    _NestedTabWidget(
+                      sController: _sController,
+                      oController: _oController,
+                      aController: _aController,
+                      pController: _pController,
+                      isNursingPlanSaved: _isNursingPlanSaved,
+                      onSaved: () {
+                        setState(() {
+                          _isNursingPlanSaved = true;
+                        });
+                      },
+                      patient: patient!,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildVitalInput('Temperature', _tempController),
+                          _buildVitalInput('Heart Rate', _hrController),
+                          _buildVitalInput('Blood Pressure', _bpController),
+                          _buildVitalInput('Respiratory Rate', _rrController),
+                          const SizedBox(height: 20), // 少しスペース
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isInspectionSaved = true;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Inspection data saved'),
+                                  ),
+                                );
+                              },
+                              child: const Text('Save'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
       ),
     );
   }
@@ -229,6 +245,7 @@ class _NestedTabWidget extends StatefulWidget {
   final TextEditingController pController;
   final bool isNursingPlanSaved;
   final VoidCallback onSaved;
+  final Patient patient;
 
   const _NestedTabWidget({
     Key? key,
@@ -238,6 +255,7 @@ class _NestedTabWidget extends StatefulWidget {
     required this.pController,
     required this.isNursingPlanSaved,
     required this.onSaved,
+    required this.patient,
   }) : super(key: key);
 
   @override
@@ -279,9 +297,6 @@ class _NestedTabWidgetState extends State<_NestedTabWidget>
 
   @override
   Widget build(BuildContext context) {
-    PatientRepository repository = PatientRepository();
-    // Patient patient = await PatientRepository().getPatient(0);
-    Patient patient = Patient(); // PatientRepositoryに対応する
     return Column(
       children: [
         TabBar(
@@ -291,7 +306,7 @@ class _NestedTabWidgetState extends State<_NestedTabWidget>
         Expanded(
           child: TabBarView(
             controller: _innerTabController,
-            children: [_buildSOAPTab(), _buildNursingPlanTable(patient)],
+            children: [_buildSOAPTab(), _buildNursingPlanTable(widget.patient)],
           ),
         ),
       ],
