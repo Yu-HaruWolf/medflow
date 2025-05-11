@@ -5,6 +5,7 @@ import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_form.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/patient_summary_page.dart';
 
 class PatientsListPage extends StatefulWidget {
   const PatientsListPage({super.key});
@@ -85,7 +86,7 @@ class _PatientsListPageState extends State<PatientsListPage> {
                                 MaterialPageRoute(
                                   builder:
                                       (_) =>
-                                          PersonalPage(patientId: patient.id),
+                                          PatientSummaryPage(patientId: patient.id),
                                 ),
                               );
                             },
