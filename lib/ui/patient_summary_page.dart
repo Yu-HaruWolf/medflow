@@ -1,7 +1,10 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:solution_challenge_tcu_2025/ui/edit_nursing_plan_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/edit_soap_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/edit_patient_page.dart';
 
@@ -17,6 +20,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   Patient? patient;
+  final displayDateFormat = DateFormat('yyyy/MM/dd');
 
   @override
   void initState() {
@@ -55,13 +59,29 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                     icon: const Icon(Icons.edit),
                     tooltip: '患者情報を編集',
                     onPressed: () {
+                      print(_tabController.index);
                       if (patient != null) {
                         // Ensure patient is not null before navigating
                         Navigator.of(context)
                             .push(
                               MaterialPageRoute(
-                                builder:
-                                    (_) => EditPatientPage(patient: patient!),
+                                builder: (_) {
+                                  switch (_tabController.index) {
+                                    case 0:
+                                      return EditPatientPage(patient: patient!);
+                                    case 1:
+                                      return EditNursingPlanPage(
+                                        patient: patient!,
+                                      );
+                                    case 2:
+                                      return EditSoapPage(
+                                        patient: patient!,
+                                        soap: patient!.historyOfSoap.last,
+                                      ); // TODO: lastでよいか確認
+                                    default:
+                                      return EditPatientPage(patient: patient!);
+                                  }
+                                },
                               ),
                             )
                             .then((_) {
@@ -140,7 +160,9 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                               padding: const EdgeInsets.all(8),
                               child: Text(
                                 patient!.personalInfo.birthday != null
-                                    ? patient!.personalInfo.birthday.toString()
+                                    ? displayDateFormat.format(
+                                      patient!.personalInfo.birthday!,
+                                    )
                                     : 'No data',
                               ),
                             ),
