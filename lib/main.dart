@@ -10,10 +10,7 @@ import 'package:solution_challenge_tcu_2025/ui/top_page.dart';
 void main() {
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ApplicationState()),
-        ChangeNotifierProvider(create: (_) => FirebaseAuthState()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => FirebaseAuthState())],
       builder: ((context, child) => const MedFlowApp()),
     ),
   );

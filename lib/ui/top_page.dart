@@ -25,29 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var patientIndex = 0;
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<ApplicationState>();
     final firebaseAuthState = context.watch<FirebaseAuthState>();
-
-    // Widget insideWidget;
-    // switch (appState.screenId) {
-    //   case 0:
-    //     insideWidget = firebaseAuthState.loggedIn ? TopPageMenu() : LoginPage();
-    //     break;
-    //   case 1:
-    //     insideWidget = PatientPage();
-    //     break;
-    //   case 2:
-    //     insideWidget = const PersonalPage();
-    //     break;
-    //   case 3:
-    //     insideWidget = const NursingPlanPage();
-    //     break;
-    //   case 4:
-    //     insideWidget = const NursingInfoPage();
-    //     break;
-    //   default:
-    //     throw UnimplementedError('no widget for $selectedIndex');
-    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Menu',
+                    'Hello',
                     style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
                   if (firebaseAuthState.loggedIn)
