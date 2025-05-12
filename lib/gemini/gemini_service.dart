@@ -33,9 +33,7 @@ class GeminiService {
         Tool.functionDeclarations([fetchNursingTool]),
       ],
       systemInstruction: Content.text("""
-あなたは優秀な看護師です。今から退院時の看護計画を作成します。
-
-形式はjson形式で、以下のように出力してください。
+You are an excellent nurse. I will now create a discharge nursing care plan. Please output the format in JSON format as follows:
 {
   nanda_i: ,
   goal:    ,
@@ -43,7 +41,7 @@ class GeminiService {
   ennjo:  ,
   sidou:   ,
 }
-詳細な出力形式は以下に示す。
+The detailed output format is shown below:
 {
   nanda_i: ,
   goal:    ,
@@ -60,27 +58,26 @@ class GeminiService {
         Tool.functionDeclarations([fetchSOAPTool]),
       ],
       systemInstruction: Content.text("""
-これは看護師と患者の会話の内容です。
-この会話の内容と患者の看護計画を参照し、看護記録の記載方法の一つで、Subjective（主観的情報）、Objective（客観的情報）、Assessment（評価）、Plan（計画）をそれぞれjson形式で出力してください。
-Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以降するかを推論してください。
-
-1. 看護計画におけるSOAPの書き方をgoogle 検索で調べる
-2. SOAPにおいて重要な部分を看護計画や会話の内容から抜きだす。
-3. 今の看護計画のNANDA-IにおいてSOAPがどのような書き方やどのようなことを注意するかなどGoogle Searchを行う
-4. 1,2,3のステップを通してSOAPにおける注意点を考慮しながら、看護計画と会話の内容を参照してSOAPを構成する。
-5. Planの部分は今の看護計画のNANDA-Iを継続か、あるいは新たなNANDA-Iに変更か。のみを記載するようにする。
-6. 出力のjsonはfetchSOAPtool関数に引数として渡して、処理してください
+This is the content of a conversation between a nurse and a patient.\n
+Referring to the content of this conversation and the patient's nursing care plan, please output Subjective (subjective information), Objective (objective information), Assessment (evaluation), and Plan (plan) in JSON format, which is one method of documenting nursing records.\n
+For the Plan, please infer whether to use the current NANDA-I items or transition to the new NANDA-I.\n\n
+1. Search Google for how to write SOAP in nursing care plans.\n
+2. Extract the important parts in SOAP from the nursing care plan and the conversation content.\n
+3. Perform a Google Search on how SOAP is written and what points to consider in the current NANDA-I of the nursing care plan.\n
+4. Considering the points to note in SOAP through steps 1, 2, and 3, construct the SOAP by referring to the nursing care plan and the conversation content.\n
+5. For the Plan section, only state whether to continue with the current NANDA-I or change to the new NANDA-I.\n
+6. Pass the output JSON as an argument to the fetchSOAPtool function for processing.
 """),
     );
 
     model3 = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
-      systemInstruction: Content.text("""あなたは優秀な看護師です。今から退院時の看護計画を作成します。
-1.患者の情報や病床から重大な最重要項目であるNANDA-Iを１つ決めます。
-2. その後NANDA-Iにそった看護計画を作成します。
-3. 患者の情報やSoapの内容、看護師のメモ書きなどを参考に最適なNANDA-Iを作成してください。
-
-形式はjson形式で、以下のように出力してください。
+      systemInstruction: Content.text(
+        """You are an excellent nurse. I will now create a discharge nursing care plan.\n
+      1. Determine the most critical NANDA-I diagnosis based on the patient's information and hospital bed status.\n
+      2. Create a nursing care plan according to that NANDA-I diagnosis.\n
+      3. Create the most suitable NANDA-I diagnosis by referring to the patient's information, SOAP content, and nurse's notes, etc.\n\n
+      Please output the format in JSON format as follows
 {
   nanda_i: ,
   goal:    ,
@@ -88,14 +85,15 @@ Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以�
   ennjo:  ,
   sidou:   ,
 }
-詳細な出力形式は以下に示す。
+The detailed output format is shown below:
 {
   nanda_i: ,
   goal:    ,
   kansatu:   ,
   ennjo:  ,
   sidou:   ,
-}"""),
+}""",
+      ),
     );
   }
 
@@ -139,7 +137,9 @@ Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以�
 
     // 2. 過去の会話履歴を設定
     final history1 = [
-      Content.text('NANDA-Iについて調べてください。どのようなNANDA-Iがあり、それぞれの評価項目をすべて教えてください。'),
+      Content.text(
+        'Please research NANDA-I. What NANDA-I diagnoses exist, and please tell me all the evaluation criteria for each one?',
+      ),
       Content.model([TextPart(responseText)]),
     ];
 
@@ -149,15 +149,14 @@ Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以�
         .startChat(history: history1)
         .sendMessageStream(
           Content.text("""
-            患者の情報から今回の病床を把握して、一番重要視するNANDA-Iを1つ決めてください。
-            このとき、看護計画やSOAPの内容、メモなどから今の患者に最適なNANDA-I１つ決めてください。
-            NANDA-Iの決定には会話履歴のNANDA-Iの項目や評価項目を参照し、最適なものを推論してください。
-              患者情報:${patient.toJson()}
+Based on the patient's information, understand their current clinical condition. Then, determine the single NANDA-I diagnosis that should be given the highest priority at this time.
+When making this determination, consult the nursing care plan, SOAP note content, memos, and refer specifically to NANDA-I items and evaluation criteria from the conversation history to infer the most suitable diagnosis.
+              patient information:${patient.toJson()}
 
-              以下は記載がある場合は、今の患者の病床と大きく異なる場合があるので、大きく参考にしてください
-              看護計画:${nursingplan.toJson()}
+              Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please refer to it carefully / take it strongly into consideration.
+              nursing plan :${nursingplan.toJson()}
               SOAP:${soap.toJson()}
-              メモ：{}
+              memo：{}
               
               """),
         );
@@ -168,19 +167,20 @@ Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以�
         intermediateResponse += response1ResultText;
       }
     }
-    history1.add(Content.text('最適なNANDA-Iを決定してください。'));
+    history1.add(
+      Content.text('Please determine the optimal NANDA-I diagnosis.'),
+    );
     history1.add(Content.model([TextPart(intermediateResponse)]));
     String json_responseText = "";
     Stream<GenerateContentResponse> responseStream = await model1
         .startChat(history: history1)
         .sendMessageStream(
           Content.text("""
-   重要視するNANDA-Iの項目は会話履歴から確認してそれを一番重視してください。
+Please identify the NANDA-I items to be prioritized by reviewing the conversation history, and give these items the highest importance.
+Create a nursing care plan for these prioritized NANDA-I items using a Google search.
 
-１．googel検索でこのNANDA-Iの項目における看護計画を作成し、
-２．SOAPや入院時データベースから患者の個別性(患者の職業や家族構成など）を加えてください。
-作成する看護計画は以下の内容として、
-json形式で必ず出力してください。
+Add patient-specific details (such as the patient's occupation, family structure, etc.) from SOAP notes and the admission database to this plan.
+The nursing care plan created should include the following content, and it must be output in JSON format.
 {
   nanda_i:  ,
   goal:    ,
@@ -188,15 +188,15 @@ json形式で必ず出力してください。
   ennjo:  ,
   sidou:  ,
 }
-・O-P (観察項目)
-・T-P 援助
-・E-P（指導)
-              患者情報:${patient.toJson()}
+・O-P Observations / Assessment / Observation Items
+・T-P Therapeutic Plan / Interventions / Care Plan
+・E-P Educational Plan / Patient Education / Teaching Pla
+              Patient Information :${patient.toJson()}
 
-              以下は記載がある場合は、今の患者の病床と大きく異なる場合があるので、大きく参考にしてください
-              看護計画:${nursingplan.toJson()}
+              Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please use it as a major reference point.
+              Nursing Plan:${nursingplan.toJson()}
               SOAP:${soap.toJson()}
-              メモ：{}
+              memo：{}
               
               """),
         );
@@ -217,8 +217,6 @@ json形式で必ず出力してください。
       if (match != null) {
         final jsonString = match.group(0)!;
         final jsonObject = jsonDecode(jsonString);
-        print('抽出・パースしたJSONオブジェクト:');
-        print(jsonObject);
 
         final newplan = NursingPlan(
           nanda_i: jsonObject['nanda_i'] ?? '',
@@ -230,15 +228,15 @@ json形式で必ず出力してください。
 
         return newplan;
       } else {
-        print('JSON部分が見つかりませんでした。');
+        print('JSON error');
       }
     } catch (e) {
-      print('JSONのパースエラー: $e');
+      print('JSONerror : $e');
       return nursingplan;
       ;
     }
     // 関数の最後に追加
-    throw Exception("期待される条件が満たされていません");
+    throw Exception("creation of nursing plan failed");
     // 実際のPatientオブジェクトを作成して返す
   }
 
@@ -262,7 +260,7 @@ json形式で必ず出力してください。
 
     final history = [
       Content.text(
-        '看護計画とSOAPの書き方について、どのような点を注意するべきか？SOAPの各項目はどのようなことですか？google 検索してまとめて',
+        'Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?',
       ),
       Content.model([TextPart(responseText)]),
     ];
@@ -271,17 +269,16 @@ json形式で必ず出力してください。
         .startChat(history: history)
         .sendMessageStream(
           Content.text("""
-    会話履歴をもとにSOAPを書く際の項目や注意点を考慮してSOAPを教えてください
-    患者情報、看護計画、前日のSOAPの内容を参考に今日のSOAPを作成してください。
-    例）前日に痛みなどがある場合は、その部分について今日のSOAPに反映して作成してください
-
-    本日のSOAPの情報は以下の通りです。
+Based on the conversation history, please provide a SOAP note, considering the items and points to note when writing it.
+Create today's SOAP note by referencing the patient information, nursing care plan, and the content of yesterday's SOAP note.
+For example, if there was pain or other issues on the previous day, please create today's SOAP note reflecting that.
+The information for today's SOAP note is as follows:
     ${todaysoap}
 
-    患者情報:${patient.toJson()}
-    看護計画:${nursingplan.toJson()}
+    Patient Informaiton:${patient.toJson()}
+    Nursing Plan:${nursingplan.toJson()}
     SOAP:${soap.toJson()}
-    SOAPの内容を抽出してください。json形式で出力してください。
+   Please extract the SOAP note content and output it in JSON format.
     {
   subject:  ,
   object:    ,
@@ -309,8 +306,6 @@ json形式で必ず出力してください。
       if (match != null) {
         final jsonString = match.group(0)!;
         final jsonObject = jsonDecode(jsonString);
-        print('抽出・パースしたJSONオブジェクト:');
-        print(jsonObject);
 
         newsoap = Soap(
           subject: jsonObject['subjective'] ?? '',
@@ -325,13 +320,13 @@ json形式で必ず出力してください。
 
         return newsoap;
       } else {
-        print('JSON部分が見つかりませんでした。');
+        print('json error');
       }
     } catch (e) {
-      print('JSONのパースエラー: $e');
+      print('JSON error: $e');
       return soap;
     }
     // 関数の最後に追加
-    throw Exception("期待される条件が満たされていません");
+    throw Exception("creation of SOAP failed");
   }
 }
