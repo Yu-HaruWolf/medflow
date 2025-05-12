@@ -242,10 +242,11 @@ json形式で必ず出力してください。
     // 実際のPatientオブジェクトを作成して返す
   }
 
-  Future<Patient> gemini_create_soap(
-    String userConversation,
-    String usersingPlan,
-    int patientId,
+  Future<Soap> gemini_create_soap(
+    Patient patient,
+    NursingPlan nursingplan,
+    Soap soap,
+    String todaysoap,
   ) async {
     // 1. GAEからレスポンスを取得
     String responseText = "";
@@ -270,7 +271,17 @@ json形式で必ず出力してください。
         .startChat(history: history)
         .sendMessageStream(
           Content.text("""
-     以下の内容と会話履歴のSOAPの書き方について考慮しながら、SOAPの内容を抽出してください。json形式で出力してください。
+    会話履歴をもとにSOAPを書く際の項目や注意点を考慮してSOAPを教えてください
+    患者情報、看護計画、前日のSOAPの内容を参考に今日のSOAPを作成してください。
+    例）前日に痛みなどがある場合は、その部分について今日のSOAPに反映して作成してください
+
+    本日のSOAPの情報は以下の通りです。
+    ${todaysoap}
+
+    患者情報:${patient.toJson()}
+    看護計画:${nursingplan.toJson()}
+    SOAP:${soap.toJson()}
+    SOAPの内容を抽出してください。json形式で出力してください。
     {
   subject:  ,
   object:    ,
@@ -278,8 +289,6 @@ json形式で必ず出力してください。
   plan:  ,
 }
 
-                          会話:${userConversation}
-                          看護計画:${usersingPlan}
               """),
         );
 
@@ -290,13 +299,8 @@ json形式で必ず出力してください。
         accumulated_text += responseResultText;
       }
     }
-    final repo = PatientRepository();
-    Patient? patient = await repo.getPatient(patientId.toString());
-    if (patient == null) {
-      throw Exception("患者ID $patientId が見つかりません");
-    }
 
-    final newplan;
+    final newsoap;
     try {
       // JSON部分を正規表現で抽出
       final regex = RegExp(r'\{[\s\S]*\}');
@@ -308,33 +312,24 @@ json形式で必ず出力してください。
         print('抽出・パースしたJSONオブジェクト:');
         print(jsonObject);
 
-        final newplan = Soap(
+        newsoap = Soap(
           subject: jsonObject['subjective'] ?? '',
           object: jsonObject['objective'] ?? '',
           assessment: jsonObject['assessment'] ?? '',
           plan: jsonObject['plan'] ?? '',
-        );
-        print('新しいSOAP:');
-        print(newplan);
-
-        final newPatient = Patient(
-          id: patient!.id,
-          historyOfSoap: [newplan],
-          // 他の必須プロパティも設定
-          // 患者の他の情報は保持する必要がある場合はここでセット
         );
 
         // リポジトリ経由で更新
 
         // await repo.updatePatient(newPatient);
 
-        return newPatient;
+        return newsoap;
       } else {
         print('JSON部分が見つかりませんでした。');
       }
     } catch (e) {
       print('JSONのパースエラー: $e');
-      return Patient(id: patientId.toString());
+      return soap;
     }
     // 関数の最後に追加
     throw Exception("期待される条件が満たされていません");

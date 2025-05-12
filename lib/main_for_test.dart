@@ -41,10 +41,23 @@ class TestHomePage extends StatelessWidget {
           onPressed: () async {
             print('Button worked!');
             // print(patient.toJson());
-            NursingPlan newplan = await gemini.gemini_create_nursing_plan(
+            // NursingPlan newplan = await gemini.gemini_create_nursing_plan(
+            //   patient,
+            //   nursingPlan,
+            //   soap,
+            // );
+            String memo = """夜、膝がズキズキ痛む。眠れない。
+夜の痛みは10段階中7。昼は3。
+痛み止めは現在食後、飲み方を変更: 9:00, 15:00, 21:00
+一人暮らしの不安：布団から起き上がる、駅までの移動
+必要：布団から起き上がり方、福祉用具の導入、理学療法士と移動の練習
+
+間食してしまう→栄養士と一緒に食事の工夫を考える必要あり""";
+            Soap newSoap = await gemini.gemini_create_soap(
               patient,
               nursingPlan,
               soap,
+              memo,
             );
           },
           child: Text('Sample Button'),
