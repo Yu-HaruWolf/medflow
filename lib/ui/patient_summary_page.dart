@@ -2,11 +2,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/soap.dart';
 import 'package:solution_challenge_tcu_2025/ui/add_soap_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/edit_nursing_plan_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/edit_soap_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/edit_patient_page.dart';
 
 class PatientSummaryPage extends StatefulWidget {

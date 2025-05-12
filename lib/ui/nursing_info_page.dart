@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
@@ -8,7 +6,7 @@ import 'package:solution_challenge_tcu_2025/data/soap.dart';
 class NursingInfoPage extends StatefulWidget {
   NursingInfoPage({super.key, required this.patientId});
 
-  String patientId;
+  final String patientId;
 
   @override
   _NursingInfoPageState createState() => _NursingInfoPageState();
@@ -72,7 +70,7 @@ class _NursingInfoPageState extends State<NursingInfoPage>
 class NestedTabWidget extends StatefulWidget {
   NestedTabWidget({super.key, required this.patient});
 
-  Patient patient;
+  final Patient patient;
 
   @override
   State<NestedTabWidget> createState() => _NestedTabWidgetState();

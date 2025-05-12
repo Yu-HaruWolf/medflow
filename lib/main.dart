@@ -1,10 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // <- 追加
+import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';
-import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 import 'package:solution_challenge_tcu_2025/ui/top_page.dart';
 
 void main() {
@@ -33,8 +32,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  late GeminiService gemini; // ✅ インスタンスを持つようにする
-
   @override
   void initState() {
     super.initState();
@@ -45,16 +42,12 @@ class _SplashScreenState extends State<SplashScreen> {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    context.read<FirebaseAuthState>().firebaseAuthListenerInit();
-    print('Firebase Ready!');
+    if (mounted) {
+      context.read<FirebaseAuthState>().firebaseAuthListenerInit();
+    }
 
-    gemini = GeminiService();
-    gemini.geminiInit(); // ✅ モデル初期化
-    // ✅ 初期化後にホームへ渡す
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => MyHomePage(title: 'MedFlow', gemini: gemini),
-      ),
+      MaterialPageRoute(builder: (_) => MyHomePage(title: 'MedFlow')),
     );
   }
 

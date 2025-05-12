@@ -2,20 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
-import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 import 'package:solution_challenge_tcu_2025/ui/login_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/nursing_info_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/nursing_plan_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/patients_list_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
 
 class MyHomePage extends StatefulWidget {
-  // const MyHomePage({super.key, required this.title});
-
   final String title;
-  final GeminiService gemini; // ← これを追加する必要がある！
 
-  const MyHomePage({required this.title, required this.gemini});
+  const MyHomePage({required this.title});
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -61,12 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.logout),
               title: const Text('Sign Out'),
               onTap: () {
-                // サインアウト処理
                 FirebaseAuth.instance.signOut();
-                Navigator.of(context).pop(); // Drawerを閉じる
+                Navigator.of(context).pop(); // close drawer
               },
             ),
-            // 必要なら他のメニューもここに追加可能
           ],
         ),
       ),
