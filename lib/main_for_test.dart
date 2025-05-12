@@ -46,18 +46,14 @@ class TestHomePage extends StatelessWidget {
             //   nursingPlan,
             //   soap,
             // );
-            String memo = """Throbbing knee pain at night. Unable to sleep.
-            Pain at night is 7/10; during the day, it's 3/10.
-            Pain medication (currently taken after meals) regimen changed to: 9:00, 15:00, and 21:00.
-            Anxious about living alone, specifically: getting out of bed (or futon) and mobility/traveling to the train station.
-            Needs: instruction on how to get out of bed, introduction of assistive devices, and mobility practice with a physical therapist.""";
-            Soap newSoap = await gemini.gemini_create_soap(
-              patient,
-              nursingPlan,
+            String memo = """Please tell me the nursing plan? """;
+            String response = await gemini.gemini_any(
               soap,
+              nursingPlan,
+              patient,
               memo,
             );
-            print('Nursing Plan: ${newSoap.toJson()}');
+            print('Nursing Plan: ${response}');
           },
           child: Text('Sample Button'),
         ),
