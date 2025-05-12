@@ -131,7 +131,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
           tabs: const [
             Tab(text: 'Nursing Database'),
             Tab(text: 'Nursing Plan'),
-            Tab(text: 'Latest SOAP'),
+            Tab(text: 'SOAP'),
           ],
         ),
       ),
