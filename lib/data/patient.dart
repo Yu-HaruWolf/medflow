@@ -141,4 +141,9 @@ class SelfPerception {
   String howCanHelp; // 悩みや不安に対し、手助けできることはありますか
   String pains; // 身体の外観の痛みはありますか
   String others; // その他の関連事項
+
+  factory SelfPerception.fromJson(Map<String, dynamic> json) =>
+      _$SelfPerceptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SelfPerceptionToJson(this);
 }

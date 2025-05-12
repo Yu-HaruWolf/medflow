@@ -23,6 +23,12 @@ Patient _$PatientFromJson(Map<String, dynamic> json) => Patient(
           : HealthPromotion.fromJson(
             json['healthPromotion'] as Map<String, dynamic>,
           ),
+  selfPerception:
+      json['selfPerception'] == null
+          ? null
+          : SelfPerception.fromJson(
+            json['selfPerception'] as Map<String, dynamic>,
+          ),
   nursingPlan:
       json['nursingPlan'] == null
           ? null
@@ -39,6 +45,7 @@ Map<String, dynamic> _$PatientToJson(Patient instance) => <String, dynamic>{
   'personalInfo': instance.personalInfo.toJson(),
   'relatedContacts': instance.relatedContacts.map((e) => e.toJson()).toList(),
   'healthPromotion': instance.healthPromotion.toJson(),
+  'selfPerception': instance.selfPerception.toJson(),
   'historyOfSoap': instance.historyOfSoap.map((e) => e.toJson()).toList(),
   'nursingPlan': instance.nursingPlan.toJson(),
 };
@@ -108,8 +115,8 @@ HealthPromotion _$HealthPromotionFromJson(Map<String, dynamic> json) =>
       isHealthManageMethodExist: json['isHealthManageMethodExist'] as bool?,
       healthManageMethod: json['healthManageMethod'] as String? ?? "",
       isSubstanceExist: json['isSubstanceExist'] as bool?,
-      alcoholPerDay: (json['alcoholPerDay'] as num?)?.toInt() ?? 0,
-      cigarettsPerDay: (json['cigarettsPerDay'] as num?)?.toInt() ?? 0,
+      alcoholPerDay: (json['alcoholPerDay'] as num?)?.toInt(),
+      cigarettsPerDay: (json['cigarettsPerDay'] as num?)?.toInt(),
       otherSubstance: json['otherSubstance'] as String? ?? "",
       otherSubstanceRelatedInfo:
           json['otherSubstanceRelatedInfo'] as String? ?? "",
@@ -129,8 +136,26 @@ Map<String, dynamic> _$HealthPromotionToJson(
     'isHealthManageMethodExist': value,
   'healthManageMethod': instance.healthManageMethod,
   if (instance.isSubstanceExist case final value?) 'isSubstanceExist': value,
-  'alcoholPerDay': instance.alcoholPerDay,
-  'cigarettsPerDay': instance.cigarettsPerDay,
+  if (instance.alcoholPerDay case final value?) 'alcoholPerDay': value,
+  if (instance.cigarettsPerDay case final value?) 'cigarettsPerDay': value,
   'otherSubstance': instance.otherSubstance,
   'otherSubstanceRelatedInfo': instance.otherSubstanceRelatedInfo,
 };
+
+SelfPerception _$SelfPerceptionFromJson(Map<String, dynamic> json) =>
+    SelfPerception(
+      selfAwareness: json['selfAwareness'] as String? ?? "",
+      worries: json['worries'] as String? ?? "",
+      howCanHelp: json['howCanHelp'] as String? ?? "",
+      pains: json['pains'] as String? ?? "",
+      others: json['others'] as String? ?? "",
+    );
+
+Map<String, dynamic> _$SelfPerceptionToJson(SelfPerception instance) =>
+    <String, dynamic>{
+      'selfAwareness': instance.selfAwareness,
+      'worries': instance.worries,
+      'howCanHelp': instance.howCanHelp,
+      'pains': instance.pains,
+      'others': instance.others,
+    };
