@@ -78,7 +78,7 @@ class _PatientsListPageState extends State<PatientsListPage> {
                           ),
                           child: ListTile(
                             title: Text(patient.personalInfo.name),
-                            subtitle: Text("なにかしらの情報"),
+                            subtitle: Text(patient.oneLineInfo),
                             leading: Icon(Icons.person),
                             trailing: Icon(Icons.arrow_forward),
                             onTap: () {

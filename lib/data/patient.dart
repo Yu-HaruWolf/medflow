@@ -11,12 +11,13 @@ part 'patient.g.dart';
 class Patient {
   Patient({
     this.id = "",
-    this.relatedContacts = const [],
     PersonalInfo? personalInfo,
+    this.relatedContacts = const [],
     HealthPromotion? healthPromotion,
     SelfPerception? selfPerception,
     NursingPlan? nursingPlan,
     this.historyOfSoap = const [],
+    this.oneLineInfo = '',
   }) : personalInfo = personalInfo ?? PersonalInfo(),
        healthPromotion = healthPromotion ?? HealthPromotion(),
        selfPerception = selfPerception ?? SelfPerception(),
@@ -30,6 +31,8 @@ class Patient {
 
   List<Soap> historyOfSoap;
   NursingPlan nursingPlan;
+
+  String oneLineInfo;
 
   void addHistoryOfSoap(Soap soap) {
     historyOfSoap.add(soap);

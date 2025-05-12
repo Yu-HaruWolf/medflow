@@ -129,7 +129,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Nursing Database'),
+            Tab(text: 'Basic Info'),
             Tab(text: 'Nursing Plan'),
             Tab(text: 'SOAP'),
           ],
@@ -143,329 +143,599 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                 children: [
                   // Nursing Database Tab
                   SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Table(
-                      border: TableBorder.all(),
-                      columnWidths: const {
-                        0: IntrinsicColumnWidth(),
-                        1: FlexColumnWidth(),
-                      },
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                    ).copyWith(top: 32.0, bottom: 64.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Name",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                        // Personal Info Section
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            "Personal Info",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(patient!.personalInfo.name),
+                          ),
+                        ),
+                        Table(
+                          border: TableBorder.all(),
+                          columnWidths: const {
+                            0: IntrinsicColumnWidth(),
+                            1: FlexColumnWidth(),
+                          },
+                          children: [
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Name",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.personalInfo.name),
+                                ),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Furigana",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.personalInfo.furigana),
+                                ),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Birthday",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.personalInfo.birthday != null
+                                        ? _displayDateFormat.format(
+                                          patient!.personalInfo.birthday!,
+                                        )
+                                        : 'No data',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Address",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.personalInfo.address),
+                                ),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Tel",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.personalInfo.tel),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Furigana",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                        // Health Promotion Section
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            "Health Promotion",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(patient!.personalInfo.furigana),
-                            ),
-                          ],
+                          ),
                         ),
-                        TableRow(
+                        Table(
+                          border: TableBorder.all(),
+                          columnWidths: const {
+                            0: IntrinsicColumnWidth(),
+                            1: FlexColumnWidth(),
+                          },
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Birthday",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Pre-Hospital Course",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.preHospitalCourse,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.personalInfo.birthday != null
-                                    ? _displayDateFormat.format(
-                                      patient!.personalInfo.birthday!,
-                                    )
-                                    : 'No data',
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Chief Complaint",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.chiefComplaint,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Address",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Purpose",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.healthPromotion.purpose),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(patient!.personalInfo.address),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Doctor's Opinion",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!
+                                            .healthPromotion
+                                            .opinions['doctor'] ??
+                                        'No data',
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Tel",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Principal's Opinion",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!
+                                            .healthPromotion
+                                            .opinions['principal'] ??
+                                        'No data',
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(patient!.personalInfo.tel),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Family's Opinion",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!
+                                            .healthPromotion
+                                            .opinions['family'] ??
+                                        'No data',
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Pre-Hospital Course",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Past Medical History",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.pastMedicalHistory,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.preHospitalCourse,
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Medicines",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.medicines,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Chief Complaint",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Health Manage Method",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.healthManageMethod,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.chiefComplaint,
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Alcohol Per Day",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.alcoholPerDay
+                                            ?.toString() ??
+                                        'No data',
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Purpose",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Cigarettes Per Day",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.cigarettsPerDay
+                                            ?.toString() ??
+                                        'No data',
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(patient!.healthPromotion.purpose),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Other Substance",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.healthPromotion.otherSubstance,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Doctor's Opinion",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.opinions['doctor'] ??
-                                    'No data',
-                              ),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Principal's Opinion",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Other Substance Related Info",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!
                                         .healthPromotion
-                                        .opinions['principal'] ??
-                                    'No data',
-                              ),
+                                        .otherSubstanceRelatedInfo,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        TableRow(
+                        // Self Perception Section
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            "Self Perception",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Table(
+                          border: TableBorder.all(),
+                          columnWidths: const {
+                            0: IntrinsicColumnWidth(),
+                            1: FlexColumnWidth(),
+                          },
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Family's Opinion",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Self Awareness",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.selfPerception.selfAwareness,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.opinions['family'] ??
-                                    'No data',
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Worries",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.selfPerception.worries),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Past Medical History",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "How Can Help",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    patient!.selfPerception.howCanHelp,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.pastMedicalHistory,
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Pains",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.selfPerception.pains),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Medicines",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(patient!.healthPromotion.medicines),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Health Manage Method",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.healthManageMethod,
-                              ),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Alcohol Per Day",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.alcoholPerDay
-                                        ?.toString() ??
-                                    'No data',
-                              ),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Cigarettes Per Day",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.cigarettsPerDay
-                                        ?.toString() ??
-                                    'No data',
-                              ),
+                            TableRow(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "Others",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(patient!.selfPerception.others),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Other Substance",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                        // Related Contacts Section
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            "Related Contacts",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!.healthPromotion.otherSubstance,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "Other Substance Related Info",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                patient!
-                                    .healthPromotion
-                                    .otherSubstanceRelatedInfo,
-                              ),
-                            ),
-                          ],
-                        ),
+                        if (patient!.relatedContacts.isNotEmpty)
+                          Table(
+                            border: TableBorder.all(),
+                            columnWidths: const {
+                              0: IntrinsicColumnWidth(),
+                              1: FlexColumnWidth(),
+                            },
+                            children:
+                                patient!.relatedContacts.map((contact) {
+                                  return TableRow(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Name",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(contact.name),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Relationship",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(contact.relationship),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Tel",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(contact.tel),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                          )
+                        else
+                          const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text("No related contacts available."),
+                          ),
                       ],
                     ),
                   ),
                   // Nursing Plan Tab
                   SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                    ).copyWith(bottom: 32.0),
                     child: Padding(
                       padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
                       child: Table(
@@ -599,7 +869,9 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                   ),
                   // Latest SOAP Tab
                   SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                    ).copyWith(bottom: 32.0),
                     child: Column(
                       children: [
                         // Display the latest SOAP at the top
