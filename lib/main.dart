@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:solution_challenge_tcu_2025/app_state.dart';
 import 'package:solution_challenge_tcu_2025/firebase_options.dart';
@@ -39,13 +40,13 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _init() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await Future.wait([
+      Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+      dotenv.load(fileName: '.env'),
+    ]);
     if (mounted) {
       context.read<FirebaseAuthState>().firebaseAuthListenerInit();
     }
-
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MyHomePage(title: 'MedFlow')),
     );

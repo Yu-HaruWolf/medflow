@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:solution_challenge_tcu_2025/speech_to_text_service.dart';
 
 class EditNursingPlanPage extends StatefulWidget {
   final Patient patient;
@@ -15,6 +16,7 @@ class EditNursingPlanPage extends StatefulWidget {
 class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _isWaitingForResult = false;
   final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   late DateTime _issueDateTime;
@@ -23,6 +25,9 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
   late TextEditingController _opController;
   late TextEditingController _tpController;
   late TextEditingController _epController;
+  final SpeechToTextService _speechToTextService = SpeechToTextService();
+  bool _isRecording = false;
+  double _recordingProgress = 0.0;
 
   @override
   void initState() {
@@ -116,6 +121,68 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
     );
   }
 
+  void _startRecording() async {
+    final isStarted = await _speechToTextService.startRecording();
+    if (isStarted) {
+      setState(() {
+        _isRecording = true;
+        _recordingProgress = 0.0;
+      });
+
+      // Update progress every second
+      for (int i = 0; i < 59; i++) {
+        await Future.delayed(const Duration(seconds: 1));
+        if (!_isRecording) break;
+        setState(() {
+          _recordingProgress = (i + 1) / 59.0;
+        });
+      }
+
+      if (_isRecording) {
+        await _stopRecording();
+      }
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('マイクの権限が拒否されました')));
+    }
+  }
+
+  Future<void> _stopRecording() async {
+    setState(() {
+      _isRecording = false;
+      _recordingProgress = 0.0;
+      _isWaitingForResult = true;
+    });
+
+    final transcriptionResult = await _speechToTextService.stopRecording();
+
+    setState(() {
+      _isWaitingForResult = false;
+    });
+
+    if (transcriptionResult.isNotEmpty) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('文字起こし結果'),
+              content: Text(transcriptionResult),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('閉じる'),
+                ),
+              ],
+            ),
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('文字起こしに失敗しました')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,31 +199,66 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Center(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.auto_awesome,
-                        ), // Gemini-like icon
-                        label: const Text('Gemini で作成'),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor:
-                              Colors.deepPurpleAccent, // Gemini-like colors
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            icon: const Icon(
+                              Icons.auto_awesome,
+                            ), // Gemini-like icon
+                            label: const Text('Gemini で作成'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  Colors.deepPurpleAccent, // Gemini-like colors
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              textStyle: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              // TODO: Implement Gemini integration
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Gemini で作成機能は準備中です'),
+                                ),
+                              );
+                            },
                           ),
-                          textStyle: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
+                          const SizedBox(width: 16),
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              if (_isRecording)
+                                SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: CircularProgressIndicator(
+                                    value: _recordingProgress,
+                                    color: Colors.deepPurpleAccent,
+                                  ),
+                                ),
+                              IconButton(
+                                icon: Icon(
+                                  _isRecording ? Icons.stop : Icons.mic,
+                                  color: Colors.deepPurpleAccent,
+                                ),
+                                onPressed: () async {
+                                  if (_isRecording) {
+                                    await _stopRecording();
+                                  } else {
+                                    _startRecording();
+                                  }
+                                },
+                              ),
+                            ],
                           ),
-                        ),
-                        onPressed: () {
-                          // TODO: Implement Gemini integration
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Gemini で作成機能は準備中です')),
-                          );
-                        },
+                        ],
                       ),
                     ),
                   ),
@@ -214,7 +316,7 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
               ),
             ),
           ),
-          if (_isLoading)
+          if (_isLoading || _isWaitingForResult)
             Positioned.fill(
               child: Stack(
                 children: [

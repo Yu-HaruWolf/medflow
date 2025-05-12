@@ -25,12 +25,13 @@ class _PatientsListPageState extends State<PatientsListPage> {
 
   void _loadPatients() async {
     final patients = await patientRepository.getAllPatients;
-    if (mounted)
+    if (mounted) {
       setState(() {
         allPatients = patients;
         filteredPatients = patients;
         isLoading = false;
       });
+    }
   }
 
   void _filterPatients(String query) {
@@ -45,7 +46,7 @@ class _PatientsListPageState extends State<PatientsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("患者リスト")),
+      appBar: AppBar(title: Text("Patients list")),
       body: Column(
         children: [
           Padding(
@@ -53,7 +54,7 @@ class _PatientsListPageState extends State<PatientsListPage> {
             child: TextField(
               onChanged: _filterPatients,
               decoration: InputDecoration(
-                labelText: '患者名で検索',
+                labelText: "Search by patient name",
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search),
               ),
@@ -102,6 +103,7 @@ class _PatientsListPageState extends State<PatientsListPage> {
               .then((_) => _loadPatients());
         },
         child: const Icon(Icons.add),
+        tooltip: 'Add patient',
       ),
     );
   }
