@@ -123,6 +123,9 @@ The detailed output format is shown below:
     NursingPlan nursingplan,
     Soap soap,
   ) async {
+    //最終的のsoapに変更する
+    soap = patient.historyOfSoap.last;
+
     // 1. GAEからレスポンスを取得
     String responseText = "";
     final response = await fetchWeatherData(

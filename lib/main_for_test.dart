@@ -41,23 +41,23 @@ class TestHomePage extends StatelessWidget {
           onPressed: () async {
             print('Button worked!');
             // print(patient.toJson());
-            NursingPlan newplan = await gemini.gemini_create_nursing_plan(
+            // NursingPlan newplan = await gemini.gemini_create_nursing_plan(
+            //   patient,
+            //   nursingPlan,
+            //   soap,
+            // );
+            String memo = """Throbbing knee pain at night. Unable to sleep.
+            Pain at night is 7/10; during the day, it's 3/10.
+            Pain medication (currently taken after meals) regimen changed to: 9:00, 15:00, and 21:00.
+            Anxious about living alone, specifically: getting out of bed (or futon) and mobility/traveling to the train station.
+            Needs: instruction on how to get out of bed, introduction of assistive devices, and mobility practice with a physical therapist.""";
+            Soap newSoap = await gemini.gemini_create_soap(
               patient,
               nursingPlan,
               soap,
+              memo,
             );
-            //             String memo = """Throbbing knee pain at night. Unable to sleep.
-            // Pain at night is 7/10; during the day, it's 3/10.
-            // Pain medication (currently taken after meals) regimen changed to: 9:00, 15:00, and 21:00.
-            // Anxious about living alone, specifically: getting out of bed (or futon) and mobility/traveling to the train station.
-            // Needs: instruction on how to get out of bed, introduction of assistive devices, and mobility practice with a physical therapist.""";
-            //             Soap newSoap = await gemini.gemini_create_soap(
-            //               patient,
-            //               nursingPlan,
-            //               soap,
-            //               memo,
-            //             );
-            print('Nursing Plan: ${newplan.toJson()}');
+            print('Nursing Plan: ${newSoap.toJson()}');
           },
           child: Text('Sample Button'),
         ),
