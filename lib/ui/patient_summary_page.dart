@@ -20,7 +20,8 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   Patient? patient;
-  final displayDateFormat = DateFormat('yyyy/MM/dd');
+  final _displayDateFormat = DateFormat('yyyy/MM/dd');
+  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   @override
   void initState() {
@@ -160,7 +161,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                               padding: const EdgeInsets.all(8),
                               child: Text(
                                 patient!.personalInfo.birthday != null
-                                    ? displayDateFormat.format(
+                                    ? _displayDateFormat.format(
                                       patient!.personalInfo.birthday!,
                                     )
                                     : 'No data',
@@ -441,6 +442,25 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                           1: FlexColumnWidth(),
                         },
                         children: [
+                          TableRow(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text(
+                                  "Date of Issue",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  _displayDateTimeFormat.format(
+                                    patient!.nursingPlan.issueDateTime,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           TableRow(
                             children: [
                               const Padding(

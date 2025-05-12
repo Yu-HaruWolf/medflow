@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
@@ -14,6 +15,7 @@ class EditNursingPlanPage extends StatefulWidget {
 class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   late DateTime _issueDateTime;
   late TextEditingController _nandaIController;
@@ -45,16 +47,30 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
   }
 
   Future<void> _pickDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _issueDateTime,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _issueDateTime) {
-      setState(() {
-        _issueDateTime = picked;
-      });
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_issueDateTime),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          _issueDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      } else {
+        // 時間選択をキャンセルした場合は日付も変更しない
+      }
     }
   }
 
@@ -115,11 +131,37 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.auto_awesome), // Gemini-like icon
+                        label: const Text('Gemini で作成'),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white, backgroundColor: Colors.deepPurpleAccent, // Gemini-like colors
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          // TODO: Implement Gemini integration
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Gemini で作成機能は準備中です')),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '作成日: ${_issueDateTime.toLocal().toString().split(' ')[0]}',
+                            '作成日: ${_displayDateTimeFormat.format(_issueDateTime)}',
                           ),
                         ),
                         ElevatedButton(

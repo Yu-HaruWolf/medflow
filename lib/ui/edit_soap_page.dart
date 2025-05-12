@@ -112,6 +112,37 @@ class _EditSoapPageState extends State<EditSoapPage> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(
+                          Icons.auto_awesome,
+                        ), // Gemini-like icon
+                        label: const Text('Gemini で作成'),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              Colors.deepPurpleAccent, // Gemini-like colors
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          textStyle: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          // TODO: Implement Gemini integration
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Gemini で作成機能は準備中です')),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
                       children: <Widget>[
                         Expanded(
