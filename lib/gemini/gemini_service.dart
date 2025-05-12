@@ -12,6 +12,7 @@ import 'gemini_tools.dart';
 class GeminiService {
   late GenerativeModel model1;
   late GenerativeModel model2;
+  late GenerativeModel model3;
 
   void geminiInit() {
     // Set parameter values in a `GenerationConfig` (example values shown here)
@@ -71,6 +72,31 @@ Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以�
 6. 出力のjsonはfetchSOAPtool関数に引数として渡して、処理してください
 """),
     );
+
+    model3 = FirebaseVertexAI.instance.generativeModel(
+      model: 'gemini-2.0-flash',
+      systemInstruction: Content.text("""あなたは優秀な看護師です。今から退院時の看護計画を作成します。
+1.患者の情報や病床から重大な最重要項目であるNANDA-Iを１つ決めます。
+2. その後NANDA-Iにそった看護計画を作成します。
+3. 患者の情報やSoapの内容、看護師のメモ書きなどを参考に最適なNANDA-Iを作成してください。
+
+形式はjson形式で、以下のように出力してください。
+{
+  nanda_i: ,
+  goal:    ,
+  kansatu:   ,
+  ennjo:  ,
+  sidou:   ,
+}
+詳細な出力形式は以下に示す。
+{
+  nanda_i: ,
+  goal:    ,
+  kansatu:   ,
+  ennjo:  ,
+  sidou:   ,
+}"""),
+    );
   }
 
   // GETリクエストを送信する関数
@@ -94,7 +120,129 @@ Planは今のNANDA-Iの項目でよいか。それとも新たなNANDA-Iへ以�
     }
   }
 
-  Future<Patient> gemini_creat_nursing_plan(
+  Future<NursingPlan> gemini_create_nursing_plan(
+    Patient patient,
+    NursingPlan nursingplan,
+    Soap soap,
+  ) async {
+    // 1. GAEからレスポンスを取得
+    String responseText = "";
+    final response = await fetchWeatherData(
+      "Please investigate NANDA-I usin Google search. What types of NANDA-I exist, and please tell me all the evaluation criteria for each",
+    );
+
+    if (response != null) {
+      responseText = response['response']; // Cloud Functionからのレスポンス
+    } else {
+      responseText = "Failed to load data";
+    }
+
+    // 2. 過去の会話履歴を設定
+    final history1 = [
+      Content.text('NANDA-Iについて調べてください。どのようなNANDA-Iがあり、それぞれの評価項目をすべて教えてください。'),
+      Content.model([TextPart(responseText)]),
+    ];
+
+    // 3. Geminiに問い合わせ
+    String intermediateResponse = "";
+    Stream<GenerateContentResponse> responseStream1 = await model1
+        .startChat(history: history1)
+        .sendMessageStream(
+          Content.text("""
+            患者の情報から今回の病床を把握して、一番重要視するNANDA-Iを1つ決めてください。
+            このとき、看護計画やSOAPの内容、メモなどから今の患者に最適なNANDA-I１つ決めてください。
+            NANDA-Iの決定には会話履歴のNANDA-Iの項目や評価項目を参照し、最適なものを推論してください。
+              患者情報:${patient.toJson()}
+
+              以下は記載がある場合は、今の患者の病床と大きく異なる場合があるので、大きく参考にしてください
+              看護計画:${nursingplan.toJson()}
+              SOAP:${soap.toJson()}
+              メモ：{}
+              
+              """),
+        );
+
+    await for (final response1 in responseStream1) {
+      final response1ResultText = response1.text;
+      if (response1ResultText != null) {
+        intermediateResponse += response1ResultText;
+      }
+    }
+    history1.add(Content.text('最適なNANDA-Iを決定してください。'));
+    history1.add(Content.model([TextPart(intermediateResponse)]));
+    String json_responseText = "";
+    Stream<GenerateContentResponse> responseStream = await model1
+        .startChat(history: history1)
+        .sendMessageStream(
+          Content.text("""
+   重要視するNANDA-Iの項目は会話履歴から確認してそれを一番重視してください。
+
+１．googel検索でこのNANDA-Iの項目における看護計画を作成し、
+２．SOAPや入院時データベースから患者の個別性(患者の職業や家族構成など）を加えてください。
+作成する看護計画は以下の内容として、
+json形式で必ず出力してください。
+{
+  nanda_i:  ,
+  goal:    ,
+  kansatu:   ,
+  ennjo:  ,
+  sidou:  ,
+}
+・O-P (観察項目)
+・T-P 援助
+・E-P（指導)
+              患者情報:${patient.toJson()}
+
+              以下は記載がある場合は、今の患者の病床と大きく異なる場合があるので、大きく参考にしてください
+              看護計画:${nursingplan.toJson()}
+              SOAP:${soap.toJson()}
+              メモ：{}
+              
+              """),
+        );
+    String accumulated_text = "";
+    await for (final response in responseStream) {
+      final responseResultText = response.text;
+      if (responseResultText != null) {
+        accumulated_text += responseResultText;
+      }
+    }
+    print(accumulated_text);
+    final newplan;
+    try {
+      // JSON部分を正規表現で抽出
+      final regex = RegExp(r'\{[\s\S]*\}');
+      final match = regex.firstMatch(accumulated_text);
+
+      if (match != null) {
+        final jsonString = match.group(0)!;
+        final jsonObject = jsonDecode(jsonString);
+        print('抽出・パースしたJSONオブジェクト:');
+        print(jsonObject);
+
+        final newplan = NursingPlan(
+          nanda_i: jsonObject['nanda_i'] ?? '',
+          goal: jsonObject['goal'] ?? '',
+          op: jsonObject['kansatu'] ?? '',
+          tp: jsonObject['ennjo'] ?? '',
+          ep: jsonObject['sidou'] ?? '',
+        );
+
+        return newplan;
+      } else {
+        print('JSON部分が見つかりませんでした。');
+      }
+    } catch (e) {
+      print('JSONのパースエラー: $e');
+      return nursingplan;
+      ;
+    }
+    // 関数の最後に追加
+    throw Exception("期待される条件が満たされていません");
+    // 実際のPatientオブジェクトを作成して返す
+  }
+
+  Future<Patient> gemini_update_nursing_plan(
     String soap,
     String nursingPlan,
     int patientId,

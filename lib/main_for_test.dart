@@ -38,9 +38,14 @@ class TestHomePage extends StatelessWidget {
       appBar: AppBar(title: Text('Test Screen')),
       body: Center(
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             print('Button worked!');
-            print(patient.toJson());
+            // print(patient.toJson());
+            NursingPlan newplan = await gemini.gemini_create_nursing_plan(
+              patient,
+              nursingPlan,
+              soap,
+            );
           },
           child: Text('Sample Button'),
         ),
