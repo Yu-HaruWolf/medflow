@@ -31,8 +31,15 @@ class Patient {
   List<Soap> historyOfSoap;
   NursingPlan nursingPlan;
 
-  factory Patient.fromJson(Map<String, dynamic> json) =>
-      _$PatientFromJson(json);
+  void addHistoryOfSoap(Soap soap) {
+    historyOfSoap.add(soap);
+  }
+
+  factory Patient.fromJson(Map<String, dynamic> json, String id) {
+    Patient patient = _$PatientFromJson(json);
+    patient.id = id;
+    return patient;
+  }
 
   Map<String, dynamic> toJson() {
     final json = _$PatientToJson(this);

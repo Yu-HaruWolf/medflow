@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
@@ -15,6 +16,7 @@ class EditSoapPage extends StatefulWidget {
 class _EditSoapPageState extends State<EditSoapPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   late DateTime _issueDateTime;
   late TextEditingController _subjectController;
@@ -43,16 +45,30 @@ class _EditSoapPageState extends State<EditSoapPage> {
   }
 
   Future<void> _pickDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _issueDateTime,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _issueDateTime) {
-      setState(() {
-        _issueDateTime = picked;
-      });
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_issueDateTime),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          _issueDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      } else {
+        // 時間選択をキャンセルした場合は日付も変更しない
+      }
     }
   }
 
@@ -147,12 +163,12 @@ class _EditSoapPageState extends State<EditSoapPage> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '作成日: ${_issueDateTime.toLocal().toString().split(' ')[0]}',
+                            '作成日: ${_displayDateTimeFormat.format(_issueDateTime)}',
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () => _pickDate(context),
-                          child: const Text('日付選択'),
+                          child: const Text('日時選択'),
                         ),
                       ],
                     ),

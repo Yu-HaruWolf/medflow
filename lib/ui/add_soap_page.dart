@@ -1,48 +1,44 @@
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
+import 'package:intl/intl.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
-class EditNursingPlanPage extends StatefulWidget {
+class AddSoapPage extends StatefulWidget {
   final Patient patient;
-  const EditNursingPlanPage({super.key, required this.patient});
+  const AddSoapPage({super.key, required this.patient});
 
   @override
-  State<EditNursingPlanPage> createState() => _EditNursingPlanPageState();
+  State<AddSoapPage> createState() => _AddSoapPageState();
 }
 
-class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
+class _AddSoapPageState extends State<AddSoapPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   late DateTime _issueDateTime;
-  late TextEditingController _nandaIController;
-  late TextEditingController _goalController;
-  late TextEditingController _opController;
-  late TextEditingController _tpController;
-  late TextEditingController _epController;
+  late TextEditingController _subjectController;
+  late TextEditingController _objectController;
+  late TextEditingController _assessmentController;
+  late TextEditingController _planController;
 
   @override
   void initState() {
     super.initState();
-    final plan = widget.patient.nursingPlan;
-    _issueDateTime = plan.issueDateTime;
-    _nandaIController = TextEditingController(text: plan.nanda_i);
-    _goalController = TextEditingController(text: plan.goal);
-    _opController = TextEditingController(text: plan.op);
-    _tpController = TextEditingController(text: plan.tp);
-    _epController = TextEditingController(text: plan.ep);
+    _issueDateTime = DateTime.now();
+    _subjectController = TextEditingController();
+    _objectController = TextEditingController();
+    _assessmentController = TextEditingController();
+    _planController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _nandaIController.dispose();
-    _goalController.dispose();
-    _opController.dispose();
-    _tpController.dispose();
-    _epController.dispose();
+    _subjectController.dispose();
+    _objectController.dispose();
+    _assessmentController.dispose();
+    _planController.dispose();
     super.dispose();
   }
 
@@ -79,14 +75,17 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
       setState(() {
         _isLoading = true;
       });
-      widget.patient.nursingPlan = NursingPlan(
+
+      final newSoap = Soap(
         issueDateTime: _issueDateTime,
-        nanda_i: _nandaIController.text,
-        goal: _goalController.text,
-        op: _opController.text,
-        tp: _tpController.text,
-        ep: _epController.text,
+        subject: _subjectController.text,
+        object: _objectController.text,
+        assessment: _assessmentController.text,
+        plan: _planController.text,
       );
+
+      widget.patient.addHistoryOfSoap(newSoap);
+
       await PatientRepository().updatePatient(widget.patient);
       setState(() {
         _isLoading = false;
@@ -100,17 +99,18 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
   Widget _buildTextFormField(
     TextEditingController controller,
     String label, {
-    int? maxLines = null,
+    int minLines = 1,
+    int? maxLines,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        keyboardType: TextInputType.multiline,
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
+        minLines: minLines,
         maxLines: maxLines,
       ),
     );
@@ -119,7 +119,7 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('看護計画の編集')),
+      appBar: AppBar(title: const Text('SOAPの編集')),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -171,26 +171,33 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
                         ),
                         ElevatedButton(
                           onPressed: () => _pickDate(context),
-                          child: const Text('日時選択'),
+                          child: const Text('日付選択'),
                         ),
                       ],
                     ),
                   ),
-                  _buildTextFormField(_nandaIController, 'NANDA-I'),
-                  _buildTextFormField(_goalController, '目標', maxLines: null),
                   _buildTextFormField(
-                    _opController,
-                    'O-P (観察項目)',
+                    _subjectController,
+                    'S (主観的情報)',
+                    minLines: 1,
                     maxLines: null,
                   ),
                   _buildTextFormField(
-                    _tpController,
-                    'T-P (援助)',
+                    _objectController,
+                    'O (客観的情報)',
+                    minLines: 1,
                     maxLines: null,
                   ),
                   _buildTextFormField(
-                    _epController,
-                    'E-P (指導)',
+                    _assessmentController,
+                    'A (アセスメント)',
+                    minLines: 1,
+                    maxLines: null,
+                  ),
+                  _buildTextFormField(
+                    _planController,
+                    'P (プラン)',
+                    minLines: 1,
                     maxLines: null,
                   ),
                   Padding(

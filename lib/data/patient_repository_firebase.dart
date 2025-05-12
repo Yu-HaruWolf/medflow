@@ -8,7 +8,7 @@ class PatientRepository {
   Future<Patient?> getPatient(String id) async {
     final querySnapshot = await db.doc(id).get();
     final data = querySnapshot.data();
-    if (data != null) return Patient.fromJson(data);
+    if (data != null) return Patient.fromJson(data, id);
     return null;
   }
 
@@ -21,7 +21,7 @@ class PatientRepository {
     final patientList = <Patient>[];
     final querySnapshot = await db.get();
     for (var doc in querySnapshot.docs) {
-      patientList.add(Patient.fromJson(doc.data()));
+      patientList.add(Patient.fromJson(doc.data(), doc.id));
     }
     return patientList;
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:solution_challenge_tcu_2025/ui/add_soap_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/edit_nursing_plan_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/edit_soap_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/personal_page.dart';
@@ -22,16 +23,23 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
   Patient? patient;
   final _displayDateFormat = DateFormat('yyyy/MM/dd');
   final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
+  List<bool> _isExpandedList = []; // Add this to manage expansion state
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     _loadPatientInfo();
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(
+      () {},
+    ); // Remove the listener to avoid memory leaks
     _tabController.dispose();
     super.dispose();
   }
@@ -41,6 +49,11 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
     if (mounted) {
       setState(() {
         patient = patient;
+        // Initialize the expansion state list based on the number of SOAPs
+        _isExpandedList = List<bool>.filled(
+          patient?.historyOfSoap.length ?? 0,
+          false,
+        );
       });
     }
   }
@@ -56,11 +69,31 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                     null // Check if patient data is loaded
                 ? null // Do not show button if patient data is not loaded
                 : <Widget>[
+                  if (_tabController.index == 2)
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      tooltip: 'Add SOAP',
+                      onPressed: () {
+                        if (patient != null) {
+                          Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(
+                                  builder: (_) {
+                                    return AddSoapPage(patient: patient!);
+                                  },
+                                ),
+                              )
+                              .then((_) {
+                                // Refresh data after returning from edit page
+                                _loadPatientInfo();
+                              });
+                        }
+                      },
+                    ),
                   IconButton(
                     icon: const Icon(Icons.edit),
                     tooltip: '患者情報を編集',
                     onPressed: () {
-                      print(_tabController.index);
                       if (patient != null) {
                         // Ensure patient is not null before navigating
                         Navigator.of(context)
@@ -569,12 +602,10 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
                       children: [
-                        ...patient!.historyOfSoap.map((soap) {
-                          // Spread the list of widgets
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 8.0,
-                            ), // Reduced vertical padding for compactness
+                        // Display the latest SOAP at the top
+                        if (patient!.historyOfSoap.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Table(
                               border: TableBorder.all(),
                               columnWidths: const {
@@ -587,7 +618,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     const Padding(
                                       padding: EdgeInsets.all(8),
                                       child: Text(
-                                        'S',
+                                        "Date of Issue",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -595,7 +626,14 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8),
-                                      child: Text(soap.subject),
+                                      child: Text(
+                                        _displayDateTimeFormat.format(
+                                          patient!
+                                              .historyOfSoap
+                                              .last
+                                              .issueDateTime, // Use last for the latest SOAP
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -604,7 +642,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     const Padding(
                                       padding: EdgeInsets.all(8),
                                       child: Text(
-                                        'O',
+                                        'Subject',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -612,7 +650,9 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8),
-                                      child: Text(soap.object),
+                                      child: Text(
+                                        patient!.historyOfSoap.last.subject,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -621,7 +661,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     const Padding(
                                       padding: EdgeInsets.all(8),
                                       child: Text(
-                                        'A',
+                                        'Object',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -629,7 +669,9 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8),
-                                      child: Text(soap.assessment),
+                                      child: Text(
+                                        patient!.historyOfSoap.last.object,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -638,7 +680,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     const Padding(
                                       padding: EdgeInsets.all(8),
                                       child: Text(
-                                        'P',
+                                        'Assessment',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -646,35 +688,162 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8),
-                                      child: Text(soap.plan),
+                                      child: Text(
+                                        patient!.historyOfSoap.last.assessment,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Text(
+                                        'Plan',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                        patient!.historyOfSoap.last.plan,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                          );
-                        }).toList(),
-                        // Add the button here
-                        if (patient!
-                            .historyOfSoap
-                            .isNotEmpty) // Optionally show button only if there's history
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => PersonalPage(
-                                          patientId: widget.patientId,
+                          ),
+                        // Display previous SOAPs in an expandable list
+                        if (patient!.historyOfSoap.length > 1)
+                          ExpansionPanelList(
+                            expansionCallback: (int index, bool isExpanded) {
+                              setState(() {
+                                _isExpandedList[index] = isExpanded;
+                              });
+                            },
+                            children:
+                                patient!
+                                    .historyOfSoap
+                                    .reversed // Reverse the list to show newest first
+                                    .skip(1) // Skip the latest SOAP
+                                    .toList()
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                      final index = entry.key;
+                                      final soap = entry.value;
+                                      return ExpansionPanel(
+                                        headerBuilder: (
+                                          BuildContext context,
+                                          bool isExpanded,
+                                        ) {
+                                          return ListTile(
+                                            title: Text(
+                                              _displayDateTimeFormat.format(
+                                                soap.issueDateTime,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        body: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0,
+                                          ),
+                                          child: Table(
+                                            border: TableBorder.all(),
+                                            columnWidths: const {
+                                              0: IntrinsicColumnWidth(),
+                                              1: FlexColumnWidth(),
+                                            },
+                                            children: [
+                                              TableRow(
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Text(
+                                                      'Subject',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    child: Text(soap.subject),
+                                                  ),
+                                                ],
+                                              ),
+                                              TableRow(
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Text(
+                                                      'Object',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    child: Text(soap.object),
+                                                  ),
+                                                ],
+                                              ),
+                                              TableRow(
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Text(
+                                                      'Assessment',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    child: Text(
+                                                      soap.assessment,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              TableRow(
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Text(
+                                                      'Plan',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    child: Text(soap.plan),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                "Previous SOAP",
-                              ), // Clarified button text
-                            ),
+                                        isExpanded: _isExpandedList[index],
+                                      );
+                                    })
+                                    .toList(),
                           ),
                       ],
                     ),
