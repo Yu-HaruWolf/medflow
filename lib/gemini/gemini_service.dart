@@ -17,15 +17,6 @@ class GeminiService {
   void geminiInit() {
     // Set parameter values in a `GenerationConfig` (example values shown here)
     final generationConfig = GenerationConfig(temperature: 0.0);
-    // GenerationConfigにtool_configを追加
-    // 強制的に関数呼び出しを使用する設定
-    // final toolConfig = ToolConfig(
-    //   functionCallingConfig: FunctionCallingConfig.mode(
-    //     "ANY",
-    //   ), // 名前付きコンストラクタを使用
-    //   // または特定の関数のみ許可する場合
-    //   // functionCallingConfig: FunctionCallingConfig.modeWithAllowedFunctions("ANY", ["fetchNursing"])
-    // );
     nandaiModel = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       generationConfig: generationConfig,
@@ -57,11 +48,11 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
       model: 'gemini-2.0-flash',
       systemInstruction: Content.text(
         """You are an excellent nurse. I will now create a discharge nursing care plan.\n
-      1. Understanding  the most critical NANDA-I diagnosis based on converstation history and how to writing nursing plan based on NANDA-I .\n
-      2. Create a nursing care plan according to that NANDA-I diagnosis.\n
-      3. Create the most suitable NANDA-I diagnosis by referring to the patient's information, SOAP content, and nurse's notes, etc.\n\n
-      Please output the format in JSON format as follows
-      The detailed output format is shown below:
+1. Understanding  the most critical NANDA-I diagnosis based on converstation history and how to writing nursing plan based on NANDA-I .\n
+2. Create a nursing care plan according to that NANDA-I diagnosis.\n
+3. Create the most suitable NANDA-I diagnosis by referring to the patient's information, SOAP content, and nurse's notes, etc.\n\n
+Please output the format in JSON format as follows
+The detailed output format is shown below:
 {
   nanda_i: ,
   goal:    ,
@@ -69,7 +60,6 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
   ennjo:  ,
   sidou:   ,
 }
-
 """,
       ),
     );
@@ -78,13 +68,12 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
       model: 'gemini-2.0-flash',
       systemInstruction: Content.text("""
 Please provide an appropriate response to the user's question.
-
 """),
     );
   }
 
   // GETリクエストを送信する関数
-  Future<Map<String, dynamic>?> fetchWeatherData(String prompt) async {
+  Future<Map<String, dynamic>?> fetchGoogleSearchData(String prompt) async {
     final Uri url = Uri.parse(
       'https://asia-northeast1-solution-challenge-458913.cloudfunctions.net/python-http-function',
     ).replace(queryParameters: {'prompt': prompt});
@@ -104,10 +93,11 @@ Please provide an appropriate response to the user's question.
     }
   }
 
-  Future<NursingPlan> gemini_create_nursing_plan(
+  Future<NursingPlan> generateNursingPlan(
     Patient patient,
     NursingPlan nursingplan,
     Soap soap,
+    String notes,
   ) async {
     //最終的のsoapに変更する
     // soap = patient.historyOfSoap.last;
@@ -117,18 +107,19 @@ Please provide an appropriate response to the user's question.
     }
     // 1. GAEからレスポンスを取得
     String responseText = "";
-    final response = await fetchWeatherData(
+    final responseFromGoogleSearch = await fetchGoogleSearchData(
       "Please investigate NANDA-I usin Google search. What types of NANDA-I exist, and please tell me all the evaluation criteria for each",
     );
 
-    if (response != null) {
-      responseText = response['response']; // Cloud Functionからのレスポンス
+    if (responseFromGoogleSearch != null) {
+      responseText =
+          responseFromGoogleSearch['response']; // Cloud Functionからのレスポンス
     } else {
       responseText = "Failed to load data";
     }
 
     // 2. 過去の会話履歴を設定
-    final history1 = [
+    final chatHistory = [
       Content.text(
         'Please research NANDA-I. What NANDA-I diagnoses exist, and please tell me all the evaluation criteria for each one?',
       ),
@@ -136,37 +127,29 @@ Please provide an appropriate response to the user's question.
     ];
 
     // 3. Geminiに問い合わせ
-    String intermediateResponse = "";
-    Stream<GenerateContentResponse> responseStream1 = await nandaiModel
-        .startChat(history: history1)
-        .sendMessageStream(
+    GenerateContentResponse responseNandai = await nandaiModel
+        .startChat(history: chatHistory)
+        .sendMessage(
           Content.text("""
-              Based on the patient's information, understand their current clinical condition. Then, determine the single NANDA-I diagnosis that should be given the highest priority at this time.
-              When making this determination, consult the nursing care plan, SOAP note content, memos, and refer specifically to NANDA-I items and evaluation criteria from the conversation history to infer the most suitable diagnosis.
-              patient information:${patient.toJson()}
+Based on the patient's information, understand their current clinical condition. Then, determine the single NANDA-I diagnosis that should be given the highest priority at this time.
+When making this determination, consult the nursing care plan, SOAP note content, memos, and refer specifically to NANDA-I items and evaluation criteria from the conversation history to infer the most suitable diagnosis.
+patient information:${patient.toJson()}
 
-              Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please refer to it carefully / take it strongly into consideration.
-              nursing plan :${nursingplan.toJson()}
-              SOAP:${soap.toJson()}
-              memo：{}
-              
-              """),
+Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please refer to it carefully / take it strongly into consideration.
+nursing plan :${nursingplan.toJson()}
+SOAP:${soap.toJson()}
+memo：${notes}
+"""),
         );
+    String intermediateResponse = "${responseNandai.text}";
 
-    await for (final response1 in responseStream1) {
-      final response1ResultText = response1.text;
-      if (response1ResultText != null) {
-        intermediateResponse += response1ResultText;
-      }
-    }
-    history1.add(
+    chatHistory.add(
       Content.text('Please determine the optimal NANDA-I diagnosis.'),
     );
-    history1.add(Content.model([TextPart(intermediateResponse)]));
-    String json_responseText = "";
-    Stream<GenerateContentResponse> responseStream = await nursingPlanModel
-        .startChat(history: history1)
-        .sendMessageStream(
+    chatHistory.add(Content.model([TextPart(intermediateResponse)]));
+    GenerateContentResponse responseNursingPlan = await nursingPlanModel
+        .startChat(history: chatHistory)
+        .sendMessage(
           Content.text("""
 Please identify the NANDA-I items to be prioritized by reviewing the conversation history, and give these items the highest importance.
 Create a nursing care plan for these prioritized NANDA-I items using a Google search.
@@ -183,34 +166,26 @@ The nursing care plan created should include the following content, and it must 
 ・O-P Observations / Assessment / Observation Items
 ・T-P Therapeutic Plan / Interventions / Care Plan
 ・E-P Educational Plan / Patient Education / Teaching Pla
-              Patient Information :${patient.toJson()}
+Patient Information :${patient.toJson()}
 
-              Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please use it as a major reference point.
-              Nursing Plan:${nursingplan.toJson()}
-              SOAP:${soap.toJson()}
-              memo：{}
-              
-              """),
+Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please use it as a major reference point.
+Nursing Plan:${nursingplan.toJson()}
+SOAP:${soap.toJson()}
+memo：${notes}
+"""),
         );
-    String accumulated_text = "";
-    await for (final response in responseStream) {
-      final responseResultText = response.text;
-      if (responseResultText != null) {
-        accumulated_text += responseResultText;
-      }
-    }
-    print(accumulated_text);
-    final newplan;
+    String accumulatedText = "${responseNursingPlan.text}";
+    final NursingPlan newPlan;
     try {
       // JSON部分を正規表現で抽出
       final regex = RegExp(r'\{[\s\S]*\}');
-      final match = regex.firstMatch(accumulated_text);
+      final match = regex.firstMatch(accumulatedText);
 
       if (match != null) {
         final jsonString = match.group(0)!;
         final jsonObject = jsonDecode(jsonString);
 
-        final newplan = NursingPlan(
+        newPlan = NursingPlan(
           nanda_i: jsonObject['nanda_i'] ?? '',
           goal: jsonObject['goal'] ?? '',
           op: jsonObject['kansatu'] ?? '',
@@ -218,7 +193,7 @@ The nursing care plan created should include the following content, and it must 
           ep: jsonObject['sidou'] ?? '',
         );
 
-        return newplan;
+        return newPlan;
       } else {
         print('JSON error');
       }
@@ -232,81 +207,75 @@ The nursing care plan created should include the following content, and it must 
     // 実際のPatientオブジェクトを作成して返す
   }
 
-  Future<Soap> gemini_create_soap(
+  Future<Soap> generateSoap(
     Patient patient,
     NursingPlan nursingPlan,
     Soap soap,
     String notes,
   ) async {
     // 1. GAEからレスポンスを取得
-    String responseText = "";
-    final response = await fetchWeatherData(
+    String responseGoogleSearchText = "";
+    final responseGoogleSearch = await fetchGoogleSearchData(
       "Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?",
     );
 
-    if (response != null) {
-      responseText = response['response']; // Cloud Functionからのレスポンス
+    if (responseGoogleSearch != null) {
+      responseGoogleSearchText =
+          responseGoogleSearch['response']; // Cloud Functionからのレスポンス
     } else {
-      responseText = "Failed to load data";
+      responseGoogleSearchText = "Failed to load data";
     }
 
     final history = [
       Content.text(
         'Please tell me the points to be aware of when writing nursing care plans and SOAP notes. What does each section of SOAP entail? Please summarize after conducting a Google search.Points to Consider When Writing Nursing Care Plans?',
       ),
-      Content.model([TextPart(responseText)]),
+      Content.model([TextPart(responseGoogleSearchText)]),
     ];
     String json_responseText = "";
-    Stream<GenerateContentResponse> responseStream = await soapModel
+    GenerateContentResponse responseSoap = await soapModel
         .startChat(history: history)
-        .sendMessageStream(
+        .sendMessage(
           Content.text("""
 Based on the conversation history, please provide a SOAP note, considering the items and points to note when writing it.
 Create today's SOAP note by referencing the patient information, nursing care plan, and the content of yesterday's SOAP note.
 For example, if there was pain or other issues on the previous day, please create today's SOAP note reflecting that.
 The information for today's SOAP note is as follows:
-    ${notes}
+${notes}
 
-    Patient Informaiton:${patient.toJson()}
-    Nursing Plan:${nursingPlan.toJson()}
-    SOAP:${soap.toJson()}
-   Please extract the SOAP note content and output it in JSON format.
+Patient Informaiton:${patient.toJson()}
+Nursing Plan:${nursingPlan.toJson()}
+SOAP:${soap.toJson()}
+Please extract the SOAP note content and output it in JSON format.
     {
   subject:  ,
   object:    ,
   assessment:   ,
   plan:  ,
 }
-
-              """),
+"""),
         );
 
-    String accumulated_text = "";
-    await for (final response in responseStream) {
-      final responseResultText = response.text;
-      if (responseResultText != null) {
-        accumulated_text += responseResultText;
-      }
-    }
+    String accumulatedText = "${responseSoap.text}";
 
-    final newsoap;
+    final Soap newSoap;
     try {
       // JSON部分を正規表現で抽出
       final regex = RegExp(r'\{[\s\S]*\}');
-      final match = regex.firstMatch(accumulated_text);
+      final match = regex.firstMatch(accumulatedText);
 
       if (match != null) {
         final jsonString = match.group(0)!;
         final jsonObject = jsonDecode(jsonString);
 
-        newsoap = Soap(
+        newSoap = Soap(
           subject: jsonObject['subjective'] ?? '',
           object: jsonObject['objective'] ?? '',
           assessment: jsonObject['assessment'] ?? '',
           plan: jsonObject['plan'] ?? '',
         );
 
-        return newsoap;
+        return newSoap;
       } else {
         print('json error');
       }
@@ -314,11 +283,11 @@ The information for today's SOAP note is as follows:
       print('JSON error: $e');
       return soap;
     }
-    // 関数の最後に追加
+    // When failed to create SOAP
     throw Exception("creation of SOAP failed");
   }
 
-  Future<String> gemini_any(
+  Future<String> askGemini(
     Patient patient,
 
     NursingPlan nursingplan,
@@ -330,19 +299,18 @@ The information for today's SOAP note is as follows:
         .startChat()
         .sendMessage(
           Content.text("""
-              Instead of providing a general answer to the prompt, if it requires referring to the patient's nursingplan, patient, and soap below.  please consult the following nursing plan, patient information, and SOAP content. Extract the relevant sections/information from these sources, and generate the response to the prompt based on that extracted information.
-              The data is below.You have to use the data below to answer the question.
+Instead of providing a general answer to the prompt, if it requires referring to the patient's nursing plan, patient, and soap below. please consult the following nursing plan, patient information, and SOAP content. Extract the relevant sections/information from these sources, and generate the response to the prompt based on that extracted information.
+The data is below.You have to use the data below to answer the question.
               
-              patient information:${patient.toJson()}
-              nursing plan :${nursingplan.toJson()}
-              SOAP:${soap.toJson()}
+patient information:${patient.toJson()}
+nursing plan :${nursingplan.toJson()}
+SOAP:${soap.toJson()}
   
-              ${prompt}            
-              """),
+${prompt}            
+"""),
         );
 
     final responseText = response.text;
-    print(responseText);
 
     return responseText ?? ''; // responseTextがnullだった場合は''を返す
   }
