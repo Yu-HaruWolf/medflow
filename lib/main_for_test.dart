@@ -46,12 +46,19 @@ class TestHomePage extends StatelessWidget {
             //   nursingPlan,
             //   soap,
             // );
-            String memo = """Please write new nursing plan? """;
-            String response = await gemini.gemini_any(
-              soap,
-              nursingPlan,
+
+            Soap soap = Soap(
+              issueDateTime: DateTime(2024, 3, 14),
+              subject: "のどがごろごろして，息苦しい時あがある",
+              object: "体温37.8℃、咳をしている",
+              assessment: "喉がごろごろするという発言があったため、風邪の可能性がある",
+              plan: "指示に基づき，酸素吸引や医師への報告をしていく",
+            );
+
+            NursingPlan response = await gemini.gemini_create_nursing_plan(
               patient,
-              memo,
+              nursingPlan,
+              soap,
             );
             print('Nursing Plan: ${response}');
           },

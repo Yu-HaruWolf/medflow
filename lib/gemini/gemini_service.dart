@@ -9,9 +9,9 @@ import 'package:solution_challenge_tcu_2025/data/soap.dart';
 import 'gemini_tools.dart';
 
 class GeminiService {
-  late GenerativeModel nursingPlanModel;
+  late GenerativeModel nandaiModel;
   late GenerativeModel soapModel;
-  late GenerativeModel model3;
+  late GenerativeModel nursingPlanModel;
   late GenerativeModel askingModel;
 
   void geminiInit() {
@@ -26,29 +26,12 @@ class GeminiService {
     //   // または特定の関数のみ許可する場合
     //   // functionCallingConfig: FunctionCallingConfig.modeWithAllowedFunctions("ANY", ["fetchNursing"])
     // );
-    nursingPlanModel = FirebaseVertexAI.instance.generativeModel(
+    nandaiModel = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       generationConfig: generationConfig,
-      tools: [
-        Tool.functionDeclarations([fetchNursingTool]),
-      ],
       systemInstruction: Content.text("""
-You are an excellent nurse. I will now create a discharge nursing care plan. Please output the format in JSON format as follows:
-{
-  nanda_i: ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:   ,
-}
-The detailed output format is shown below:
-{
-  nanda_i: ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:   ,
-}
+You are an excellent nurse. 
+determine the single NANDA-I diagnosis that should be given the highest priority at this time.
 """),
     );
 
@@ -70,14 +53,15 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
 """),
     );
 
-    model3 = FirebaseVertexAI.instance.generativeModel(
+    nursingPlanModel = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       systemInstruction: Content.text(
         """You are an excellent nurse. I will now create a discharge nursing care plan.\n
-      1. Determine the most critical NANDA-I diagnosis based on the patient's information and hospital bed status.\n
+      1. Understanding  the most critical NANDA-I diagnosis based on converstation history and how to writing nursing plan based on NANDA-I .\n
       2. Create a nursing care plan according to that NANDA-I diagnosis.\n
       3. Create the most suitable NANDA-I diagnosis by referring to the patient's information, SOAP content, and nurse's notes, etc.\n\n
       Please output the format in JSON format as follows
+      The detailed output format is shown below:
 {
   nanda_i: ,
   goal:    ,
@@ -85,14 +69,8 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
   ennjo:  ,
   sidou:   ,
 }
-The detailed output format is shown below:
-{
-  nanda_i: ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:   ,
-}""",
+
+""",
       ),
     );
 
@@ -132,8 +110,11 @@ Please provide an appropriate response to the user's question.
     Soap soap,
   ) async {
     //最終的のsoapに変更する
-    soap = patient.historyOfSoap.last;
-
+    // soap = patient.historyOfSoap.last;
+    // historyOfSoapが空でない場合のみlastを使う
+    if (patient.historyOfSoap.isNotEmpty) {
+      soap = patient.historyOfSoap.last;
+    }
     // 1. GAEからレスポンスを取得
     String responseText = "";
     final response = await fetchWeatherData(
@@ -156,12 +137,12 @@ Please provide an appropriate response to the user's question.
 
     // 3. Geminiに問い合わせ
     String intermediateResponse = "";
-    Stream<GenerateContentResponse> responseStream1 = await nursingPlanModel
+    Stream<GenerateContentResponse> responseStream1 = await nandaiModel
         .startChat(history: history1)
         .sendMessageStream(
           Content.text("""
-Based on the patient's information, understand their current clinical condition. Then, determine the single NANDA-I diagnosis that should be given the highest priority at this time.
-When making this determination, consult the nursing care plan, SOAP note content, memos, and refer specifically to NANDA-I items and evaluation criteria from the conversation history to infer the most suitable diagnosis.
+              Based on the patient's information, understand their current clinical condition. Then, determine the single NANDA-I diagnosis that should be given the highest priority at this time.
+              When making this determination, consult the nursing care plan, SOAP note content, memos, and refer specifically to NANDA-I items and evaluation criteria from the conversation history to infer the most suitable diagnosis.
               patient information:${patient.toJson()}
 
               Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please refer to it carefully / take it strongly into consideration.
@@ -338,9 +319,10 @@ The information for today's SOAP note is as follows:
   }
 
   Future<String> gemini_any(
-    Soap soap,
-    NursingPlan nursingplan,
     Patient patient,
+
+    NursingPlan nursingplan,
+    Soap soap,
     String prompt,
   ) async {
     // 3. Geminiに問い合わせ
