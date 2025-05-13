@@ -12,7 +12,7 @@ class AddPatientScreen extends StatefulWidget {
 class _AddPatientScreenState extends State<AddPatientScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  bool _isLoading = false; // ローディング状態追加
+  bool _isLoading = false; // loading state
 
   // Patient Controllers
   late TextEditingController _idController;
@@ -114,7 +114,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _birthday ?? DateTime(1980, 1, 1), // デフォルトの初期日付
+      initialDate: _birthday ?? DateTime(1980, 1, 1), // Default initial date
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -127,7 +127,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
 
   void _addRelatedContact() {
     setState(() {
-      // RelatedContactのコンストラクタが引数なし、または全てオプショナルであることを想定
+      // Assuming RelatedContact constructor has no arguments or all optional
       _relatedContacts.add(RelatedContact());
       _relatedContactControllers.add({
         'name': TextEditingController(),
@@ -147,7 +147,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     });
   }
 
-  // ヘルパー関数: 文字列が空またはパース不可ならnull、そうでなければパースした整数を返す
+  // Helper function: Returns null if string is empty or unparsable, otherwise returns parsed integer
   int? _emptyOrInvalidAsNullInt(String text) {
     if (text.trim().isEmpty) return null;
     return int.tryParse(text.trim());
@@ -241,7 +241,6 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     TextEditingController controller,
     String label, {
     TextInputType keyboardType = TextInputType.text,
-    // isOptional は不要になったため削除
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -253,7 +252,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
         ),
         keyboardType: keyboardType,
         validator: (value) {
-          // 空白を許可するため、必須チェックを削除
+          // Removed required check to allow blanks
           // 数値フィールドの場合のバリデーションは残しても良い
           if (keyboardType == TextInputType.number &&
               value != null &&
@@ -342,7 +341,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('患者情報入力')),
+      appBar: AppBar(title: const Text('Patient Information Input')),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -352,9 +351,9 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _buildSectionTitle('基本情報'),
-                  _buildTextFormField(_furiganaController, 'フリガナ'),
-                  _buildTextFormField(_nameController, '氏名'),
+                  _buildSectionTitle('Basic Information'),
+                  _buildTextFormField(_furiganaController, 'Furigana'),
+                  _buildTextFormField(_nameController, 'Name'),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
@@ -362,14 +361,14 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                         Expanded(
                           child: Text(
                             _birthday == null
-                                ? '生年月日'
-                                : '生年月日: ${_birthday!.toLocal().toString().split(' ')[0]}',
+                                ? 'Date of Birth'
+                                : 'Date of Birth: ${_birthday!.toLocal().toString().split(' ')[0]}',
                           ),
                         ),
                         if (_birthday != null)
                           IconButton(
                             icon: const Icon(Icons.clear),
-                            tooltip: '生年月日を削除',
+                            tooltip: 'Remove Date of Birth',
                             onPressed: () {
                               setState(() {
                                 _birthday = null;
@@ -378,19 +377,19 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                           ),
                         ElevatedButton(
                           onPressed: () => _pickDate(context),
-                          child: const Text('日付選択'),
+                          child: const Text('Select Date'),
                         ),
                       ],
                     ),
                   ),
-                  _buildTextFormField(_addressController, '住所'),
+                  _buildTextFormField(_addressController, 'Address'),
                   _buildTextFormField(
                     _telController,
-                    '電話番号',
+                    'Phone Number',
                     keyboardType: TextInputType.phone,
                   ),
 
-                  _buildSectionTitle('関連連絡先'),
+                  _buildSectionTitle('Related Contacts'),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -404,20 +403,20 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '連絡先 ${index + 1}',
+                                'Contact ${index + 1}',
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               _buildTextFormField(
                                 _relatedContactControllers[index]['name']!,
-                                '氏名',
+                                'Name',
                               ),
                               _buildTextFormField(
                                 _relatedContactControllers[index]['relationship']!,
-                                '続柄',
+                                'Relationship',
                               ),
                               _buildTextFormField(
                                 _relatedContactControllers[index]['tel']!,
-                                '電話番号',
+                                'Phone Number',
                                 keyboardType: TextInputType.phone,
                               ),
                               Align(
@@ -428,7 +427,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                                     color: Colors.red,
                                   ),
                                   label: const Text(
-                                    '削除',
+                                    'Delete',
                                     style: TextStyle(color: Colors.red),
                                   ),
                                   onPressed: () => _removeRelatedContact(index),
@@ -444,52 +443,52 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.add),
-                      label: const Text('連絡先を追加'),
+                      label: const Text('Add Contact'),
                       onPressed: _addRelatedContact,
                     ),
                   ),
 
-                  _buildSectionTitle('健康増進情報'),
+                  _buildSectionTitle('Health Promotion Information'),
                   _buildTextFormField(
                     _preHospitalCourseController,
-                    '入院までの経過',
+                    'Pre-Hospital Course',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _chiefComplaintController,
-                    '主訴',
+                    'Chief Complaint',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _purposeController,
-                    '入院目的',
+                    'Purpose of Admission',
                     keyboardType: TextInputType.multiline,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(
-                      '現在の病気について医師からの説明とそのとらえ方:',
+                      'Current Illness - Doctor\'s Explanation and Patient\'s Perspective:',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ),
                   _buildTextFormField(
                     _doctorOpinionController,
-                    '医師からの説明',
+                    'Doctor\'s Explanation',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _principalOpinionController,
-                    '本人のとらえ方',
+                    'Patient\'s Perspective',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _familyOpinionController,
-                    '家族のとらえ方',
+                    'Family\'s Perspective',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _pastMedicalHistoryController,
-                    '既往歴',
+                    'Past Medical History',
                     keyboardType: TextInputType.multiline,
                   ),
 
@@ -581,7 +580,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                     child: Center(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.save),
-                        label: const Text('保存'),
+                        label: const Text('Save'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32,
