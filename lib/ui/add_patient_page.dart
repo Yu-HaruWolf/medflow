@@ -53,6 +53,8 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   late TextEditingController _painsController;
   late TextEditingController _selfPerceptionOthersController;
 
+  late TextEditingController _oneLineInfoController; // Added for oneLineInfo
+
   @override
   void initState() {
     super.initState();
@@ -82,6 +84,9 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     _howCanHelpController = TextEditingController();
     _painsController = TextEditingController();
     _selfPerceptionOthersController = TextEditingController();
+
+    _oneLineInfoController =
+        TextEditingController(); // Initialize oneLineInfo controller
   }
 
   @override
@@ -104,6 +109,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     _cigarettsPerDayController.dispose();
     _otherSubstanceController.dispose();
     _otherSubstanceRelatedInfoController.dispose();
+    _oneLineInfoController.dispose(); // Dispose oneLineInfo controller
 
     for (var controllers in _relatedContactControllers) {
       controllers.forEach((key, controller) => controller.dispose());
@@ -167,6 +173,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
           address: _addressController.text,
           tel: _telController.text,
         ),
+        oneLineInfo: _oneLineInfoController.text, // Add oneLineInfo to Patient
         relatedContacts: _relatedContacts,
         healthPromotion: HealthPromotion(
           preHospitalCourse: _preHospitalCourseController.text,
@@ -377,6 +384,11 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                     _telController,
                     '電話番号',
                     keyboardType: TextInputType.phone,
+                  ),
+                  _buildTextFormField(
+                    _oneLineInfoController,
+                    'One Line Info',
+                    keyboardType: TextInputType.multiline,
                   ),
 
                   _buildSectionTitle('関連連絡先'),

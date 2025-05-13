@@ -55,6 +55,8 @@ class _EditPatientPageState extends State<EditPatientPage> {
   late TextEditingController _painsController;
   late TextEditingController _selfPerceptionOthersController;
 
+  late TextEditingController _oneLineInfoController;
+
   @override
   void initState() {
     super.initState();
@@ -130,6 +132,9 @@ class _EditPatientPageState extends State<EditPatientPage> {
     _selfPerceptionOthersController = TextEditingController(
       text: p.selfPerception.others,
     );
+
+    // oneLineInfo コントローラーの初期化
+    _oneLineInfoController = TextEditingController(text: p.oneLineInfo);
   }
 
   @override
@@ -152,6 +157,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
     _cigarettsPerDayController.dispose();
     _otherSubstanceController.dispose();
     _otherSubstanceRelatedInfoController.dispose();
+    _oneLineInfoController.dispose(); // 追加: oneLineInfo コントローラーの破棄
 
     for (var controllers in _relatedContactControllers) {
       controllers.forEach((key, controller) => controller.dispose());
@@ -217,6 +223,8 @@ class _EditPatientPageState extends State<EditPatientPage> {
           address: _addressController.text,
           tel: _telController.text,
         ),
+        oneLineInfo:
+            _oneLineInfoController.text, // 追加: oneLineInfo を Patient に設定
         relatedContacts:
             _relatedContactControllers
                 .map(
@@ -438,6 +446,11 @@ class _EditPatientPageState extends State<EditPatientPage> {
                     _telController,
                     '電話番号',
                     keyboardType: TextInputType.phone,
+                  ),
+                  _buildTextFormField(
+                    _oneLineInfoController,
+                    'One Line Info',
+                    keyboardType: TextInputType.multiline,
                   ),
 
                   _buildSectionTitle('関連連絡先'),
