@@ -30,26 +30,9 @@ class GeminiService {
     model1 = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       generationConfig: generationConfig,
-      tools: [
-        Tool.functionDeclarations([fetchNursingTool]),
-      ],
       systemInstruction: Content.text("""
-You are an excellent nurse. I will now create a discharge nursing care plan. Please output the format in JSON format as follows:
-{
-  nanda_i: ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:   ,
-}
-The detailed output format is shown below:
-{
-  nanda_i: ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:   ,
-}
+You are an excellent nurse. 
+determine the single NANDA-I diagnosis that should be given the highest priority at this time.
 """),
     );
 
@@ -75,10 +58,11 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
       model: 'gemini-2.0-flash',
       systemInstruction: Content.text(
         """You are an excellent nurse. I will now create a discharge nursing care plan.\n
-      1. Determine the most critical NANDA-I diagnosis based on the patient's information and hospital bed status.\n
+      1. Understanding  the most critical NANDA-I diagnosis based on converstation history and how to writing nursing plan based on NANDA-I .\n
       2. Create a nursing care plan according to that NANDA-I diagnosis.\n
       3. Create the most suitable NANDA-I diagnosis by referring to the patient's information, SOAP content, and nurse's notes, etc.\n\n
       Please output the format in JSON format as follows
+      The detailed output format is shown below:
 {
   nanda_i: ,
   goal:    ,
@@ -86,14 +70,8 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
   ennjo:  ,
   sidou:   ,
 }
-The detailed output format is shown below:
-{
-  nanda_i: ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:   ,
-}""",
+
+""",
       ),
     );
 
@@ -133,8 +111,11 @@ Please provide an appropriate response to the user's question.
     Soap soap,
   ) async {
     //最終的のsoapに変更する
-    soap = patient.historyOfSoap.last;
-
+    // soap = patient.historyOfSoap.last;
+    // historyOfSoapが空でない場合のみlastを使う
+    if (patient.historyOfSoap.isNotEmpty) {
+      soap = patient.historyOfSoap.last;
+    }
     // 1. GAEからレスポンスを取得
     String responseText = "";
     final response = await fetchWeatherData(
@@ -161,8 +142,8 @@ Please provide an appropriate response to the user's question.
         .startChat(history: history1)
         .sendMessageStream(
           Content.text("""
-Based on the patient's information, understand their current clinical condition. Then, determine the single NANDA-I diagnosis that should be given the highest priority at this time.
-When making this determination, consult the nursing care plan, SOAP note content, memos, and refer specifically to NANDA-I items and evaluation criteria from the conversation history to infer the most suitable diagnosis.
+              Based on the patient's information, understand their current clinical condition. Then, determine the single NANDA-I diagnosis that should be given the highest priority at this time.
+              When making this determination, consult the nursing care plan, SOAP note content, memos, and refer specifically to NANDA-I items and evaluation criteria from the conversation history to infer the most suitable diagnosis.
               patient information:${patient.toJson()}
 
               Please note that if the following information is provided, it may differ significantly from the patient's current clinical condition. Therefore, please refer to it carefully / take it strongly into consideration.
@@ -184,7 +165,7 @@ When making this determination, consult the nursing care plan, SOAP note content
     );
     history1.add(Content.model([TextPart(intermediateResponse)]));
     String json_responseText = "";
-    Stream<GenerateContentResponse> responseStream = await model1
+    Stream<GenerateContentResponse> responseStream = await model3
         .startChat(history: history1)
         .sendMessageStream(
           Content.text("""
@@ -343,9 +324,10 @@ The information for today's SOAP note is as follows:
   }
 
   Future<String> gemini_any(
-    Soap soap,
-    NursingPlan nursingplan,
     Patient patient,
+
+    NursingPlan nursingplan,
+    Soap soap,
     String prompt,
   ) async {
     // 3. Geminiに問い合わせ
