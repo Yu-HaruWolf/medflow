@@ -65,7 +65,7 @@ class _AddSoapPageState extends State<AddSoapPage> {
           );
         });
       } else {
-        // 時間選択をキャンセルした場合は日付も変更しない
+        // If time selection is canceled, the date will not be changed
       }
     }
   }

@@ -313,17 +313,6 @@ class _EditPatientPageState extends State<EditPatientPage> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
         keyboardType: keyboardType,
-        validator: (value) {
-          // 空白を許可するため、必須チェックを削除
-          // 数値フィールドの場合のバリデーションは残しても良い
-          if (keyboardType == TextInputType.number &&
-              value != null &&
-              value.trim().isNotEmpty && // trim() を追加して空白のみの入力をチェック
-              int.tryParse(value.trim()) == null) {
-            return '有効な数値を入力してください';
-          }
-          return null; // 常にnullを返し、バリデーションエラーとしない
-        },
       ),
     );
   }
