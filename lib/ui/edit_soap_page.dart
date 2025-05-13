@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 
 class EditSoapPage extends StatefulWidget {
   final Patient patient;
@@ -69,6 +70,108 @@ class _EditSoapPageState extends State<EditSoapPage> {
       } else {
         // 時間選択をキャンセルした場合は日付も変更しない
       }
+    }
+  }
+
+  Future<void> _handleGeminiCreation() async {
+    final TextEditingController memoController = TextEditingController();
+    final geminiService = GeminiService();
+    geminiService.geminiInit();
+
+    // Show dialog to input memo
+    final String memo =
+        await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('メモを入力してください'),
+              content: TextField(
+                controller: memoController,
+                decoration: const InputDecoration(hintText: 'メモを入力'),
+                maxLines: 3,
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed:
+                      () => Navigator.of(context).pop(''), // Allow empty memo
+                  child: const Text('スキップ'),
+                ),
+                TextButton(
+                  onPressed:
+                      () => Navigator.of(context).pop(memoController.text),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        ''; // Default to empty string if dialog is dismissed
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final Soap generatedSoap = await geminiService.generateSoap(
+        widget.patient,
+        widget.patient.nursingPlan,
+        widget.patient.historyOfSoap.isNotEmpty
+            ? widget.patient.historyOfSoap.last
+            : Soap(),
+        memo,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Show dialog to confirm generated SOAP
+      final bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('生成されたSOAP'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('S (主観的情報): ${generatedSoap.subject}'),
+                  Text('O (客観的情報): ${generatedSoap.object}'),
+                  Text('A (アセスメント): ${generatedSoap.assessment}'),
+                  Text('P (プラン): ${generatedSoap.plan}'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('キャンセル'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirm == true) {
+        // Apply generated SOAP to input fields
+        setState(() {
+          _subjectController.text = generatedSoap.subject;
+          _objectController.text = generatedSoap.object;
+          _assessmentController.text = generatedSoap.assessment;
+          _planController.text = generatedSoap.plan;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
     }
   }
 
@@ -148,12 +251,7 @@ class _EditSoapPageState extends State<EditSoapPage> {
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
-                        onPressed: () {
-                          // TODO: Implement Gemini integration
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Gemini で作成機能は準備中です')),
-                          );
-                        },
+                        onPressed: _handleGeminiCreation,
                       ),
                     ),
                   ),

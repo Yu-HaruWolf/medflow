@@ -54,12 +54,13 @@ For the Plan, please infer whether to use the current NANDA-I items or transitio
 Please output the format in JSON format as follows
 The detailed output format is shown below:
 {
-  nanda_i: ,
-  goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:   ,
+  nanda_i: "STRING",
+  goal: "STRING",
+  observation: "STRING",
+  therapeutic: "STRING",
+  educational: "STRING",
 }
+You must not send anything other than json. Your message only text of json. not markdown.
 """,
       ),
     );
@@ -159,9 +160,9 @@ The nursing care plan created should include the following content, and it must 
 {
   nanda_i:  ,
   goal:    ,
-  kansatu:   ,
-  ennjo:  ,
-  sidou:  ,
+  observation:   ,
+  therapeutic:  ,
+  educational:  ,
 }
 ・O-P Observations / Assessment / Observation Items
 ・T-P Therapeutic Plan / Interventions / Care Plan
@@ -188,9 +189,9 @@ memo：${notes}
         newPlan = NursingPlan(
           nanda_i: jsonObject['nanda_i'] ?? '',
           goal: jsonObject['goal'] ?? '',
-          op: jsonObject['kansatu'] ?? '',
-          tp: jsonObject['ennjo'] ?? '',
-          ep: jsonObject['sidou'] ?? '',
+          op: jsonObject['observation'] ?? '',
+          tp: jsonObject['therapeutic'] ?? '',
+          ep: jsonObject['educational'] ?? '',
         );
 
         return newPlan;
@@ -199,8 +200,7 @@ memo：${notes}
       }
     } catch (e) {
       print('JSONerror : $e');
-      return nursingplan;
-      ;
+      throw Exception('JSON error : $e');
     }
     // 関数の最後に追加
     throw Exception("creation of nursing plan failed");
@@ -281,7 +281,7 @@ Please extract the SOAP note content and output it in JSON format.
       }
     } catch (e) {
       print('JSON error: $e');
-      return soap;
+      throw Exception("JSON error: $e");
     }
     // When failed to create SOAP
     throw Exception("creation of SOAP failed");
