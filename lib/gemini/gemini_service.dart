@@ -4,16 +4,15 @@ import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:http/http.dart' as http;
 import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
 import 'gemini_tools.dart';
 
 class GeminiService {
-  late GenerativeModel model1;
-  late GenerativeModel model2;
+  late GenerativeModel nursingPlanModel;
+  late GenerativeModel soapModel;
   late GenerativeModel model3;
-  late GenerativeModel model4;
+  late GenerativeModel askingModel;
 
   void geminiInit() {
     // Set parameter values in a `GenerationConfig` (example values shown here)
@@ -27,7 +26,7 @@ class GeminiService {
     //   // または特定の関数のみ許可する場合
     //   // functionCallingConfig: FunctionCallingConfig.modeWithAllowedFunctions("ANY", ["fetchNursing"])
     // );
-    model1 = FirebaseVertexAI.instance.generativeModel(
+    nursingPlanModel = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       generationConfig: generationConfig,
       tools: [
@@ -53,7 +52,7 @@ The detailed output format is shown below:
 """),
     );
 
-    model2 = FirebaseVertexAI.instance.generativeModel(
+    soapModel = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       tools: [
         Tool.functionDeclarations([fetchSOAPTool]),
@@ -97,7 +96,7 @@ The detailed output format is shown below:
       ),
     );
 
-    model4 = FirebaseVertexAI.instance.generativeModel(
+    askingModel = FirebaseVertexAI.instance.generativeModel(
       model: 'gemini-2.0-flash',
       systemInstruction: Content.text("""
 Please provide an appropriate response to the user's question.
@@ -157,7 +156,7 @@ Please provide an appropriate response to the user's question.
 
     // 3. Geminiに問い合わせ
     String intermediateResponse = "";
-    Stream<GenerateContentResponse> responseStream1 = await model1
+    Stream<GenerateContentResponse> responseStream1 = await nursingPlanModel
         .startChat(history: history1)
         .sendMessageStream(
           Content.text("""
@@ -184,7 +183,7 @@ When making this determination, consult the nursing care plan, SOAP note content
     );
     history1.add(Content.model([TextPart(intermediateResponse)]));
     String json_responseText = "";
-    Stream<GenerateContentResponse> responseStream = await model1
+    Stream<GenerateContentResponse> responseStream = await nursingPlanModel
         .startChat(history: history1)
         .sendMessageStream(
           Content.text("""
@@ -254,9 +253,9 @@ The nursing care plan created should include the following content, and it must 
 
   Future<Soap> gemini_create_soap(
     Patient patient,
-    NursingPlan nursingplan,
+    NursingPlan nursingPlan,
     Soap soap,
-    String todaysoap,
+    String notes,
   ) async {
     // 1. GAEからレスポンスを取得
     String responseText = "";
@@ -277,7 +276,7 @@ The nursing care plan created should include the following content, and it must 
       Content.model([TextPart(responseText)]),
     ];
     String json_responseText = "";
-    Stream<GenerateContentResponse> responseStream = await model2
+    Stream<GenerateContentResponse> responseStream = await soapModel
         .startChat(history: history)
         .sendMessageStream(
           Content.text("""
@@ -285,10 +284,10 @@ Based on the conversation history, please provide a SOAP note, considering the i
 Create today's SOAP note by referencing the patient information, nursing care plan, and the content of yesterday's SOAP note.
 For example, if there was pain or other issues on the previous day, please create today's SOAP note reflecting that.
 The information for today's SOAP note is as follows:
-    ${todaysoap}
+    ${notes}
 
     Patient Informaiton:${patient.toJson()}
-    Nursing Plan:${nursingplan.toJson()}
+    Nursing Plan:${nursingPlan.toJson()}
     SOAP:${soap.toJson()}
    Please extract the SOAP note content and output it in JSON format.
     {
@@ -326,10 +325,6 @@ The information for today's SOAP note is as follows:
           plan: jsonObject['plan'] ?? '',
         );
 
-        // リポジトリ経由で更新
-
-        // await repo.updatePatient(newPatient);
-
         return newsoap;
       } else {
         print('json error');
@@ -349,8 +344,10 @@ The information for today's SOAP note is as follows:
     String prompt,
   ) async {
     // 3. Geminiに問い合わせ
-    GenerateContentResponse response = await model4.startChat().sendMessage(
-      Content.text("""
+    GenerateContentResponse response = await askingModel
+        .startChat()
+        .sendMessage(
+          Content.text("""
               Instead of providing a general answer to the prompt, if it requires referring to the patient's nursingplan, patient, and soap below.  please consult the following nursing plan, patient information, and SOAP content. Extract the relevant sections/information from these sources, and generate the response to the prompt based on that extracted information.
               The data is below.You have to use the data below to answer the question.
               
@@ -360,7 +357,7 @@ The information for today's SOAP note is as follows:
   
               ${prompt}            
               """),
-    );
+        );
 
     final responseText = response.text;
     print(responseText);
