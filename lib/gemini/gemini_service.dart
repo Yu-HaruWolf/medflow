@@ -349,11 +349,8 @@ The information for today's SOAP note is as follows:
     String prompt,
   ) async {
     // 3. Geminiに問い合わせ
-    String intermediateResponse = "";
-    Stream<GenerateContentResponse> responseStream1 = await model4
-        .startChat()
-        .sendMessageStream(
-          Content.text("""
+    GenerateContentResponse response = await model4.startChat().sendMessage(
+      Content.text("""
               Instead of providing a general answer to the prompt, if it requires referring to the patient's nursingplan, patient, and soap below.  please consult the following nursing plan, patient information, and SOAP content. Extract the relevant sections/information from these sources, and generate the response to the prompt based on that extracted information.
               The data is below.You have to use the data below to answer the question.
               
@@ -361,19 +358,13 @@ The information for today's SOAP note is as follows:
               nursing plan :${nursingplan.toJson()}
               SOAP:${soap.toJson()}
   
-              
+              ${prompt}            
               """),
-        );
+    );
 
-    await for (final response1 in responseStream1) {
-      final response1ResultText = response1.text;
-      if (response1ResultText != null) {
-        intermediateResponse += response1ResultText;
-      }
-    }
+    final responseText = response.text;
+    print(responseText);
 
-    print(intermediateResponse);
-
-    return intermediateResponse;
+    return responseText ?? ''; // responseTextがnullだった場合は''を返す
   }
 }

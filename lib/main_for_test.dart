@@ -46,7 +46,7 @@ class TestHomePage extends StatelessWidget {
             //   nursingPlan,
             //   soap,
             // );
-            String memo = """Please tell me the nursing plan? """;
+            String memo = """Please write new nursing plan? """;
             String response = await gemini.gemini_any(
               soap,
               nursingPlan,
