@@ -91,7 +91,7 @@ class _SoapFormPageState extends State<SoapFormPage> {
   Future<void> _handleGeminiCreation() async {
     final TextEditingController memoController = TextEditingController();
     final geminiService = GeminiService();
-    geminiService.geminiInit();
+    await geminiService.geminiInit();
 
     // Show dialog to input memo
     final String? memo = await showDialog<String>(
