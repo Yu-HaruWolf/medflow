@@ -2,10 +2,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/ui/add_soap_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/edit_nursing_plan_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/edit_soap_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/edit_patient_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/patient_form_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/soap_form_page.dart';
 
 class PatientSummaryPage extends StatefulWidget {
   final String patientId;
@@ -77,7 +76,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                               .push(
                                 MaterialPageRoute(
                                   builder: (_) {
-                                    return AddSoapPage(patient: patient!);
+                                    return SoapFormPage(patient: patient!);
                                   },
                                 ),
                               )
@@ -101,7 +100,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                   builder: (_) {
                                     switch (_tabController.index) {
                                       case 0:
-                                        return EditPatientPage(
+                                        return PatientFormPage(
                                           patient: patient!,
                                         );
                                       case 1:
@@ -109,12 +108,12 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                           patient: patient!,
                                         );
                                       case 2:
-                                        return EditSoapPage(
+                                        return SoapFormPage(
                                           patient: patient!,
                                           soap: patient!.historyOfSoap.last,
                                         );
                                       default:
-                                        return EditPatientPage(
+                                        return PatientFormPage(
                                           patient: patient!,
                                         );
                                     }
