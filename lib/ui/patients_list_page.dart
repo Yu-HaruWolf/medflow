@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/ui/patient_form_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/form/patient_form_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_summary_page.dart';
 
 class PatientsListPage extends StatefulWidget {
