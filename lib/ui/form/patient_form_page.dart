@@ -458,7 +458,11 @@ class _PatientFormPageState extends State<PatientFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(isEditMode ? '患者情報編集' : '患者情報入力')),
+      appBar: AppBar(
+        title: Text(
+          isEditMode ? 'Edit Patient Information' : 'Enter Patient Information',
+        ),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
