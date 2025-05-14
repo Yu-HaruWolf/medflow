@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/ui/edit_nursing_plan_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/nursing_plan_editor_form_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_form_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/soap_form_page.dart';
 
@@ -104,7 +104,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                                           patient: patient!,
                                         );
                                       case 1:
-                                        return EditNursingPlanPage(
+                                        return NursingPlanEditorFormPage(
                                           patient: patient!,
                                         );
                                       case 2:

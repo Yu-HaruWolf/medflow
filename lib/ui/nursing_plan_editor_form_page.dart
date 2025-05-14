@@ -6,15 +6,16 @@ import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
-class EditNursingPlanPage extends StatefulWidget {
+class NursingPlanEditorFormPage extends StatefulWidget {
   final Patient patient;
-  const EditNursingPlanPage({super.key, required this.patient});
+  const NursingPlanEditorFormPage({super.key, required this.patient});
 
   @override
-  State<EditNursingPlanPage> createState() => _EditNursingPlanPageState();
+  State<NursingPlanEditorFormPage> createState() =>
+      _NursingPlanEditorFormPageState();
 }
 
-class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
+class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
