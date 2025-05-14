@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/ui/add_patient_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/form/patient_form_page.dart';
 import 'package:solution_challenge_tcu_2025/ui/patient_summary_page.dart';
 
 class PatientsListPage extends StatefulWidget {
@@ -99,7 +99,7 @@ class _PatientsListPageState extends State<PatientsListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => AddPatientScreen()))
+              .push(MaterialPageRoute(builder: (_) => const PatientFormPage()))
               .then((_) => _loadPatients());
         },
         child: const Icon(Icons.add),

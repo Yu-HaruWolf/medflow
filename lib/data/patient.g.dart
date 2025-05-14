@@ -8,15 +8,15 @@ part of 'patient.dart';
 
 Patient _$PatientFromJson(Map<String, dynamic> json) => Patient(
   id: json['id'] as String? ?? "",
+  personalInfo:
+      json['personalInfo'] == null
+          ? null
+          : PersonalInfo.fromJson(json['personalInfo'] as Map<String, dynamic>),
   relatedContacts:
       (json['relatedContacts'] as List<dynamic>?)
           ?.map((e) => RelatedContact.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
-  personalInfo:
-      json['personalInfo'] == null
-          ? null
-          : PersonalInfo.fromJson(json['personalInfo'] as Map<String, dynamic>),
   healthPromotion:
       json['healthPromotion'] == null
           ? null
@@ -38,6 +38,7 @@ Patient _$PatientFromJson(Map<String, dynamic> json) => Patient(
           ?.map((e) => Soap.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  oneLineInfo: json['oneLineInfo'] as String? ?? '',
 );
 
 Map<String, dynamic> _$PatientToJson(Patient instance) => <String, dynamic>{
@@ -48,6 +49,7 @@ Map<String, dynamic> _$PatientToJson(Patient instance) => <String, dynamic>{
   'selfPerception': instance.selfPerception.toJson(),
   'historyOfSoap': instance.historyOfSoap.map((e) => e.toJson()).toList(),
   'nursingPlan': instance.nursingPlan.toJson(),
+  'oneLineInfo': instance.oneLineInfo,
 };
 
 PersonalInfo _$PersonalInfoFromJson(Map<String, dynamic> json) => PersonalInfo(

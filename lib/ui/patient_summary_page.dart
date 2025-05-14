@@ -2,10 +2,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/ui/add_soap_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/edit_nursing_plan_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/edit_soap_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/edit_patient_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/form/nursing_plan_editor_form_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/form/patient_form_page.dart';
+import 'package:solution_challenge_tcu_2025/ui/form/soap_form_page.dart';
 
 class PatientSummaryPage extends StatefulWidget {
   final String patientId;
@@ -77,7 +76,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                               .push(
                                 MaterialPageRoute(
                                   builder: (_) {
-                                    return AddSoapPage(patient: patient!);
+                                    return SoapFormPage(patient: patient!);
                                   },
                                 ),
                               )
@@ -88,41 +87,46 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                         }
                       },
                     ),
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    tooltip: '患者情報を編集',
-                    onPressed: () {
-                      if (patient != null) {
-                        // Ensure patient is not null before navigating
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) {
-                                  switch (_tabController.index) {
-                                    case 0:
-                                      return EditPatientPage(patient: patient!);
-                                    case 1:
-                                      return EditNursingPlanPage(
-                                        patient: patient!,
-                                      );
-                                    case 2:
-                                      return EditSoapPage(
-                                        patient: patient!,
-                                        soap: patient!.historyOfSoap.last,
-                                      ); // TODO: lastでよいか確認
-                                    default:
-                                      return EditPatientPage(patient: patient!);
-                                  }
-                                },
-                              ),
-                            )
-                            .then((_) {
-                              // Refresh data after returning from edit page
-                              _loadPatientInfo();
-                            });
-                      }
-                    },
-                  ),
+                  if (_tabController.index != 2 ||
+                      patient!.historyOfSoap.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      tooltip: '患者情報を編集',
+                      onPressed: () {
+                        if (patient != null) {
+                          Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(
+                                  builder: (_) {
+                                    switch (_tabController.index) {
+                                      case 0:
+                                        return PatientFormPage(
+                                          patient: patient!,
+                                        );
+                                      case 1:
+                                        return NursingPlanEditorFormPage(
+                                          patient: patient!,
+                                        );
+                                      case 2:
+                                        return SoapFormPage(
+                                          patient: patient!,
+                                          soap: patient!.historyOfSoap.last,
+                                        );
+                                      default:
+                                        return PatientFormPage(
+                                          patient: patient!,
+                                        );
+                                    }
+                                  },
+                                ),
+                              )
+                              .then((_) {
+                                // Refresh data after returning from edit page
+                                _loadPatientInfo();
+                              });
+                        }
+                      },
+                    ),
                 ],
         bottom: TabBar(
           controller: _tabController,

@@ -4,23 +4,26 @@ import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/speech_to_text_service.dart';
+import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
+import 'package:solution_challenge_tcu_2025/data/soap.dart';
 
-class EditNursingPlanPage extends StatefulWidget {
+class NursingPlanEditorFormPage extends StatefulWidget {
   final Patient patient;
-  const EditNursingPlanPage({super.key, required this.patient});
+  const NursingPlanEditorFormPage({super.key, required this.patient});
 
   @override
-  State<EditNursingPlanPage> createState() => _EditNursingPlanPageState();
+  State<NursingPlanEditorFormPage> createState() =>
+      _NursingPlanEditorFormPageState();
 }
 
-class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
+class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _isWaitingForResult = false;
   final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   late DateTime _issueDateTime;
-  late TextEditingController _nandaIController;
+  late TextEditingController _nandaiController;
   late TextEditingController _goalController;
   late TextEditingController _opController;
   late TextEditingController _tpController;
@@ -34,7 +37,7 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
     super.initState();
     final plan = widget.patient.nursingPlan;
     _issueDateTime = plan.issueDateTime;
-    _nandaIController = TextEditingController(text: plan.nanda_i);
+    _nandaiController = TextEditingController(text: plan.nanda_i);
     _goalController = TextEditingController(text: plan.goal);
     _opController = TextEditingController(text: plan.op);
     _tpController = TextEditingController(text: plan.tp);
@@ -43,7 +46,7 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
 
   @override
   void dispose() {
-    _nandaIController.dispose();
+    _nandaiController.dispose();
     _goalController.dispose();
     _opController.dispose();
     _tpController.dispose();
@@ -86,7 +89,7 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
       });
       widget.patient.nursingPlan = NursingPlan(
         issueDateTime: _issueDateTime,
-        nanda_i: _nandaIController.text,
+        nanda_i: _nandaiController.text,
         goal: _goalController.text,
         op: _opController.text,
         tp: _tpController.text,
@@ -99,6 +102,111 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
       if (mounted) {
         Navigator.of(context).pop();
       }
+    }
+  }
+
+  Future<void> _handleGeminiCreation() async {
+    final TextEditingController memoController = TextEditingController();
+    final geminiService = GeminiService();
+    geminiService.geminiInit();
+
+    // Show dialog to input memo
+    final String memo =
+        await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('メモを入力してください'),
+              content: TextField(
+                controller: memoController,
+                decoration: const InputDecoration(hintText: 'メモを入力'),
+                maxLines: 3,
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed:
+                      () =>
+                          Navigator.of(context).pop(''), // Return empty string
+                  child: const Text('スキップ'),
+                ),
+                TextButton(
+                  onPressed:
+                      () => Navigator.of(context).pop(memoController.text),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        ''; // Default to empty string if dialog is dismissed
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final NursingPlan generatedPlan = await geminiService.generateNursingPlan(
+        widget.patient,
+        widget.patient.nursingPlan,
+        widget.patient.historyOfSoap.isNotEmpty
+            ? widget.patient.historyOfSoap.last
+            : Soap(),
+        memo,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Show dialog to confirm generated plan
+      final bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('生成された看護計画'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('NANDA-I: ${generatedPlan.nanda_i}'),
+                  Text('目標: ${generatedPlan.goal}'),
+                  Text('O-P (観察項目): ${generatedPlan.op}'),
+                  Text('T-P (援助): ${generatedPlan.tp}'),
+                  Text('E-P (指導): ${generatedPlan.ep}'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('キャンセル'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirm == true) {
+        // Apply generated plan to input fields
+        setState(() {
+          _nandaiController.text = generatedPlan.nanda_i;
+          _goalController.text = generatedPlan.goal;
+          _opController.text = generatedPlan.op;
+          _tpController.text = generatedPlan.tp;
+          _epController.text = generatedPlan.ep;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
     }
   }
 
@@ -221,14 +329,7 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
                                 borderRadius: BorderRadius.circular(20.0),
                               ),
                             ),
-                            onPressed: () {
-                              // TODO: Implement Gemini integration
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Gemini で作成機能は準備中です'),
-                                ),
-                              );
-                            },
+                            onPressed: _handleGeminiCreation,
                           ),
                           const SizedBox(width: 16),
                           Stack(
@@ -278,7 +379,7 @@ class _EditNursingPlanPageState extends State<EditNursingPlanPage> {
                       ],
                     ),
                   ),
-                  _buildTextFormField(_nandaIController, 'NANDA-I'),
+                  _buildTextFormField(_nandaiController, 'NANDA-I'),
                   _buildTextFormField(_goalController, '目標', maxLines: null),
                   _buildTextFormField(
                     _opController,
