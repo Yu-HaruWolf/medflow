@@ -94,33 +94,30 @@ class _SoapFormPageState extends State<SoapFormPage> {
     geminiService.geminiInit();
 
     // Show dialog to input memo
-    final String memo =
-        await showDialog<String>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('メモを入力してください'),
-              content: TextField(
-                controller: memoController,
-                decoration: const InputDecoration(hintText: 'メモを入力'),
-                maxLines: 3,
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed:
-                      () => Navigator.of(context).pop(''), // Allow empty memo
-                  child: const Text('スキップ'),
-                ),
-                TextButton(
-                  onPressed:
-                      () => Navigator.of(context).pop(memoController.text),
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        ) ??
-        ''; // Default to empty string if dialog is dismissed
+    final String? memo = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter notes for Gemini'),
+          content: TextField(
+            controller: memoController,
+            decoration: const InputDecoration(hintText: 'Enter notes'),
+            maxLines: 3,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(null),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(memoController.text),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    ); // cancel if null
+    if (memo == null) return;
 
     setState(() {
       _isLoading = true;
@@ -145,22 +142,22 @@ class _SoapFormPageState extends State<SoapFormPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('生成されたSOAP'),
+            title: const Text('Generated SOAP'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('S (主観的情報): ${generatedSoap.subject}'),
-                  Text('O (客観的情報): ${generatedSoap.object}'),
-                  Text('A (アセスメント): ${generatedSoap.assessment}'),
-                  Text('P (プラン): ${generatedSoap.plan}'),
+                  Text('Subject: ${generatedSoap.subject}'),
+                  Text('Object: ${generatedSoap.object}'),
+                  Text('Assessment: ${generatedSoap.assessment}'),
+                  Text('Plan: ${generatedSoap.plan}'),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('キャンセル'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -186,7 +183,7 @@ class _SoapFormPageState extends State<SoapFormPage> {
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
+      ).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
     }
   }
 
