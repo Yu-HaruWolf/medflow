@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
-class EditPatientPage extends StatefulWidget {
-  const EditPatientPage({super.key, required this.patient});
+class PatientFormPage extends StatefulWidget {
+  final Patient? patient; // Add mode if null, otherwise edit mode
 
-  final Patient patient;
+  const PatientFormPage({super.key, this.patient});
 
   @override
-  State<EditPatientPage> createState() => _EditPatientPageState();
+  State<PatientFormPage> createState() => _PatientFormPageState();
 }
 
-class _EditPatientPageState extends State<EditPatientPage> {
+class _PatientFormPageState extends State<PatientFormPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
-  bool _isLoading = false; // Added loading state
+  // Determine mode getter
+  bool get isEditMode => widget.patient != null;
 
   // Patient Controllers
   late TextEditingController _idController;
@@ -55,81 +57,124 @@ class _EditPatientPageState extends State<EditPatientPage> {
   late TextEditingController _painsController;
   late TextEditingController _selfPerceptionOthersController;
 
+  late TextEditingController _oneLineInfoController;
+
   @override
   void initState() {
     super.initState();
-    final p = widget.patient;
-    _idController = TextEditingController(text: p.id);
-    _furiganaController = TextEditingController(text: p.personalInfo.furigana);
-    _nameController = TextEditingController(text: p.personalInfo.name);
-    _birthday = p.personalInfo.birthday;
-    _addressController = TextEditingController(text: p.personalInfo.address);
-    _telController = TextEditingController(text: p.personalInfo.tel);
 
-    _relatedContacts = List<RelatedContact>.from(p.relatedContacts);
-    _relatedContactControllers =
-        _relatedContacts
-            .map(
-              (rc) => {
-                'name': TextEditingController(text: rc.name),
-                'relationship': TextEditingController(text: rc.relationship),
-                'tel': TextEditingController(text: rc.tel),
-              },
-            )
-            .toList();
+    if (isEditMode) {
+      // 編集モードの初期化処理
+      final p = widget.patient!;
+      _idController = TextEditingController(text: p.id);
+      _furiganaController = TextEditingController(
+        text: p.personalInfo.furigana,
+      );
+      _nameController = TextEditingController(text: p.personalInfo.name);
+      _birthday = p.personalInfo.birthday;
+      _addressController = TextEditingController(text: p.personalInfo.address);
+      _telController = TextEditingController(text: p.personalInfo.tel);
 
-    _preHospitalCourseController = TextEditingController(
-      text: p.healthPromotion.preHospitalCourse,
-    );
-    _chiefComplaintController = TextEditingController(
-      text: p.healthPromotion.chiefComplaint,
-    );
-    _purposeController = TextEditingController(text: p.healthPromotion.purpose);
-    _doctorOpinionController = TextEditingController(
-      text: p.healthPromotion.opinions['doctor'] ?? '',
-    );
-    _principalOpinionController = TextEditingController(
-      text: p.healthPromotion.opinions['principal'] ?? '',
-    );
-    _familyOpinionController = TextEditingController(
-      text: p.healthPromotion.opinions['family'] ?? '',
-    );
-    _pastMedicalHistoryController = TextEditingController(
-      text: p.healthPromotion.pastMedicalHistory,
-    );
-    _isMedicinesExist = p.healthPromotion.isMedicinesExist;
-    _medicinesController = TextEditingController(
-      text: p.healthPromotion.medicines,
-    );
-    _isHealthManageMethodExist = p.healthPromotion.isHealthManageMethodExist;
-    _healthManageMethodController = TextEditingController(
-      text: p.healthPromotion.healthManageMethod,
-    );
-    _isSubstanceExist = p.healthPromotion.isSubstanceExist;
-    _alcoholPerDayController = TextEditingController(
-      text: p.healthPromotion.alcoholPerDay?.toString() ?? '',
-    );
-    _cigarettsPerDayController = TextEditingController(
-      text: p.healthPromotion.cigarettsPerDay?.toString() ?? '',
-    );
-    _otherSubstanceController = TextEditingController(
-      text: p.healthPromotion.otherSubstance,
-    );
-    _otherSubstanceRelatedInfoController = TextEditingController(
-      text: p.healthPromotion.otherSubstanceRelatedInfo,
-    );
+      _relatedContacts = List<RelatedContact>.from(p.relatedContacts);
+      _relatedContactControllers =
+          _relatedContacts
+              .map(
+                (rc) => {
+                  'name': TextEditingController(text: rc.name),
+                  'relationship': TextEditingController(text: rc.relationship),
+                  'tel': TextEditingController(text: rc.tel),
+                },
+              )
+              .toList();
 
-    _selfAwarenessController = TextEditingController(
-      text: p.selfPerception.selfAwareness,
-    );
-    _worriesController = TextEditingController(text: p.selfPerception.worries);
-    _howCanHelpController = TextEditingController(
-      text: p.selfPerception.howCanHelp,
-    );
-    _painsController = TextEditingController(text: p.selfPerception.pains);
-    _selfPerceptionOthersController = TextEditingController(
-      text: p.selfPerception.others,
-    );
+      _preHospitalCourseController = TextEditingController(
+        text: p.healthPromotion.preHospitalCourse,
+      );
+      _chiefComplaintController = TextEditingController(
+        text: p.healthPromotion.chiefComplaint,
+      );
+      _purposeController = TextEditingController(
+        text: p.healthPromotion.purpose,
+      );
+      _doctorOpinionController = TextEditingController(
+        text: p.healthPromotion.opinions['doctor'] ?? '',
+      );
+      _principalOpinionController = TextEditingController(
+        text: p.healthPromotion.opinions['principal'] ?? '',
+      );
+      _familyOpinionController = TextEditingController(
+        text: p.healthPromotion.opinions['family'] ?? '',
+      );
+      _pastMedicalHistoryController = TextEditingController(
+        text: p.healthPromotion.pastMedicalHistory,
+      );
+      _isMedicinesExist = p.healthPromotion.isMedicinesExist;
+      _medicinesController = TextEditingController(
+        text: p.healthPromotion.medicines,
+      );
+      _isHealthManageMethodExist = p.healthPromotion.isHealthManageMethodExist;
+      _healthManageMethodController = TextEditingController(
+        text: p.healthPromotion.healthManageMethod,
+      );
+      _isSubstanceExist = p.healthPromotion.isSubstanceExist;
+      _alcoholPerDayController = TextEditingController(
+        text: p.healthPromotion.alcoholPerDay?.toString() ?? '',
+      );
+      _cigarettsPerDayController = TextEditingController(
+        text: p.healthPromotion.cigarettsPerDay?.toString() ?? '',
+      );
+      _otherSubstanceController = TextEditingController(
+        text: p.healthPromotion.otherSubstance,
+      );
+      _otherSubstanceRelatedInfoController = TextEditingController(
+        text: p.healthPromotion.otherSubstanceRelatedInfo,
+      );
+
+      _selfAwarenessController = TextEditingController(
+        text: p.selfPerception.selfAwareness,
+      );
+      _worriesController = TextEditingController(
+        text: p.selfPerception.worries,
+      );
+      _howCanHelpController = TextEditingController(
+        text: p.selfPerception.howCanHelp,
+      );
+      _painsController = TextEditingController(text: p.selfPerception.pains);
+      _selfPerceptionOthersController = TextEditingController(
+        text: p.selfPerception.others,
+      );
+
+      _oneLineInfoController = TextEditingController(text: p.oneLineInfo);
+    } else {
+      // 追加モードの初期化処理
+      _idController = TextEditingController(text: "");
+      _furiganaController = TextEditingController();
+      _nameController = TextEditingController();
+      _addressController = TextEditingController();
+      _telController = TextEditingController();
+
+      _preHospitalCourseController = TextEditingController();
+      _chiefComplaintController = TextEditingController();
+      _purposeController = TextEditingController();
+      _doctorOpinionController = TextEditingController();
+      _principalOpinionController = TextEditingController();
+      _familyOpinionController = TextEditingController();
+      _pastMedicalHistoryController = TextEditingController();
+      _medicinesController = TextEditingController();
+      _healthManageMethodController = TextEditingController();
+      _alcoholPerDayController = TextEditingController();
+      _cigarettsPerDayController = TextEditingController();
+      _otherSubstanceController = TextEditingController();
+      _otherSubstanceRelatedInfoController = TextEditingController();
+
+      _selfAwarenessController = TextEditingController();
+      _worriesController = TextEditingController();
+      _howCanHelpController = TextEditingController();
+      _painsController = TextEditingController();
+      _selfPerceptionOthersController = TextEditingController();
+
+      _oneLineInfoController = TextEditingController();
+    }
   }
 
   @override
@@ -152,6 +197,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
     _cigarettsPerDayController.dispose();
     _otherSubstanceController.dispose();
     _otherSubstanceRelatedInfoController.dispose();
+    _oneLineInfoController.dispose();
 
     for (var controllers in _relatedContactControllers) {
       controllers.forEach((key, controller) => controller.dispose());
@@ -162,7 +208,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _birthday ?? DateTime(1980, 1, 1), // Default initial date
+      initialDate: _birthday ?? DateTime(1980, 1, 1),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -175,7 +221,6 @@ class _EditPatientPageState extends State<EditPatientPage> {
 
   void _addRelatedContact() {
     setState(() {
-      // Assuming RelatedContact constructor has no arguments or all optional
       _relatedContacts.add(RelatedContact());
       _relatedContactControllers.add({
         'name': TextEditingController(),
@@ -207,73 +252,95 @@ class _EditPatientPageState extends State<EditPatientPage> {
       setState(() {
         _isLoading = true;
       });
-      // コントローラーから値を取得し、編集用Patientを作成
-      final updatedPatient = Patient(
-        id: widget.patient.id,
-        personalInfo: PersonalInfo(
-          furigana: _furiganaController.text,
-          name: _nameController.text,
-          birthday: _birthday,
-          address: _addressController.text,
-          tel: _telController.text,
-        ),
-        relatedContacts:
-            _relatedContactControllers
-                .map(
-                  (map) => RelatedContact(
-                    name: map['name']!.text,
-                    relationship: map['relationship']!.text,
-                    tel: map['tel']!.text,
-                  ),
-                )
-                .toList(),
-        healthPromotion: HealthPromotion(
-          preHospitalCourse: _preHospitalCourseController.text,
-          chiefComplaint: _chiefComplaintController.text,
-          purpose: _purposeController.text,
-          opinions: {
-            'doctor': _doctorOpinionController.text,
-            'principal': _principalOpinionController.text,
-            'family': _familyOpinionController.text,
-          },
-          pastMedicalHistory: _pastMedicalHistoryController.text,
-          isMedicinesExist: _isMedicinesExist,
-          medicines: _isMedicinesExist == true ? _medicinesController.text : '',
-          isHealthManageMethodExist: _isHealthManageMethodExist,
-          healthManageMethod:
-              _isHealthManageMethodExist == true
-                  ? _healthManageMethodController.text
-                  : '',
-          isSubstanceExist: _isSubstanceExist,
-          alcoholPerDay:
-              _isSubstanceExist == true
-                  ? _emptyOrInvalidAsNullInt(_alcoholPerDayController.text)
-                  : null,
-          cigarettsPerDay:
-              _isSubstanceExist == true
-                  ? _emptyOrInvalidAsNullInt(_cigarettsPerDayController.text)
-                  : null,
-          otherSubstance:
-              _isSubstanceExist == true ? _otherSubstanceController.text : '',
-          otherSubstanceRelatedInfo:
-              _isSubstanceExist == true
-                  ? _otherSubstanceRelatedInfoController.text
-                  : '',
-        ),
-        selfPerception: SelfPerception(
-          selfAwareness: _selfAwarenessController.text,
-          worries: _worriesController.text,
-          howCanHelp: _howCanHelpController.text,
-          pains: _painsController.text,
-          others: _selfPerceptionOthersController.text,
-        ),
-        // nursingPlan, historyOfSoap など他のフィールドも必要に応じてコピー
-        nursingPlan: widget.patient.nursingPlan,
-        historyOfSoap: widget.patient.historyOfSoap,
+
+      final personalInfo = PersonalInfo(
+        furigana: _furiganaController.text,
+        name: _nameController.text,
+        birthday: _birthday,
+        address: _addressController.text,
+        tel: _telController.text,
       );
+
+      final relatedContacts =
+          _relatedContactControllers
+              .map(
+                (map) => RelatedContact(
+                  name: map['name']!.text,
+                  relationship: map['relationship']!.text,
+                  tel: map['tel']!.text,
+                ),
+              )
+              .toList();
+
+      final healthPromotion = HealthPromotion(
+        preHospitalCourse: _preHospitalCourseController.text,
+        chiefComplaint: _chiefComplaintController.text,
+        purpose: _purposeController.text,
+        opinions: {
+          "doctor": _doctorOpinionController.text,
+          "principal": _principalOpinionController.text,
+          "family": _familyOpinionController.text,
+        },
+        pastMedicalHistory: _pastMedicalHistoryController.text,
+        isMedicinesExist: _isMedicinesExist,
+        medicines: _isMedicinesExist == true ? _medicinesController.text : '',
+        isHealthManageMethodExist: _isHealthManageMethodExist,
+        healthManageMethod:
+            _isHealthManageMethodExist == true
+                ? _healthManageMethodController.text
+                : '',
+        isSubstanceExist: _isSubstanceExist,
+        alcoholPerDay:
+            _isSubstanceExist == true
+                ? _emptyOrInvalidAsNullInt(_alcoholPerDayController.text)
+                : null,
+        cigarettsPerDay:
+            _isSubstanceExist == true
+                ? _emptyOrInvalidAsNullInt(_cigarettsPerDayController.text)
+                : null,
+        otherSubstance:
+            _isSubstanceExist == true ? _otherSubstanceController.text : '',
+        otherSubstanceRelatedInfo:
+            _isSubstanceExist == true
+                ? _otherSubstanceRelatedInfoController.text
+                : '',
+      );
+
+      final selfPerception = SelfPerception(
+        selfAwareness: _selfAwarenessController.text,
+        worries: _worriesController.text,
+        howCanHelp: _howCanHelpController.text,
+        pains: _painsController.text,
+        others: _selfPerceptionOthersController.text,
+      );
+
       final patientRepository = PatientRepository();
       try {
-        await patientRepository.updatePatient(updatedPatient); // 編集用メソッドを呼ぶ
+        if (isEditMode) {
+          // 編集モード: 既存の Patient を更新
+          final updatedPatient = Patient(
+            id: widget.patient!.id, // 既存の ID を維持
+            personalInfo: personalInfo,
+            oneLineInfo: _oneLineInfoController.text,
+            relatedContacts: relatedContacts,
+            healthPromotion: healthPromotion,
+            selfPerception: selfPerception,
+            // 他の必要なフィールドは元の Patient からコピー
+            nursingPlan: widget.patient!.nursingPlan,
+            historyOfSoap: widget.patient!.historyOfSoap,
+          );
+          await patientRepository.updatePatient(updatedPatient);
+        } else {
+          // 追加モード: 新しい Patient を作成
+          final newPatient = Patient(
+            personalInfo: personalInfo,
+            oneLineInfo: _oneLineInfoController.text,
+            relatedContacts: relatedContacts,
+            healthPromotion: healthPromotion,
+            selfPerception: selfPerception,
+          );
+          await patientRepository.addPatient(newPatient);
+        }
         setState(() {
           _isLoading = false;
         });
@@ -312,17 +379,6 @@ class _EditPatientPageState extends State<EditPatientPage> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
         keyboardType: keyboardType,
-        validator: (value) {
-          // Removed required check to allow blanks
-          // 数値フィールドの場合のバリデーションは残しても良い
-          if (keyboardType == TextInputType.number &&
-              value != null &&
-              value.trim().isNotEmpty && // trim() を追加して空白のみの入力をチェック
-              int.tryParse(value.trim()) == null) {
-            return '有効な数値を入力してください';
-          }
-          return null; // 常にnullを返し、バリデーションエラーとしない
-        },
       ),
     );
   }
@@ -402,7 +458,7 @@ class _EditPatientPageState extends State<EditPatientPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Patient Information')),
+      appBar: AppBar(title: Text(isEditMode ? '患者情報編集' : '患者情報入力')),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -449,6 +505,12 @@ class _EditPatientPageState extends State<EditPatientPage> {
                     'Phone Number',
                     keyboardType: TextInputType.phone,
                   ),
+                  _buildTextFormField(
+                    _oneLineInfoController,
+                    'One Line Info',
+                    keyboardType: TextInputType.multiline,
+                  ),
+
                   _buildSectionTitle('Related Contacts'),
                   ListView.builder(
                     shrinkWrap: true,

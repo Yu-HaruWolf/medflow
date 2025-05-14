@@ -3,17 +3,19 @@ import 'package:intl/intl.dart';
 import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
 
-class EditSoapPage extends StatefulWidget {
+class SoapFormPage extends StatefulWidget {
   final Patient patient;
-  final Soap soap;
-  const EditSoapPage({super.key, required this.patient, required this.soap});
+  final Soap? soap;
+
+  const SoapFormPage({super.key, required this.patient, this.soap});
 
   @override
-  State<EditSoapPage> createState() => _EditSoapPageState();
+  State<SoapFormPage> createState() => _SoapFormPageState();
 }
 
-class _EditSoapPageState extends State<EditSoapPage> {
+class _SoapFormPageState extends State<SoapFormPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
@@ -24,15 +26,29 @@ class _EditSoapPageState extends State<EditSoapPage> {
   late TextEditingController _assessmentController;
   late TextEditingController _planController;
 
+  // A getter to determine if we're in edit mode
+  bool get isEditMode => widget.soap != null;
+
   @override
   void initState() {
     super.initState();
-    final s = widget.soap;
-    _issueDateTime = s.issueDateTime;
-    _subjectController = TextEditingController(text: s.subject);
-    _objectController = TextEditingController(text: s.object);
-    _assessmentController = TextEditingController(text: s.assessment);
-    _planController = TextEditingController(text: s.plan);
+
+    if (isEditMode) {
+      // Edit mode - initialize with existing SOAP data
+      final s = widget.soap!;
+      _issueDateTime = s.issueDateTime;
+      _subjectController = TextEditingController(text: s.subject);
+      _objectController = TextEditingController(text: s.object);
+      _assessmentController = TextEditingController(text: s.assessment);
+      _planController = TextEditingController(text: s.plan);
+    } else {
+      // Add mode - initialize with empty values
+      _issueDateTime = DateTime.now();
+      _subjectController = TextEditingController();
+      _objectController = TextEditingController();
+      _assessmentController = TextEditingController();
+      _planController = TextEditingController();
+    }
   }
 
   @override
@@ -72,16 +88,133 @@ class _EditSoapPageState extends State<EditSoapPage> {
     }
   }
 
+  Future<void> _handleGeminiCreation() async {
+    final TextEditingController memoController = TextEditingController();
+    final geminiService = GeminiService();
+    geminiService.geminiInit();
+
+    // Show dialog to input memo
+    final String memo =
+        await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('メモを入力してください'),
+              content: TextField(
+                controller: memoController,
+                decoration: const InputDecoration(hintText: 'メモを入力'),
+                maxLines: 3,
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed:
+                      () => Navigator.of(context).pop(''), // Allow empty memo
+                  child: const Text('スキップ'),
+                ),
+                TextButton(
+                  onPressed:
+                      () => Navigator.of(context).pop(memoController.text),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        ''; // Default to empty string if dialog is dismissed
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final Soap generatedSoap = await geminiService.generateSoap(
+        widget.patient,
+        widget.patient.nursingPlan,
+        widget.patient.historyOfSoap.isNotEmpty
+            ? widget.patient.historyOfSoap.last
+            : Soap(),
+        memo,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Show dialog to confirm generated SOAP
+      final bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('生成されたSOAP'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('S (主観的情報): ${generatedSoap.subject}'),
+                  Text('O (客観的情報): ${generatedSoap.object}'),
+                  Text('A (アセスメント): ${generatedSoap.assessment}'),
+                  Text('P (プラン): ${generatedSoap.plan}'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('キャンセル'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirm == true) {
+        // Apply generated SOAP to input fields
+        setState(() {
+          _subjectController.text = generatedSoap.subject;
+          _objectController.text = generatedSoap.object;
+          _assessmentController.text = generatedSoap.assessment;
+          _planController.text = generatedSoap.plan;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
+    }
+  }
+
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
-      widget.soap.issueDateTime = _issueDateTime;
-      widget.soap.subject = _subjectController.text;
-      widget.soap.object = _objectController.text;
-      widget.soap.assessment = _assessmentController.text;
-      widget.soap.plan = _planController.text;
+
+      if (isEditMode) {
+        // Edit mode - update existing SOAP
+        final soap = widget.soap!;
+        soap.issueDateTime = _issueDateTime;
+        soap.subject = _subjectController.text;
+        soap.object = _objectController.text;
+        soap.assessment = _assessmentController.text;
+        soap.plan = _planController.text;
+      } else {
+        // Add mode - create new SOAP and add to patient history
+        final newSoap = Soap(
+          issueDateTime: _issueDateTime,
+          subject: _subjectController.text,
+          object: _objectController.text,
+          assessment: _assessmentController.text,
+          plan: _planController.text,
+        );
+        widget.patient.addHistoryOfSoap(newSoap);
+      }
 
       await PatientRepository().updatePatient(widget.patient);
       setState(() {
@@ -116,7 +249,7 @@ class _EditSoapPageState extends State<EditSoapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SOAPの編集')),
+      appBar: AppBar(title: Text(isEditMode ? 'SOAPの編集' : 'SOAPの作成')),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -148,12 +281,7 @@ class _EditSoapPageState extends State<EditSoapPage> {
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
-                        onPressed: () {
-                          // TODO: Implement Gemini integration
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Gemini で作成機能は準備中です')),
-                          );
-                        },
+                        onPressed: _handleGeminiCreation,
                       ),
                     ),
                   ),
