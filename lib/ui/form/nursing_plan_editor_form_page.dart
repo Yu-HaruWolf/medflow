@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
-import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:medflow/data/nursing_plan.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/data/patient_repository.dart';
+import 'package:medflow/gemini/gemini_service.dart';
+import 'package:medflow/data/soap.dart';
 
 class NursingPlanEditorFormPage extends StatefulWidget {
   final Patient patient;

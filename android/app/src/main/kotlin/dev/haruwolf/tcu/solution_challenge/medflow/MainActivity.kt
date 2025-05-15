@@ -1,4 +1,4 @@
-package com.example.solution_challenge_tcu_2025
+package dev.haruwolf.tcu.solution_challenge.medflow
 
 import io.flutter.embedding.android.FlutterActivity
 
