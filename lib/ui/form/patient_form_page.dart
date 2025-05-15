@@ -3,7 +3,7 @@ import 'package:solution_challenge_tcu_2025/data/patient.dart';
 import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
 
 class PatientFormPage extends StatefulWidget {
-  final Patient? patient; // null なら追加、そうでなければ編集モード
+  final Patient? patient; // Add mode if null, otherwise edit mode
 
   const PatientFormPage({super.key, this.patient});
 
@@ -15,7 +15,7 @@ class _PatientFormPageState extends State<PatientFormPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  // モード判定用ゲッター
+  // Determine mode getter
   bool get isEditMode => widget.patient != null;
 
   // Patient Controllers
@@ -240,7 +240,7 @@ class _PatientFormPageState extends State<PatientFormPage> {
     });
   }
 
-  // ヘルパー関数: 文字列が空またはパース不可ならnull、そうでなければパースした整数を返す
+  // Helper function: Returns null if string is empty or unparsable, otherwise returns parsed integer
   int? _emptyOrInvalidAsNullInt(String text) {
     if (text.trim().isEmpty) return null;
     return int.tryParse(text.trim());
@@ -404,7 +404,7 @@ class _PatientFormPageState extends State<PatientFormPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
-                  'はい',
+                  'Yes',
                   style: TextStyle(
                     color:
                         currentValue == true
@@ -418,7 +418,7 @@ class _PatientFormPageState extends State<PatientFormPage> {
                   onChanged: onChanged,
                 ),
                 Text(
-                  'いいえ',
+                  'No',
                   style: TextStyle(
                     color:
                         currentValue == false
@@ -432,7 +432,7 @@ class _PatientFormPageState extends State<PatientFormPage> {
                   onChanged: onChanged,
                 ),
                 Text(
-                  '不明',
+                  'Unknown',
                   style: TextStyle(
                     color:
                         currentValue == null
@@ -458,7 +458,11 @@ class _PatientFormPageState extends State<PatientFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(isEditMode ? '患者情報編集' : '患者情報入力')),
+      appBar: AppBar(
+        title: Text(
+          isEditMode ? 'Edit Patient Information' : 'Enter Patient Information',
+        ),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -468,9 +472,9 @@ class _PatientFormPageState extends State<PatientFormPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _buildSectionTitle('基本情報'),
-                  _buildTextFormField(_furiganaController, 'フリガナ'),
-                  _buildTextFormField(_nameController, '氏名'),
+                  _buildSectionTitle('Basic Information'),
+                  _buildTextFormField(_furiganaController, 'Furigana'),
+                  _buildTextFormField(_nameController, 'Name'),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
@@ -478,14 +482,14 @@ class _PatientFormPageState extends State<PatientFormPage> {
                         Expanded(
                           child: Text(
                             _birthday == null
-                                ? '生年月日'
-                                : '生年月日: ${_birthday!.toLocal().toString().split(' ')[0]}',
+                                ? 'Date of Birth'
+                                : 'Date of Birth: ${_birthday!.toLocal().toString().split(' ')[0]}',
                           ),
                         ),
                         if (_birthday != null)
                           IconButton(
                             icon: const Icon(Icons.clear),
-                            tooltip: '生年月日を削除',
+                            tooltip: 'Remove Date of Birth',
                             onPressed: () {
                               setState(() {
                                 _birthday = null;
@@ -494,15 +498,15 @@ class _PatientFormPageState extends State<PatientFormPage> {
                           ),
                         ElevatedButton(
                           onPressed: () => _pickDate(context),
-                          child: const Text('日付選択'),
+                          child: const Text('Select Date'),
                         ),
                       ],
                     ),
                   ),
-                  _buildTextFormField(_addressController, '住所'),
+                  _buildTextFormField(_addressController, 'Address'),
                   _buildTextFormField(
                     _telController,
-                    '電話番号',
+                    'Phone Number',
                     keyboardType: TextInputType.phone,
                   ),
                   _buildTextFormField(
@@ -511,7 +515,7 @@ class _PatientFormPageState extends State<PatientFormPage> {
                     keyboardType: TextInputType.multiline,
                   ),
 
-                  _buildSectionTitle('関連連絡先'),
+                  _buildSectionTitle('Related Contacts'),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -525,20 +529,20 @@ class _PatientFormPageState extends State<PatientFormPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '連絡先 ${index + 1}',
+                                'Contact ${index + 1}',
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               _buildTextFormField(
                                 _relatedContactControllers[index]['name']!,
-                                '氏名',
+                                'Name',
                               ),
                               _buildTextFormField(
                                 _relatedContactControllers[index]['relationship']!,
-                                '続柄',
+                                'Relationship',
                               ),
                               _buildTextFormField(
                                 _relatedContactControllers[index]['tel']!,
-                                '電話番号',
+                                'Phone Number',
                                 keyboardType: TextInputType.phone,
                               ),
                               Align(
@@ -549,7 +553,7 @@ class _PatientFormPageState extends State<PatientFormPage> {
                                     color: Colors.red,
                                   ),
                                   label: const Text(
-                                    '削除',
+                                    'Delete',
                                     style: TextStyle(color: Colors.red),
                                   ),
                                   onPressed: () => _removeRelatedContact(index),
@@ -565,71 +569,70 @@ class _PatientFormPageState extends State<PatientFormPage> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.add),
-                      label: const Text('連絡先を追加'),
+                      label: const Text('Add Contact'),
                       onPressed: _addRelatedContact,
                     ),
                   ),
-
-                  _buildSectionTitle('健康増進情報'),
+                  _buildSectionTitle('Health Promotion Information'),
                   _buildTextFormField(
                     _preHospitalCourseController,
-                    '入院までの経過',
+                    'Pre-Hospital Course',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _chiefComplaintController,
-                    '主訴',
+                    'Chief Complaint',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _purposeController,
-                    '入院目的',
+                    'Purpose of Admission',
                     keyboardType: TextInputType.multiline,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(
-                      '現在の病気について医師からの説明とそのとらえ方:',
+                      'Current Illness - Doctor\'s Explanation and Patient\'s Perspective:',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ),
                   _buildTextFormField(
                     _doctorOpinionController,
-                    '医師からの説明',
+                    'Doctor\'s Explanation',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _principalOpinionController,
-                    '本人のとらえ方',
+                    'Patient\'s Perspective',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _familyOpinionController,
-                    '家族のとらえ方',
+                    'Family\'s Perspective',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _pastMedicalHistoryController,
-                    '既往歴',
+                    'Past Medical History',
                     keyboardType: TextInputType.multiline,
                   ),
-
-                  _buildNullableCheckbox('入院までの使用薬剤の有無', _isMedicinesExist, (
-                    value,
-                  ) {
-                    setState(() {
-                      _isMedicinesExist = value;
-                    });
-                  }),
+                  _buildNullableCheckbox(
+                    'Medication Before Admission',
+                    _isMedicinesExist,
+                    (value) {
+                      setState(() {
+                        _isMedicinesExist = value;
+                      });
+                    },
+                  ),
                   if (_isMedicinesExist == true)
                     _buildTextFormField(
                       _medicinesController,
-                      '使用薬剤',
+                      'Medications',
                       keyboardType: TextInputType.multiline,
                     ),
-
                   _buildNullableCheckbox(
-                    '健康管理の方法の有無',
+                    'Health Management Methods',
                     _isHealthManageMethodExist,
                     (value) {
                       setState(() {
@@ -640,11 +643,12 @@ class _PatientFormPageState extends State<PatientFormPage> {
                   if (_isHealthManageMethodExist == true)
                     _buildTextFormField(
                       _healthManageMethodController,
-                      '健康管理の方法',
+                      'Health Management Methods',
                       keyboardType: TextInputType.multiline,
                     ),
-
-                  _buildNullableCheckbox('嗜好品の有無', _isSubstanceExist, (value) {
+                  _buildNullableCheckbox('Substances Use', _isSubstanceExist, (
+                    value,
+                  ) {
                     setState(() {
                       _isSubstanceExist = value;
                     });
@@ -652,55 +656,55 @@ class _PatientFormPageState extends State<PatientFormPage> {
                   if (_isSubstanceExist == true) ...[
                     _buildTextFormField(
                       _alcoholPerDayController,
-                      'アルコール摂取量 (杯/日)',
+                      'Alcohol Consumption (cups/day)',
                       keyboardType: TextInputType.number,
                     ),
                     _buildTextFormField(
                       _cigarettsPerDayController,
-                      'タバコ本数 (本/日)',
+                      'Cigarettes (sticks/day)',
                       keyboardType: TextInputType.number,
                     ),
-                    _buildTextFormField(_otherSubstanceController, 'その他嗜好品'),
+                    _buildTextFormField(
+                      _otherSubstanceController,
+                      'Other Substances',
+                    ),
                     _buildTextFormField(
                       _otherSubstanceRelatedInfoController,
-                      'その他嗜好品関連情報',
+                      'Other Substances Related Information',
                     ),
                   ],
-
-                  // SelfPerception 入力欄
-                  _buildSectionTitle('自己認識・自己受容（Self-Perception）'),
+                  _buildSectionTitle('Self-Perception and Self-Acceptance'),
                   _buildTextFormField(
                     _selfAwarenessController,
-                    '自分のことをどう思っていますか',
+                    'How do you feel about yourself?',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _worriesController,
-                    'いま、悩みや不安、恐怖、抑うつ、絶望を感じていますか',
+                    'Do you feel worry, anxiety, fear, depression, or despair?',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _howCanHelpController,
-                    '悩みや不安に対し、手助けできることはありますか',
+                    'What kind of help do you think you need?',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _painsController,
-                    '身体の外観の痛みはありますか',
+                    'Do you have any pain related to your body image?',
                     keyboardType: TextInputType.multiline,
                   ),
                   _buildTextFormField(
                     _selfPerceptionOthersController,
-                    'その他（自己認識・自己受容）',
+                    'Other (Self-Perception and Self-Acceptance)',
                     keyboardType: TextInputType.multiline,
                   ),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24.0),
                     child: Center(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.save),
-                        label: const Text('保存'),
+                        label: const Text('Save'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32,
