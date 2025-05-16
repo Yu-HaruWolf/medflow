@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
-import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:medflow/data/nursing_plan.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/data/patient_repository.dart';
+import 'package:medflow/gemini/gemini_service.dart';
+import 'package:medflow/data/soap.dart';
 
 class NursingPlanEditorFormPage extends StatefulWidget {
   final Patient patient;
@@ -18,7 +18,7 @@ class NursingPlanEditorFormPage extends StatefulWidget {
 class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
+  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm');
 
   late DateTime _issueDateTime;
   late TextEditingController _nandaIController;
@@ -72,7 +72,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
           );
         });
       } else {
-        // 時間選択をキャンセルした場合は日付も変更しない
+        // If time selection is canceled, the date will not be changed
       }
     }
   }
@@ -224,7 +224,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('看護計画の編集')),
+      appBar: AppBar(title: const Text('Edit Nursing Plan')),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -241,7 +241,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
                         icon: const Icon(
                           Icons.auto_awesome,
                         ), // Gemini-like icon
-                        label: const Text('Gemini で作成'),
+                        label: const Text('Generate with Gemini'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor:
@@ -266,31 +266,31 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '作成日: ${_displayDateTimeFormat.format(_issueDateTime)}',
+                            'Issue date: ${_displayDateTimeFormat.format(_issueDateTime)}',
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () => _pickDate(context),
-                          child: const Text('日時選択'),
+                          child: const Text('Select Date & Time'),
                         ),
                       ],
                     ),
                   ),
                   _buildTextFormField(_nandaIController, 'NANDA-I'),
-                  _buildTextFormField(_goalController, '目標', maxLines: null),
+                  _buildTextFormField(_goalController, 'Goal', maxLines: null),
                   _buildTextFormField(
                     _opController,
-                    'O-P (観察項目)',
+                    'O-P (Observation)',
                     maxLines: null,
                   ),
                   _buildTextFormField(
                     _tpController,
-                    'T-P (援助)',
+                    'T-P (Therapeutic)',
                     maxLines: null,
                   ),
                   _buildTextFormField(
                     _epController,
-                    'E-P (指導)',
+                    'E-P (Educational)',
                     maxLines: null,
                   ),
                   Padding(
@@ -298,7 +298,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
                     child: Center(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.save),
-                        label: const Text('保存'),
+                        label: const Text('Save'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32,

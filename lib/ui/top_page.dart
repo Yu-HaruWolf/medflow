@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:solution_challenge_tcu_2025/app_state.dart';
-import 'package:solution_challenge_tcu_2025/ui/login_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/patients_list_page.dart';
+import 'package:medflow/app_state.dart';
+import 'package:medflow/ui/login_page.dart';
+import 'package:medflow/ui/patients_list_page.dart';
 
 class MyHomePage extends StatefulWidget {
   final String title;

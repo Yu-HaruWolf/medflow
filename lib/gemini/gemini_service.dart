@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:http/http.dart' as http;
-import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:medflow/data/nursing_plan.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/data/soap.dart';
 
 import 'gemini_tools.dart';
 

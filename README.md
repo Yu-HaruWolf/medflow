@@ -1,16 +1,12 @@
-# solution_challenge_tcu_2025
+# MedFlow
 
-A new Flutter project.
+Available Platform: Android
 
-## Getting Started
+This project was made for Solution Challenge 2025.
 
-This project is a starting point for a Flutter application.
+This app is not contains actual data.
 
-A few resources to get you started if this is your first Flutter project:
+# Accounts
+Email: example@example.com<br>
+PW: abcd1234
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
