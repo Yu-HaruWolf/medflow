@@ -42,7 +42,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCKq6aL-Om7Pz6ta0sUorwpIJ-sBkAi5FI',
-    appId: '1:996765302538:web:bfb8032c9454c2245544f3',
+    appId: '1:996765302538:web:a7e11aad6e54ea0b5544f3',
     messagingSenderId: '996765302538',
     projectId: 'medflow-tcu',
     authDomain: 'medflow-tcu.firebaseapp.com',
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAvHBZzNWuUNk7Lz_exQyBlL-ef9_oUU0g',
-    appId: '1:996765302538:android:e8e4d9380dc7b84f5544f3',
+    appId: '1:996765302538:android:6c1e24c8fb27ee8f5544f3',
     messagingSenderId: '996765302538',
     projectId: 'medflow-tcu',
     storageBucket: 'medflow-tcu.firebasestorage.app',
