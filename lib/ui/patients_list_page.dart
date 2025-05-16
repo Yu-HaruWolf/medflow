@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/ui/form/patient_form_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/patient_summary_page.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/data/patient_repository.dart';
+import 'package:medflow/ui/form/patient_form_page.dart';
+import 'package:medflow/ui/patient_summary_page.dart';
 
 class PatientsListPage extends StatefulWidget {
   const PatientsListPage({super.key});
@@ -37,7 +37,11 @@ class _PatientsListPageState extends State<PatientsListPage> {
     setState(() {
       filteredPatients =
           allPatients
-              .where((patient) => patient.personalInfo.name.toLowerCase().contains(query.toLowerCase()))
+              .where(
+                (patient) => patient.personalInfo.name.toLowerCase().contains(
+                  query.toLowerCase(),
+                ),
+              )
               .toList();
     });
   }
@@ -47,7 +51,7 @@ class _PatientsListPageState extends State<PatientsListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 62, 183, 220),
-        title: Text("Patient List")
+        title: Text("Patient List"),
       ),
       body: Column(
         children: [

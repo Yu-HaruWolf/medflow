@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/ui/form/nursing_plan_editor_form_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/form/patient_form_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/form/soap_form_page.dart';
+import 'package:medflow/data/patient_repository.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/ui/form/nursing_plan_editor_form_page.dart';
+import 'package:medflow/ui/form/patient_form_page.dart';
+import 'package:medflow/ui/form/soap_form_page.dart';
 
 class PatientSummaryPage extends StatefulWidget {
   final String patientId;

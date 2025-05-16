@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/data/patient_repository.dart';
 
 class PatientFormPage extends StatefulWidget {
   final Patient? patient; // Add mode if null, otherwise edit mode
