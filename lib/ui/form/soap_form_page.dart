@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/data/soap.dart';
-import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/data/patient_repository.dart';
+import 'package:medflow/data/soap.dart';
+import 'package:medflow/gemini/gemini_service.dart';
 
 class SoapFormPage extends StatefulWidget {
   final Patient patient;
@@ -18,7 +18,7 @@ class SoapFormPage extends StatefulWidget {
 class _SoapFormPageState extends State<SoapFormPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
+  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm');
 
   late DateTime _issueDateTime;
   late TextEditingController _subjectController;
@@ -94,33 +94,30 @@ class _SoapFormPageState extends State<SoapFormPage> {
     geminiService.geminiInit();
 
     // Show dialog to input memo
-    final String memo =
-        await showDialog<String>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('メモを入力してください'),
-              content: TextField(
-                controller: memoController,
-                decoration: const InputDecoration(hintText: 'メモを入力'),
-                maxLines: 3,
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed:
-                      () => Navigator.of(context).pop(''), // Allow empty memo
-                  child: const Text('スキップ'),
-                ),
-                TextButton(
-                  onPressed:
-                      () => Navigator.of(context).pop(memoController.text),
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        ) ??
-        ''; // Default to empty string if dialog is dismissed
+    final String? memo = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter notes for Gemini'),
+          content: TextField(
+            controller: memoController,
+            decoration: const InputDecoration(hintText: 'Enter notes'),
+            maxLines: 3,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(null),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(memoController.text),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    ); // cancel if null
+    if (memo == null) return;
 
     setState(() {
       _isLoading = true;
@@ -145,22 +142,22 @@ class _SoapFormPageState extends State<SoapFormPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('生成されたSOAP'),
+            title: const Text('Generated SOAP'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('S (主観的情報): ${generatedSoap.subject}'),
-                  Text('O (客観的情報): ${generatedSoap.object}'),
-                  Text('A (アセスメント): ${generatedSoap.assessment}'),
-                  Text('P (プラン): ${generatedSoap.plan}'),
+                  Text('Subject: ${generatedSoap.subject}'),
+                  Text('Object: ${generatedSoap.object}'),
+                  Text('Assessment: ${generatedSoap.assessment}'),
+                  Text('Plan: ${generatedSoap.plan}'),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('キャンセル'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -186,7 +183,7 @@ class _SoapFormPageState extends State<SoapFormPage> {
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
+      ).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
     }
   }
 
@@ -249,7 +246,7 @@ class _SoapFormPageState extends State<SoapFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(isEditMode ? 'SOAPの編集' : 'SOAPの作成')),
+      appBar: AppBar(title: Text(isEditMode ? 'Edit SOAP' : 'Create SOAP')),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -266,7 +263,7 @@ class _SoapFormPageState extends State<SoapFormPage> {
                         icon: const Icon(
                           Icons.auto_awesome,
                         ), // Gemini-like icon
-                        label: const Text('Gemini で作成'),
+                        label: const Text('Create with Gemini'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor:
@@ -291,37 +288,37 @@ class _SoapFormPageState extends State<SoapFormPage> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '作成日: ${_displayDateTimeFormat.format(_issueDateTime)}',
+                            'Issue date: ${_displayDateTimeFormat.format(_issueDateTime)}',
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () => _pickDate(context),
-                          child: const Text('日時選択'),
+                          child: const Text('Select Date & Time'),
                         ),
                       ],
                     ),
                   ),
                   _buildTextFormField(
                     _subjectController,
-                    'S (主観的情報)',
+                    'S (Subjective Information)',
                     minLines: 1,
                     maxLines: null,
                   ),
                   _buildTextFormField(
                     _objectController,
-                    'O (客観的情報)',
+                    'O (Objective Information)',
                     minLines: 1,
                     maxLines: null,
                   ),
                   _buildTextFormField(
                     _assessmentController,
-                    'A (アセスメント)',
+                    'A (Assessment)',
                     minLines: 1,
                     maxLines: null,
                   ),
                   _buildTextFormField(
                     _planController,
-                    'P (プラン)',
+                    'P (Plan)',
                     minLines: 1,
                     maxLines: null,
                   ),
@@ -330,7 +327,7 @@ class _SoapFormPageState extends State<SoapFormPage> {
                     child: Center(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.save),
-                        label: const Text('保存'),
+                        label: const Text('Save'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32,

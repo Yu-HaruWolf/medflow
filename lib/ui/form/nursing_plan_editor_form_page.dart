@@ -1,11 +1,11 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/nursing_plan.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/speech_to_text_service.dart';
-import 'package:solution_challenge_tcu_2025/gemini/gemini_service.dart';
-import 'package:solution_challenge_tcu_2025/data/soap.dart';
+import 'package:medflow/data/nursing_plan.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/data/patient_repository.dart';
+import 'package:medflow/gemini/gemini_service.dart';
+import 'package:medflow/data/soap.dart';
+import 'package:medflow/speech_to_text_service.dart';
 
 class NursingPlanEditorFormPage extends StatefulWidget {
   final Patient patient;
@@ -20,7 +20,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _isWaitingForResult = false;
-  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
+  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm');
 
   late DateTime _issueDateTime;
   late TextEditingController _nandaiController;
@@ -77,7 +77,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
           );
         });
       } else {
-        // 時間選択をキャンセルした場合は日付も変更しない
+        // If time selection is canceled, the date will not be changed
       }
     }
   }
@@ -111,34 +111,31 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
     geminiService.geminiInit();
 
     // Show dialog to input memo
-    final String memo =
-        await showDialog<String>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('メモを入力してください'),
-              content: TextField(
-                controller: memoController,
-                decoration: const InputDecoration(hintText: 'メモを入力'),
-                maxLines: 3,
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed:
-                      () =>
-                          Navigator.of(context).pop(''), // Return empty string
-                  child: const Text('スキップ'),
-                ),
-                TextButton(
-                  onPressed:
-                      () => Navigator.of(context).pop(memoController.text),
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        ) ??
-        ''; // Default to empty string if dialog is dismissed
+    final String? memo = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter notes for Gemini'),
+          content: TextField(
+            controller: memoController,
+            decoration: const InputDecoration(hintText: 'Enter notes'),
+            maxLines: 3,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(null),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(memoController.text),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    // cancel if null
+    if (memo == null) return;
 
     setState(() {
       _isLoading = true;
@@ -163,27 +160,27 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('生成された看護計画'),
+            title: const Text('Generated nursing plan'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('NANDA-I: ${generatedPlan.nanda_i}'),
-                  Text('目標: ${generatedPlan.goal}'),
-                  Text('O-P (観察項目): ${generatedPlan.op}'),
-                  Text('T-P (援助): ${generatedPlan.tp}'),
-                  Text('E-P (指導): ${generatedPlan.ep}'),
+                  Text('Goal: ${generatedPlan.goal}'),
+                  Text('O-P (Observation): ${generatedPlan.op}'),
+                  Text('T-P (Therapeutic): ${generatedPlan.tp}'),
+                  Text('E-P (Educational): ${generatedPlan.ep}'),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('キャンセル'),
+                child: const Text('Reject'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('OK'),
+                child: const Text('Accept'),
               ),
             ],
           );
@@ -206,14 +203,14 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
+      ).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
     }
   }
 
   Widget _buildTextFormField(
     TextEditingController controller,
     String label, {
-    int? maxLines = null,
+    int? maxLines,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -294,7 +291,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('看護計画の編集')),
+      appBar: AppBar(title: const Text('Edit Nursing Plan')),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -314,7 +311,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
                             icon: const Icon(
                               Icons.auto_awesome,
                             ), // Gemini-like icon
-                            label: const Text('Gemini で作成'),
+                            label: const Text('Generate with Gemini'),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
                               backgroundColor:
@@ -369,31 +366,31 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '作成日: ${_displayDateTimeFormat.format(_issueDateTime)}',
+                            'Issue date: ${_displayDateTimeFormat.format(_issueDateTime)}',
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () => _pickDate(context),
-                          child: const Text('日時選択'),
+                          child: const Text('Select Date & Time'),
                         ),
                       ],
                     ),
                   ),
                   _buildTextFormField(_nandaiController, 'NANDA-I'),
-                  _buildTextFormField(_goalController, '目標', maxLines: null),
+                  _buildTextFormField(_goalController, 'Goal', maxLines: null),
                   _buildTextFormField(
                     _opController,
-                    'O-P (観察項目)',
+                    'O-P (Observation)',
                     maxLines: null,
                   ),
                   _buildTextFormField(
                     _tpController,
-                    'T-P (援助)',
+                    'T-P (Therapeutic)',
                     maxLines: null,
                   ),
                   _buildTextFormField(
                     _epController,
-                    'E-P (指導)',
+                    'E-P (Educational)',
                     maxLines: null,
                   ),
                   Padding(
@@ -401,7 +398,7 @@ class _NursingPlanEditorFormPageState extends State<NursingPlanEditorFormPage> {
                     child: Center(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.save),
-                        label: const Text('保存'),
+                        label: const Text('Save'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32,

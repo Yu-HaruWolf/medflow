@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:solution_challenge_tcu_2025/data/patient_repository.dart';
-import 'package:solution_challenge_tcu_2025/data/patient.dart';
-import 'package:solution_challenge_tcu_2025/ui/form/nursing_plan_editor_form_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/form/patient_form_page.dart';
-import 'package:solution_challenge_tcu_2025/ui/form/soap_form_page.dart';
+import 'package:medflow/data/patient_repository.dart';
+import 'package:medflow/data/patient.dart';
+import 'package:medflow/ui/form/nursing_plan_editor_form_page.dart';
+import 'package:medflow/ui/form/patient_form_page.dart';
+import 'package:medflow/ui/form/soap_form_page.dart';
 
 class PatientSummaryPage extends StatefulWidget {
   final String patientId;
@@ -19,7 +19,7 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
   late TabController _tabController;
   Patient? patient;
   final _displayDateFormat = DateFormat('yyyy/MM/dd');
-  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm:ss');
+  final _displayDateTimeFormat = DateFormat('yyyy/MM/dd HH:mm');
   List<bool> _isExpandedList = []; // Add this to manage expansion state
 
   @override
@@ -91,7 +91,14 @@ class _PatientSummaryPageState extends State<PatientSummaryPage>
                       patient!.historyOfSoap.isNotEmpty)
                     IconButton(
                       icon: const Icon(Icons.edit),
-                      tooltip: '患者情報を編集',
+                      tooltip:
+                          _tabController.index == 0
+                              ? 'Edit Basic Info'
+                              : _tabController.index == 1
+                              ? 'Edit Nursing Plan'
+                              : _tabController.index == 2
+                              ? 'Edit SOAP'
+                              : 'Edit info',
                       onPressed: () {
                         if (patient != null) {
                           Navigator.of(context)
