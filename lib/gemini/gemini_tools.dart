@@ -5,9 +5,9 @@ final fetchNursingTool = FunctionDeclaration(
   'jsonからNANDA-I,goal,観察項目,援助,指導を取得する関数',
   parameters: {
     'nursingJson': Schema.object(
-      description: 'SOAPノートの各セクション（NANDA-I,goal,観察項目,援助,指導）を含むJSONオブジェクト。',
+      description: '看護計画の各セクション（NANDA-I,goal,観察項目,援助,指導）を含むJSONオブジェクト。',
       properties: {
-        'nanda-i': Schema.string(description: '看護診断の名前'),
+        'nanda_i': Schema.string(description: '看護診断の名前'),
         'goal': Schema.string(description: '患者が達成するべき目標'),
         'kansatu': Schema.string(description: '患者の状態を観察するポイント'),
         'ennjo': Schema.string(description: '患者に提供する具体的な援助内容'),

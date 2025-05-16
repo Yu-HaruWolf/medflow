@@ -11,63 +11,38 @@ part 'patient.g.dart';
 class Patient {
   Patient({
     this.id = "",
-    this.relatedContacts = const [],
     PersonalInfo? personalInfo,
+    this.relatedContacts = const [],
     HealthPromotion? healthPromotion,
-    Nutrition? nutrition,
-    EliminationAndExchange? eliminationAndExchange,
-    ActivityAndRest? activityAndRest,
-    PerceptionAndCognition? perceptionAndCognition,
     SelfPerception? selfPerception,
-    Relationship? relationship,
-    Sexuality? sexuality,
-    Coping? coping,
-    LifePrinciples? lifePrinciples,
-    Safety? safety,
-    Comfort? comfort,
-    Growth? growth,
     NursingPlan? nursingPlan,
     this.historyOfSoap = const [],
+    this.oneLineInfo = '',
   }) : personalInfo = personalInfo ?? PersonalInfo(),
        healthPromotion = healthPromotion ?? HealthPromotion(),
-       nutrition = nutrition ?? Nutrition(),
-       eliminationAndExchange =
-           eliminationAndExchange ?? EliminationAndExchange(),
-       activityAndRest = activityAndRest ?? ActivityAndRest(),
-       perceptionAndCognition =
-           perceptionAndCognition ?? PerceptionAndCognition(),
        selfPerception = selfPerception ?? SelfPerception(),
-       relationship = relationship ?? Relationship(),
-       sexuality = sexuality ?? Sexuality(),
-       coping = coping ?? Coping(),
-       lifePrinciples = lifePrinciples ?? LifePrinciples(),
-       safety = safety ?? Safety(),
-       comfort = comfort ?? Comfort(),
-       growth = growth ?? Growth(),
        nursingPlan = nursingPlan ?? NursingPlan();
 
   String id;
   PersonalInfo personalInfo;
   List<RelatedContact> relatedContacts;
   HealthPromotion healthPromotion;
-  Nutrition nutrition;
-  EliminationAndExchange eliminationAndExchange;
-  ActivityAndRest activityAndRest;
-  PerceptionAndCognition perceptionAndCognition;
   SelfPerception selfPerception;
-  Relationship relationship;
-  Sexuality sexuality;
-  Coping coping;
-  LifePrinciples lifePrinciples;
-  Safety safety;
-  Comfort comfort;
-  Growth growth;
 
   List<Soap> historyOfSoap;
   NursingPlan nursingPlan;
 
-  factory Patient.fromJson(Map<String, dynamic> json) =>
-      _$PatientFromJson(json);
+  String oneLineInfo;
+
+  void addHistoryOfSoap(Soap soap) {
+    historyOfSoap.add(soap);
+  }
+
+  factory Patient.fromJson(Map<String, dynamic> json, String id) {
+    Patient patient = _$PatientFromJson(json);
+    patient.id = id;
+    return patient;
+  }
 
   Map<String, dynamic> toJson() {
     final json = _$PatientToJson(this);
@@ -128,8 +103,8 @@ class HealthPromotion {
     this.isHealthManageMethodExist,
     this.healthManageMethod = "",
     this.isSubstanceExist,
-    this.alcoholPerDay = 0,
-    this.cigarettsPerDay = 0,
+    this.alcoholPerDay,
+    this.cigarettsPerDay,
     this.otherSubstance = "",
     this.otherSubstanceRelatedInfo = "",
   });
@@ -144,8 +119,8 @@ class HealthPromotion {
   String healthManageMethod; // 健康管理の方法
 
   bool? isSubstanceExist; // 嗜好品
-  int alcoholPerDay; // アルコール杯数(1日あたり)
-  int cigarettsPerDay; // タバコ本数(1日あたり)
+  int? alcoholPerDay; // アルコール杯数(1日あたり)
+  int? cigarettsPerDay; // タバコ本数(1日あたり)
   String otherSubstance; // 嗜好品 - その他
   String otherSubstanceRelatedInfo; // 嗜好品 - その他の関連情報
 
@@ -156,106 +131,22 @@ class HealthPromotion {
 }
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Nutrition {
-  Nutrition();
-  factory Nutrition.fromJson(Map<String, dynamic> json) =>
-      _$NutritionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$NutritionToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class EliminationAndExchange {
-  EliminationAndExchange();
-  factory EliminationAndExchange.fromJson(Map<String, dynamic> json) =>
-      _$EliminationAndExchangeFromJson(json);
-
-  Map<String, dynamic> toJson() => _$EliminationAndExchangeToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class ActivityAndRest {
-  ActivityAndRest();
-  factory ActivityAndRest.fromJson(Map<String, dynamic> json) =>
-      _$ActivityAndRestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ActivityAndRestToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class PerceptionAndCognition {
-  PerceptionAndCognition();
-  factory PerceptionAndCognition.fromJson(Map<String, dynamic> json) =>
-      _$PerceptionAndCognitionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PerceptionAndCognitionToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class SelfPerception {
-  SelfPerception();
+  SelfPerception({
+    this.selfAwareness = "",
+    this.worries = "",
+    this.howCanHelp = "",
+    this.pains = "",
+    this.others = "",
+  });
+  String selfAwareness; // 自分のことをどう思っていますか
+  String worries; // いま、悩みや不安、恐怖、抑うつ、絶望を感じていますか
+  String howCanHelp; // 悩みや不安に対し、手助けできることはありますか
+  String pains; // 身体の外観の痛みはありますか
+  String others; // その他の関連事項
+
   factory SelfPerception.fromJson(Map<String, dynamic> json) =>
       _$SelfPerceptionFromJson(json);
 
   Map<String, dynamic> toJson() => _$SelfPerceptionToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Relationship {
-  Relationship();
-  factory Relationship.fromJson(Map<String, dynamic> json) =>
-      _$RelationshipFromJson(json);
-
-  Map<String, dynamic> toJson() => _$RelationshipToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Sexuality {
-  Sexuality();
-  factory Sexuality.fromJson(Map<String, dynamic> json) =>
-      _$SexualityFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SexualityToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Coping {
-  Coping();
-  factory Coping.fromJson(Map<String, dynamic> json) => _$CopingFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CopingToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class LifePrinciples {
-  LifePrinciples();
-  factory LifePrinciples.fromJson(Map<String, dynamic> json) =>
-      _$LifePrinciplesFromJson(json);
-
-  Map<String, dynamic> toJson() => _$LifePrinciplesToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Safety {
-  Safety();
-  factory Safety.fromJson(Map<String, dynamic> json) => _$SafetyFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SafetyToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Comfort {
-  Comfort();
-  factory Comfort.fromJson(Map<String, dynamic> json) =>
-      _$ComfortFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ComfortToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Growth {
-  Growth();
-  factory Growth.fromJson(Map<String, dynamic> json) => _$GrowthFromJson(json);
-
-  Map<String, dynamic> toJson() => _$GrowthToJson(this);
 }
